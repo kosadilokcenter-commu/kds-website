@@ -793,3 +793,32 @@ html.kld-on{overflow:hidden}
 .nc{grid-template-columns:minmax(0,1fr)}
 .nc .nwhr{grid-template-columns:repeat(auto-fit,minmax(min(100%,250px),1fr))}
 .nc .cpg{grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr))}
+
+/* ===== HERO KDS (ภาพเต็มพื้นที่ · ข้อความและปุ่มชิดซ้ายซ้อนบนภาพ) =====
+   ใช้โครง HTML และระบบสไลด์เดิม (.hmedia/.hsl/.hst/.hctl) ปรับเฉพาะการวางตำแหน่งและสี
+   ผูกกับ .hero ทั้งหมด ไม่กระทบส่วนอื่นของหน้าแรก · ย้อนกลับ: ลบบล็อกนี้ทั้งหมด หรือคืนจาก style.css.bak-20261017 */
+.hero{display:flex;align-items:center;min-height:clamp(440px,62vh,640px);color:#fff;background:#4F1016}
+.hero .hgrid{display:grid;grid-template-columns:minmax(0,1fr);gap:0;width:100%;padding-top:clamp(40px,6vw,72px);padding-bottom:clamp(76px,8vw,96px)}
+/* ภาพ: ออกจากกรอบการ์ด เต็มพื้นที่ Hero (อ้างอิง .hero ซึ่งเป็น position:relative) */
+.hero .hmedia{position:absolute;inset:0;z-index:0;aspect-ratio:auto;border-radius:0;box-shadow:none;background:#4F1016}
+/* Overlay: เข้มทางซ้ายที่มีข้อความ จางลงทางขวาให้เห็นภาพ */
+.hero .hmedia::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(90deg,rgba(24,8,11,.86) 0%,rgba(24,8,11,.72) 44%,rgba(24,8,11,.36) 62%,rgba(24,8,11,.06) 100%)}
+/* ข้อความและปุ่ม: อยู่เหนือภาพ ชิดซ้าย */
+.hero .hc{z-index:2;width:100%;max-width:min(580px,100%);color:#fff}
+.hero .hk{color:rgba(255,255,255,.9);text-shadow:0 1px 6px rgba(0,0,0,.45)}
+.hero .hc h1{color:#fff;text-shadow:0 2px 14px rgba(0,0,0,.5)}
+.hero .hc p{color:rgba(255,255,255,.95);text-shadow:0 1px 8px rgba(0,0,0,.55)}
+/* ปุ่มที่ 2 (แบบเส้นกรอบ): ปรับสีให้อ่านชัดบนภาพ · ขนาด รูปทรง ข้อความ ลิงก์ เหมือนเดิม */
+.hero .hb .btn:not(.b){background:rgba(0,0,0,.18);border-color:#fff;color:#fff}
+.hero .hb .btn:not(.b):hover{background:#fff;border-color:#fff;color:var(--kds-primary);box-shadow:none}
+/* ภาพสำรอง (ไม่มีภาพ): พื้นหลังโทนแดงเข้ม KDS · โลโก้อยู่บนแผ่นสีขาวด้านขวา ไม่ชนข้อความ */
+.hero .hfb{z-index:2;background:linear-gradient(135deg,#4F1016 0%,#7A1A22 58%,#5E131A 100%);justify-items:end;padding:5% clamp(24px,6vw,96px)}
+.hero .hfb img{width:auto;height:auto;max-width:min(32%,300px);max-height:62%;object-fit:contain;background:#fff;border-radius:18px;padding:14px 18px;box-shadow:0 8px 28px rgba(0,0,0,.35)}
+@media(max-width:760px){
+ .hero{align-items:flex-end;min-height:clamp(480px,78vh,580px)}
+ .hero .hgrid{padding-top:150px;padding-bottom:72px}
+ .hero .hmedia::after{background:linear-gradient(0deg,rgba(24,8,11,.92) 0%,rgba(24,8,11,.8) 52%,rgba(24,8,11,.4) 76%,rgba(24,8,11,.08) 100%)}
+ .hero .hc{max-width:100%}
+ .hero .hfb{justify-items:center;align-items:start;padding:28px 24px}
+ .hero .hfb img{max-width:56%;max-height:30%}
+}
