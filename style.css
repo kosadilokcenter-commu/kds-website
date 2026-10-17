@@ -797,7 +797,7 @@ html.kld-on{overflow:hidden}
 /* ===== HERO KDS (ภาพเต็มพื้นที่ · ข้อความและปุ่มชิดซ้ายซ้อนบนภาพ · สัดส่วนและ Overlay ตาม KIT) =====
    ใช้โครง HTML และระบบสไลด์เดิม (.hmedia/.hsl/.hst/.hctl) ปรับเฉพาะการวางตำแหน่งและสี ใช้โทนน้ำตาลแดงเข้มของ KDS
    ผูกกับ .hero ทั้งหมด (ใช้เฉพาะหน้าแรก) · ย้อนกลับ: คืนจาก style.css.bak-before-kit-match-20261017 */
-.hero{display:flex;align-items:center;min-height:clamp(340px,34vw,480px);color:#fff;background:#4F1016;border-bottom:0}
+.hero{display:flex;align-items:center;min-height:clamp(460px,60vh,680px);min-height:clamp(460px,60svh,680px);color:#fff;background:#4F1016;border-bottom:0}
 .hero .hgrid{display:grid;grid-template-columns:minmax(0,1fr);gap:0;width:100%;padding-top:56px;padding-bottom:56px}
 /* ภาพ: ออกจากกรอบการ์ด เต็มพื้นที่ Hero (อ้างอิง .hero ซึ่งเป็น position:relative) · ยึดภาพด้านขวาเหมือน KIT */
 .hero .hmedia{position:absolute;inset:0;z-index:0;aspect-ratio:auto;border-radius:0;box-shadow:none;background:#4F1016}
@@ -819,15 +819,17 @@ html.kld-on{overflow:hidden}
 .hero .hfb img{width:auto;height:auto;max-width:min(26%,280px);max-height:62%;object-fit:contain;background:#fff;border-radius:18px;padding:14px 18px;box-shadow:0 8px 28px rgba(0,0,0,.35)}
 @media(min-width:701px){.hero.hsx .hgrid{padding-top:76px;padding-bottom:76px}}
 @media(max-width:900px){
- .hero{min-height:clamp(320px,52vw,420px)}
+ .hero{min-height:clamp(420px,48vh,560px);min-height:clamp(420px,48svh,560px)}
  .hero .hmedia::after{background:linear-gradient(90deg,rgba(24,8,11,.95) 0%,rgba(24,8,11,.8) 55%,rgba(24,8,11,.35) 100%)}
  .hero .hfb img{display:none}
 }
 @media(max-width:700px){
- .hero{min-height:0}
+ .hero{min-height:clamp(400px,56vh,520px);min-height:clamp(400px,56svh,520px)}
  .hero .hmedia::after{background:linear-gradient(180deg,rgba(24,8,11,.82) 0%,rgba(24,8,11,.9) 100%)}
  .hero .hgrid{padding-top:44px;padding-bottom:44px}
  .hero.hsx .hgrid{padding-bottom:72px}
  .hero .hc{max-width:100%}
  .hero .hctl{bottom:12px}
 }
+/* จอเตี้ย (เช่น มือถือแนวนอน): ไม่บังคับความสูงขั้นต่ำ ให้ตามเนื้อหา ไม่ให้ Hero สูงเกินหน้าจอ */
+@media(max-height:520px){.hero{min-height:0}.hero .hgrid,.hero.hsx .hgrid{padding-top:28px;padding-bottom:56px}}
