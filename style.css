@@ -788,7 +788,7 @@ html.kld-on{overflow:hidden}
 .hn .hin>div:first-child{position:relative;min-width:0}
 .hn .hin>div:first-child::before{content:"\201C";position:absolute;left:-4px;top:-30px;font:700 7.5rem/1 "Noto Serif Thai",Georgia,serif;color:var(--kds-secondary);opacity:.3;pointer-events:none}
 .hn .hin h2{position:relative;margin-top:0;color:var(--kds-primary-text);font-family:"Noto Serif Thai","Sarabun",Anuphan,serif}
-.hn .hin .pl{position:relative;font-size:1.05rem;line-height:1.85}
+.hn .hin .pl{position:relative;font-size:.95rem;line-height:1.85}
 .hn .hin.hm img{max-height:380px;box-shadow:var(--shadow)}
 /* ภาพประกอบส่วนแนะนำ (ช่อง URL ภาพประกอบส่วนแนะนำ): ถอดกรอบการ์ดเฉพาะตอนมีภาพ (.hm) · ภาพแสดงครบทั้งรูป ไม่ตัด ไม่บิด ไม่มีกรอบ/เส้นขอบ/เงา/มุมโค้ง
    ตอนไม่มีภาพยังเป็นการ์ดเดิม · ผูกกับ .hn .hin.hm เท่านั้น ไม่กระทบ Hero และภาพส่วนอื่น · ย้อนกลับ: คืนจาก style.css.bak-before-intro-image-20261017 */
