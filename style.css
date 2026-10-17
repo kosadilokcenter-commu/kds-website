@@ -790,6 +790,10 @@ html.kld-on{overflow:hidden}
 .hn .hin h2{position:relative;margin-top:0;color:var(--kds-primary-text);font-family:"Noto Serif Thai","Sarabun",Anuphan,serif}
 .hn .hin .pl{position:relative;font-size:1.05rem;line-height:1.85}
 .hn .hin.hm img{max-height:380px;box-shadow:var(--shadow)}
+/* ภาพประกอบส่วนแนะนำ (ช่อง URL ภาพประกอบส่วนแนะนำ): ถอดกรอบการ์ดเฉพาะตอนมีภาพ (.hm) · ภาพแสดงครบทั้งรูป ไม่ตัด ไม่บิด ไม่มีกรอบ/เส้นขอบ/เงา/มุมโค้ง
+   ตอนไม่มีภาพยังเป็นการ์ดเดิม · ผูกกับ .hn .hin.hm เท่านั้น ไม่กระทบ Hero และภาพส่วนอื่น · ย้อนกลับ: คืนจาก style.css.bak-before-intro-image-20261017 */
+.hn .hin.hm{background:none;border:0;border-radius:0;box-shadow:none;overflow:visible;padding:clamp(4px,1vw,12px) 0}
+.hn .hin.hm img{display:block;justify-self:center;width:100%;height:auto;max-width:100%;max-height:min(70vh,520px);object-fit:contain;object-position:center;border:0;border-radius:0;box-shadow:none;background:none;padding:0}
 .nc{grid-template-columns:minmax(0,1fr)}
 .nc .nwhr{grid-template-columns:repeat(auto-fit,minmax(min(100%,250px),1fr))}
 .nc .cpg{grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr))}
