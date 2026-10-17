@@ -940,7 +940,7 @@ const fqG=()=>fqArr('fgroups'),fqF=()=>fqArr('faculties'),fqM=()=>fqArr('majors'
 const CP_PF=[['mixi2','Mixi2',['mixi.social']],['x','X (Twitter)',['x.com','twitter.com']],['instagram','Instagram',['instagram.com']],['facebook','Facebook',['facebook.com','fb.com','fb.watch']],['threads','Threads',['threads.net','threads.com']],['bluesky','Bluesky',['bsky.app']],['youtube','YouTube',['youtube.com','youtu.be']],['other','อื่น ๆ',null]];
 const CP_T='โพสต์',CP_PER=12,CP_DEF=6,CP_MAX=24,CP_TXT=1000,CP_NAME=80;
 /* ข่าวสารและประกาศ: site_docs 'news' (อาร์เรย์) · NW_SRV ต้องตรงกับ limit ใน _pub_news() ของ migration_homepage.sql */
-const NW_T='ข่าวสารและประกาศ',NW_CAT=[['university','ข่าวมหาวิทยาลัย'],['faculty','ข่าวจากคณะ'],['announcement','ประกาศสำคัญ']],NW_PER=12,NW_DEF=3,NW_MAX=12,NW_TTL=150,NW_SUM=300,NW_BODY=5000,NW_SRV=60,EV_DEF=3,EV_MAX=12;
+const NW_T='ข่าวสารและประกาศ',NW_CAT=[['announcement','ประกาศสำคัญ'],['school','ข่าวโรงเรียน'],['kosa','รอบรั้วโกศา'],['council','สภานักเรียน']],NW_OLD=[['university','ข่าวมหาวิทยาลัย'],['faculty','ข่าวจากคณะ']]/* หมวดเดิมที่ยกเลิก: ข่าวเก่าไม่ถูกแก้/ลบ ยังแสดงป้ายเดิมได้ แต่เลือกใหม่ไม่ได้ และต้องเลือกหมวดใหม่ก่อนบันทึกการแก้ไข */,NW_PER=12,NW_DEF=3,NW_MAX=12,NW_TTL=150,NW_SUM=300,NW_BODY=5000,NW_SRV=60,EV_DEF=3,EV_MAX=12;
 const fqNW=()=>fqArr('news'),hnOf=(v,d,m)=>{if(v===null||v===undefined||v==='')return d;const n=Math.floor(+v);return Number.isFinite(n)?Math.max(0,Math.min(m,n)):d};
 const fqIsPub=x=>x.status==='published';
 /* ค่าเล่าเรียน (บาท/ภาคการศึกษา): เก็บใน programs[].tuition เป็นตัวเลขไม่ติดลบ หรือ '' เมื่อยังไม่มีข้อมูล (0 ถือเป็นค่าที่ระบุแล้ว) */
@@ -1425,9 +1425,9 @@ const FQE={
   label:p=>(p.author?p.author+' · ':'')+(p.platform==='other'?(cpHost(p.url)||'ลิงก์ภายนอก'):cpPf(p.platform)[1]),
   sub:p=>[okD(p.date)?fmtD(p.date):'ไม่ระบุวันที่',p.text?String(p.text).replace(/\s+/g,' ').slice(0,60)+(String(p.text).length>60?'…':''):'ไม่มีข้อความ',p.image?'มีรูป':'ไม่มีรูป',cpHost(p.url)].join(' · '),kids:()=>[],kidName:''},
  news:{one:'ข่าว',title:'จัดการข่าวสารและประกาศ',pre:'nw',get:fqNW,
-  blank:()=>({title:'',category:'university',date:todayS(),image:'',summary:'',body:'',url:'',status:'draft'}),
-  fields:[['title','หัวข้อข่าว','text',1],['category','หมวดหมู่ข่าว','sel',1,()=>NW_CAT],['date','วันที่เผยแพร่','date',1],['image','รูปภาพประกอบ (ไม่บังคับ)','img'],['summary','คำอธิบายสั้น ๆ แสดงบนการ์ด (ไม่เกิน '+NW_SUM+' ตัวอักษร)','area'],['body','เนื้อหาข่าวฉบับเต็ม (ไม่บังคับ เว้นบรรทัดว่างเพื่อขึ้นย่อหน้าใหม่ ไม่เกิน '+NW_BODY+' ตัวอักษร)','area8'],['url','ลิงก์ข้อมูลเพิ่มเติม (https:// ถ้ามี)','text']],
-  label:n=>n.title,sub:n=>[nwCat(n.category)||'ไม่ระบุหมวดหมู่',okD(n.date)?fmtD(n.date):'ไม่ระบุวันที่',n.summary?'มีคำอธิบายสั้น':'ไม่มีคำอธิบายสั้น',n.image?'มีรูป':'ไม่มีรูป'].join(' · '),kids:()=>[],kidName:''}
+  blank:()=>({title:'',category:'',date:todayS(),image:'',summary:'',body:'',url:'',status:'draft'}),
+  fields:[['title','หัวข้อข่าว','text',1],['category','หมวดหมู่ข่าว','sel',1,()=>NW_CAT.concat(WC.fq&&nwOld(WC.fq.category)?[[WC.fq.category,nwCat(WC.fq.category)+' (หมวดเดิม ยกเลิกแล้ว — กรุณาเลือกหมวดใหม่)']]:[])],['date','วันที่เผยแพร่','date',1],['image','รูปภาพประกอบ (ไม่บังคับ)','img'],['summary','คำอธิบายสั้น ๆ แสดงบนการ์ด (ไม่เกิน '+NW_SUM+' ตัวอักษร)','area'],['body','เนื้อหาข่าวฉบับเต็ม (ไม่บังคับ เว้นบรรทัดว่างเพื่อขึ้นย่อหน้าใหม่ ไม่เกิน '+NW_BODY+' ตัวอักษร)','area8'],['url','ลิงก์ข้อมูลเพิ่มเติม (https:// ถ้ามี)','text']],
+  label:n=>n.title,sub:n=>[(nwCat(n.category)?nwCat(n.category)+(nwOld(n.category)?' (หมวดเดิม ต้องเลือกใหม่)':''):'ไม่ระบุหมวดหมู่'),okD(n.date)?fmtD(n.date):'ไม่ระบุวันที่',n.summary?'มีคำอธิบายสั้น':'ไม่มีคำอธิบายสั้น',n.image?'มีรูป':'ไม่มีรูป'].join(' · '),kids:()=>[],kidName:''}
 };
 /* ===== บุคลากรและทีมผู้บริหาร: ข้อมูลชุด site_docs 'people' จัดการผ่านหลังบ้านกลาง FQE เดิม (#/admin/people) ===== */
 const pplMakePage=()=>secPageMake('people','บุคลากรและทีมผู้บริหาร','people');
@@ -1591,7 +1591,7 @@ function statsMount(){if(STD)return;const els=document.querySelectorAll('.stn[da
  els.forEach(el=>{el.textContent=fmtN(0);io.observe(el)})}
 
 /* ===== ข่าวสารและประกาศ ===== */
-const nwCat=k=>(NW_CAT.find(x=>x[0]===k)||['',''])[1];
+const nwCat=k=>(NW_CAT.concat(NW_OLD).find(x=>x[0]===k)||['',''])[1],nwOld=k=>NW_OLD.some(x=>x[0]===k);
 const nwAll=()=>fqNW().filter(n=>fqIsPub(n)&&okD(n.date)).sort((a,b)=>b.date.localeCompare(a.date));
 function nwCard(n){const img=okU(n.image)&&!cpUrlBasic(n.image),cat=nwCat(n.category);
  return `<a class="nwc${img?'':' nwn'}" href="#/news/${encodeURIComponent(n.id)}">${img?`<div class="nwm"><img src="${E(n.image)}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.parentNode.parentNode.classList.add('nwn');this.parentNode.remove()"></div>`:''}<div class="nwb"><div class="nwh">${cat?`<span class="nwtag">${E(cat)}</span>`:''}<span>${E(fmtD(n.date))}</span></div><h3>${E(n.title)}</h3>${n.summary?`<p class="nwt">${E(n.summary)}</p>`:''}<span class="nwgo">อ่านรายละเอียดเพิ่มเติม ${ic('right')}</span></div></a>`}
@@ -1619,14 +1619,14 @@ function nwDetail(raw){let id=String(raw||'');try{id=decodeURIComponent(id)}catc
 PUB.news=(a,b)=>a&&a!=='page'?nwDetail(a):nwList(b);
 /* ตรวจก่อนบันทึกข่าว (เรียกจาก fqClean): คืนข้อความผิดพลาดหรือ '' */
 function nwClean(it){it.title=String(it.title||'').trim();if(!it.title)return 'กรุณากรอกหัวข้อข่าว';if([...it.title].length>NW_TTL)return 'หัวข้อข่าวยาวเกิน '+NW_TTL+' ตัวอักษร';
- if(!NW_CAT.some(x=>x[0]===it.category))return 'หมวดหมู่ข่าวไม่ถูกต้อง';if(!okD(it.date))return 'วันที่เผยแพร่ไม่ถูกต้อง';
+ if(nwOld(it.category))return 'หมวดหมู่เดิมนี้ถูกยกเลิกแล้ว กรุณาเลือกหมวดหมู่ใหม่ 1 ใน 4 หมวด';if(!NW_CAT.some(x=>x[0]===it.category))return 'กรุณาเลือกหมวดหมู่ข่าว';if(!okD(it.date))return 'วันที่เผยแพร่ไม่ถูกต้อง';
  it.summary=String(it.summary||'').trim();it.body=String(it.body||'').trim();
  if([...it.summary].length>NW_SUM)return 'คำอธิบายสั้นยาวเกิน '+NW_SUM+' ตัวอักษร (ตอนนี้ '+[...it.summary].length+')';
  if([...it.body].length>NW_BODY)return 'เนื้อหาข่าวยาวเกิน '+NW_BODY+' ตัวอักษร (ตอนนี้ '+[...it.body].length+')';
  it.image=String(it.image||'').trim();if(it.image){const er=cpUrlBasic(it.image);if(er)return 'ลิงก์รูป: '+er}
  it.url=String(it.url||'').trim();if(it.url){const er=cpUrlBasic(it.url);if(er)return 'ลิงก์ข้อมูลเพิ่มเติม: '+er}
  return ''}
-const nwAdminBox=()=>{const n=hnOf(HD().nn,NW_DEF,NW_MAX);return `<div class="msg ok">ข่าวที่เผยแพร่ ${nwAll().length} รายการ · หน้าแรกแสดง ${n>0?n+' ข่าวล่าสุด':'ไม่แสดงส่วนข่าว (ตั้งเป็น 0)'} · <a href="#/news">เปิดหน้ารวมข่าว</a> · <a href="#/admin/home">ตั้งค่าหน้าแรก</a></div><p><small>เพื่อไม่ให้ข้อมูลที่ผู้เข้าชมโหลดมีขนาดใหญ่เกินไป ระบบส่งให้ผู้เข้าชมเฉพาะข่าวที่เผยแพร่ล่าสุด ${NW_SRV} รายการ ข่าวที่เก่ากว่านั้นยังอยู่ในหลังบ้านแต่จะไม่แสดงต่อสาธารณะ</small></p>`};
+const nwAdminBox=()=>{const n=hnOf(HD().nn,NW_DEF,NW_MAX),od=fqNW().filter(x=>nwOld(x.category)).length;return `${od?`<div class="msg er">มีข่าว ${od} รายการที่ยังใช้หมวดหมู่เดิม (ข่าวมหาวิทยาลัย/ข่าวจากคณะ) ข่าวเหล่านี้ยังแสดงตามปกติและไม่ถูกเปลี่ยนอัตโนมัติ กรุณาเปิดแก้ไขทีละข่าวแล้วเลือกหมวดหมู่ใหม่</div>`:''}<div class="msg ok">ข่าวที่เผยแพร่ ${nwAll().length} รายการ · หน้าแรกแสดง ${n>0?n+' ข่าวล่าสุด':'ไม่แสดงส่วนข่าว (ตั้งเป็น 0)'} · <a href="#/news">เปิดหน้ารวมข่าว</a> · <a href="#/admin/home">ตั้งค่าหน้าแรก</a></div><p><small>เพื่อไม่ให้ข้อมูลที่ผู้เข้าชมโหลดมีขนาดใหญ่เกินไป ระบบส่งให้ผู้เข้าชมเฉพาะข่าวที่เผยแพร่ล่าสุด ${NW_SRV} รายการ ข่าวที่เก่ากว่านั้นยังอยู่ในหลังบ้านแต่จะไม่แสดงต่อสาธารณะ</small></p>`};
 
 /* ===== กิจกรรมที่กำลังจะมาถึง (ใช้ site_docs 'events' เดิม) =====
    ยังไม่ผ่านกำหนด = วันสิ้นสุด (หรือวันเริ่มถ้าไม่มี) อยู่หลังวันนี้ หรือเป็นวันนี้และเวลาสิ้นสุดยังไม่ถึง (ไม่ระบุเวลาสิ้นสุด = นับทั้งวัน) */
