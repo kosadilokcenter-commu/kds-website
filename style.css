@@ -851,3 +851,11 @@ html.kld-on{overflow:hidden}
 .fqfl img{width:auto;max-width:min(100%,320px);max-height:none}
 .modal.kdz>div{text-align:center}.modal.kdz .evi{margin-top:30px;max-height:78vh}
 @media(max-width:560px){.fqfl img{max-width:100%}}
+
+/* ===== หน้าหลักสูตร (ม.ต้น/ม.ปลาย → แผนการเรียน → สาขาที่เหมาะกับผู้เรียน): ต่อยอดการ์ด .fcd เดิม ===== */
+.fcb .fqbr{-webkit-line-clamp:5}
+.fcsu{margin:0 0 12px}
+.fcsh{margin:0 0 6px;color:var(--gold-text);font-size:.84em;font-weight:700;letter-spacing:.02em}
+.fcsu ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px}
+.fcsu li{position:relative;padding-left:1.1em;font-size:.92em;line-height:1.45;overflow-wrap:anywhere}
+.fcsu li::before{content:"";position:absolute;left:0;top:.6em;width:6px;height:6px;border-radius:50%;background:var(--gold)}
