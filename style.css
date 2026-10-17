@@ -562,6 +562,9 @@ header .sndp{top:calc(100% + 8px)}
 
 /* ===== หน้าแรก: KIT ในตัวเลข / ข่าวสารและประกาศ / การ์ดกิจกรรม ===== */
 .sts{margin:38px 0 10px}
+/* แถบสถิติอยู่เหนือส่วนสารจากผู้อำนวยการ: คงระยะเดิม — ระยะใต้ Hero 44px (เท่าที่เคยเป็นของส่วนสาร) และระยะระหว่างสองส่วน 38px (เท่าที่เคยอยู่เหนือแถบสถิติ) · ย้อนกลับ: style.css.bak-before-stats-move-20261017 */
+body .hn>.sts:first-child{margin-top:0}
+.hn>.sts+.hin{margin-top:38px}
 .stb{position:relative;display:flex;align-items:stretch;background:color-mix(in srgb,var(--kds-secondary) 22%,var(--surface));border:1px solid color-mix(in srgb,var(--kds-secondary) 50%,transparent);border-radius:18px;box-shadow:var(--shadow);overflow:hidden}
 .stb::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--gold)}
 .stt{flex:0 0 clamp(170px,19%,220px);display:flex;flex-direction:column;justify-content:center;gap:4px;padding:22px 20px 22px 28px;min-width:0}
