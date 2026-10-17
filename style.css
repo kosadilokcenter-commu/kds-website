@@ -859,3 +859,5 @@ html.kld-on{overflow:hidden}
 .fcsu ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px}
 .fcsu li{position:relative;padding-left:1.1em;font-size:.92em;line-height:1.45;overflow-wrap:anywhere}
 .fcsu li::before{content:"";position:absolute;left:0;top:.6em;width:6px;height:6px;border-radius:50%;background:var(--gold)}
+/* โพสต์: ตัวกรองหมวดหมู่และป้ายหมวดหมู่ */
+.cpf{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 16px}.cpcat{font-weight:600;color:var(--fg)}

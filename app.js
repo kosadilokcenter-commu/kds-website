@@ -163,7 +163,7 @@ async function evsave(id){evsync(id);const e=WC.ev.find(x=>x.id===id);e.updated=
 const secRaw=s=>{const t=E(s.text),tg=u=>u[0]==='#'?'':' target="_blank" rel="noopener noreferrer"';if(s.type==='heading')return `<h2>${t}</h2>`;if(s.type==='text')return `<p class="pl">${t}</p>`;if(s.type==='image')return okU(s.url)?`<img src="${E(s.url)}" alt="${E(s.alt)}" style="max-width:100%;height:auto;border-radius:16px;margin:12px 0">`:'';if(s.type==='button')return okL(s.url)?`<p><a class="btn b" href="${E(s.url)}"${tg(s.url)}>${E(s.label)}</a></p>`:'';if(s.type==='cards')return `<div class="grid">${(s.items||[]).map(c=>{const ed=elD(c.st),b=`${okU(c.m)?`<img src="${E(c.m)}" alt=""${okL(c.l)?'':` data-zoom="${E(c.m)}" style="cursor:zoom-in"`}>`:''}<div class="p"><h3>${E(c.t)}</h3><p class="pl">${E(c.d)}</p></div>`;return okL(c.l)?`<a class="card${ed.c}"${ed.a} href="${E(c.l)}"${tg(c.l)}>${b}</a>`:`<div class="card h${ed.c}"${ed.a}>${b}</div>`}).join('')}</div>`;if(s.type==='calendar')return calView();if(s.type==='campusmap')return cmView();if(s.type==='faculties')return facView();if(s.type==='people')return pplView();if(s.type==='courses')return crsView();if(s.type==='linkcards')return lcHtml(s);if(s.type==='clubs')return clubView();if(s.type==='news')return nwSecView(s);return ''};
 const secOne=s=>{const h=secRaw(s),a=h?elA(s.st,s.type,'se'):'';return a?`<div${a}>${h}</div>`:h};
 const secsHtml=(a,G)=>{a=a||[];G=G||[];let out='',i=0;while(i<a.length){const s=a[i],g=s.grp&&G.find(x=>x.id===s.grp);if(!g){out+=secOne(s);i++;continue}let j=i,h='';while(j<a.length&&a[j].grp===s.grp){h+=secOne(a[j]);j++}const b=elBuild(g.st,'group');out+=b.ds?`<div class="sg" data-e="${b.ds}" style="${b.st}">${h}</div>`:h;i=j}return out};
-const pageView=(p,pv)=>{PVW=!!pv;return `<div class="w sec${psC(p.id)}"${psA(p.id)}>${pv?`<div class="msg">ตัวอย่าง: หน้านี้สถานะ${p.status==='published'?'เผยแพร่':'ฉบับร่าง'} · <a href="#/admin/pages/edit/${p.id}">กลับไปแก้ไข</a></div>`:''}<h1>${E(p.title)}</h1>${p.sections&&p.sections.length?secsHtml(p.sections,p.groups):'<p style="opacity:.6">ยังไม่ได้เพิ่มเนื้อหา</p>'}</div>`};
+const pageView=(p,pv)=>{PVW=!!pv;return `<div class="w sec${psC(p.id)}"${psA(p.id)}>${pv?`<div class="msg">ตัวอย่าง: หน้านี้สถานะ${p.status==='published'?'เผยแพร่':'ฉบับร่าง'} · <a href="#/admin/pages/edit/${p.id}">กลับไปแก้ไข</a></div>`:''}<h1>${E(p.title)}</h1>${p.sections&&p.sections.length?secsHtml(p.sections,p.groups):'<p style="opacity:.6">ยังไม่ได้เพิ่มเนื้อหา</p>'}${cpPageSec(p.id)}</div>`};
 const emptyPub=()=>'<div class="empty-pub"><h1>ยังไม่มีหน้าเว็บที่เผยแพร่</h1><p>เว็บไซต์นี้ยังไม่มีเนื้อหา กรุณากลับมาใหม่ภายหลัง</p></div>';
 /* ===== หน้าแรก: เนื้อหาเก็บใน settings.home (ฐานข้อมูลเดิม site/settings) ===== */
 const HD=()=>Object.assign({t:'',x:'',img:'',b1t:'',b1u:'',b2t:'',b2u:'',it:'',ix:'',iimg:'',sc:null,pt:'',pn:null,stx:false,stt:'',stu:'',stf:'',sl_mj:'',sl_fa:'',sl_stu:'',sl_stf:'',sn_mj:'',sn_fa:'',sta:'',nt:'',nn:null,et:'',en:null},getSet().home||{});
@@ -940,6 +940,9 @@ const fqArr=k=>{const v=getSH(k);return Array.isArray(v)?v.filter(x=>x&&x.id):[]
 const fqG=()=>fqArr('fgroups'),fqF=()=>fqArr('faculties'),fqM=()=>fqArr('majors'),fqP=()=>fqArr('programs'),fqPeople=()=>fqArr('people'),fqCC=()=>fqArr('clubcats'),fqCL=()=>fqArr('clubs'),fqCP=()=>fqArr('cposts');
 const CP_PF=[['mixi2','Mixi2',['mixi.social']],['x','X (Twitter)',['x.com','twitter.com']],['instagram','Instagram',['instagram.com']],['facebook','Facebook',['facebook.com','fb.com','fb.watch']],['threads','Threads',['threads.net','threads.com']],['bluesky','Bluesky',['bsky.app']],['youtube','YouTube',['youtube.com','youtu.be']],['other','อื่น ๆ',null]];
 const CP_T='โพสต์',CP_PER=12,CP_DEF=6,CP_MAX=24,CP_TXT=1000,CP_NAME=80;
+/* หมวดหมู่โพสต์ (เก็บใน it.cat) และหน้าแสดงผล (เก็บใน it.pages = อาร์เรย์ id หน้า) — ฟิลด์ใหม่อยู่ใน JSON ของโพสต์เดิม ไม่เพิ่มตาราง
+   โพสต์เก่าที่ไม่มี pages = แสดงที่ 'home' และ 'community' เหมือนเดิม ไม่ถูกซ่อน */
+const CP_CAT=[['player','โพสต์ของผู้เล่น'],['school','โพสต์ของโรงเรียน']],CP_BI=[['home','หน้าแรก'],['community','หน้ารวมโพสต์ (#/community)']];
 /* ข่าวสารและประกาศ: site_docs 'news' (อาร์เรย์) · NW_SRV ต้องตรงกับ limit ใน _pub_news() ของ migration_homepage.sql */
 const NW_T='ข่าวสารและประกาศ',NW_CAT=[['announcement','ประกาศสำคัญ'],['school','ข่าวโรงเรียน'],['kosa','รอบรั้วโกศา'],['council','สภานักเรียน']],NW_OLD=[['university','ข่าวมหาวิทยาลัย'],['faculty','ข่าวจากคณะ']]/* หมวดเดิมที่ยกเลิก: ข่าวเก่าไม่ถูกแก้/ลบ ยังแสดงป้ายเดิมได้ แต่เลือกใหม่ไม่ได้ และต้องเลือกหมวดใหม่ก่อนบันทึกการแก้ไข */,NW_PER=12,NW_DEF=3,NW_MAX=12,NW_TTL=150,NW_SUM=300,NW_BODY=5000,NW_SRV=60,EV_DEF=3,EV_MAX=12;
 const fqNW=()=>fqArr('news'),hnOf=(v,d,m)=>{if(v===null||v===undefined||v==='')return d;const n=Math.floor(+v);return Number.isFinite(n)?Math.max(0,Math.min(m,n)):d};
@@ -1429,10 +1432,10 @@ const FQE={
   filter:c=>!AFV.club||(AFV.club==='-'?!fqCC().some(x=>x.id===c.catId):c.catId===AFV.club),
   label:c=>c.name,sub:c=>fqName(fqCC(),c.catId,'name')||'ไม่ระบุหมวดหมู่',kids:()=>[],kidName:''},
  cposts:{one:'โพสต์',title:'จัดการโพสต์',pre:'cp',get:fqCP,
-  blank:()=>({platform:'mixi2',url:'',author:'',text:'',image:'',date:'',status:'draft'}),
-  fields:[['platform','แพลตฟอร์มต้นทาง','sel',1,()=>CP_PF.map(x=>[x[0],x[1]])],['url','URL ของโพสต์ต้นฉบับ (https://)','text',1],['author','ชื่อผู้โพสต์หรือชื่อบัญชีที่แสดง (ถ้ามี)','text'],['text','ข้อความโพสต์หรือคำอธิบาย (ไม่เกิน '+CP_TXT+' ตัวอักษร)','area'],['image','รูปภาพประกอบ (ไม่บังคับ)','img'],['date','วันที่โพสต์ (ถ้าทราบ)','date']],
+  blank:()=>({platform:'mixi2',url:'',author:'',text:'',image:'',date:'',cat:'',pages:['home','community'],status:'draft'}),
+  fields:[['platform','แพลตฟอร์มต้นทาง','sel',1,()=>CP_PF.map(x=>[x[0],x[1]])],['url','URL ของโพสต์ต้นฉบับ (https://)','text',1],['author','ชื่อผู้โพสต์หรือชื่อบัญชีที่แสดง (ถ้ามี)','text'],['text','ข้อความโพสต์หรือคำอธิบาย (ไม่เกิน '+CP_TXT+' ตัวอักษร)','area'],['image','รูปภาพประกอบ (ไม่บังคับ)','img'],['date','วันที่โพสต์ (ถ้าทราบ)','date'],['cat','หมวดหมู่โพสต์ (ไม่บังคับ)','sel',0,()=>CP_CAT],['pages','หน้าที่แสดงโพสต์นี้','cpg']],
   label:p=>(p.author?p.author+' · ':'')+(p.platform==='other'?(cpHost(p.url)||'ลิงก์ภายนอก'):cpPf(p.platform)[1]),
-  sub:p=>[okD(p.date)?fmtD(p.date):'ไม่ระบุวันที่',p.text?String(p.text).replace(/\s+/g,' ').slice(0,60)+(String(p.text).length>60?'…':''):'ไม่มีข้อความ',p.image?'มีรูป':'ไม่มีรูป',cpHost(p.url)].join(' · '),kids:()=>[],kidName:''},
+  sub:p=>[okD(p.date)?fmtD(p.date):'ไม่ระบุวันที่',p.text?String(p.text).replace(/\s+/g,' ').slice(0,60)+(String(p.text).length>60?'…':''):'ไม่มีข้อความ',p.image?'มีรูป':'ไม่มีรูป',cpCatName(p.cat)||'ไม่ระบุหมวดหมู่',cpPgCount(p)+' หน้า',cpHost(p.url)].join(' · '),kids:()=>[],kidName:''},
  news:{one:'ข่าว',title:'จัดการข่าวสารและประกาศ',pre:'nw',get:fqNW,
   blank:()=>({title:'',category:'',date:todayS(),image:'',summary:'',body:'',url:'',status:'draft'}),
   fields:[['title','หัวข้อข่าว','text',1],['category','หมวดหมู่ข่าว','sel',1,()=>NW_CAT.concat(WC.fq&&nwOld(WC.fq.category)?[[WC.fq.category,nwCat(WC.fq.category)+' (หมวดเดิม ยกเลิกแล้ว — กรุณาเลือกหมวดใหม่)']]:[])],['date','วันที่เผยแพร่','date',1],['image','รูปภาพประกอบ (ไม่บังคับ)','img'],['summary','คำอธิบายสั้น ๆ แสดงบนการ์ด (ไม่เกิน '+NW_SUM+' ตัวอักษร)','area'],['body','เนื้อหาข่าวฉบับเต็ม (ไม่บังคับ เว้นบรรทัดว่างเพื่อขึ้นย่อหน้าใหม่ ไม่เกิน '+NW_BODY+' ตัวอักษร)','area8'],['url','ลิงก์ข้อมูลเพิ่มเติม (https:// ถ้ามี)','text']],
@@ -1502,6 +1505,7 @@ function fqEditor(ent,id){const C=FQE[ent],isNew=id==='new';
   if(t==='area'||t==='area8')return `${lb}<textarea id="${nm}" name="${nm}" rows="${t==='area8'?8:4}">${E(v)}</textarea>`;
   if(t==='sel'){const o=opt();let g=null,h='';o.forEach(([a,b,gr])=>{if(gr!==undefined&&gr!==g){if(g!==null)h+='</optgroup>';h+=`<optgroup label="${E(gr)}">`;g=gr}h+=`<option value="${E(a)}"${v===a?' selected':''}>${E(b)}</option>`});if(g!==null)h+='</optgroup>';return `${lb}<select id="${nm}" name="${nm}"><option value="">— เลือก —</option>${h}</select>`}
   if(t==='chk')return `<fieldset><legend>${l}</legend>${FQ_LV.map(([a,b])=>`<label style="display:inline-block;margin-right:14px"><input type="checkbox" name="${nm}" value="${a}"${(v||[]).includes(a)?' checked':''} style="width:auto"> ${b}</label>`).join('')}</fieldset>`;
+  if(t==='cpg'){const cur=Array.isArray(v)?v:['home','community'],L=cpPgList(),ex=cur.filter(id=>!L.some(x=>x[0]===id));return `<fieldset><legend>${l}</legend><input type="hidden" name="${nm}_x" value="1">${L.concat(ex.map(id=>[id,'(หน้านี้ถูกลบแล้ว — ติ๊กออกเพื่อนำออก)'])).map(([a,b])=>`<label class="ck"><input type="checkbox" name="${nm}" value="${E(a)}"${cur.includes(a)?' checked':''}> ${E(b)}</label>`).join('')}<small>เลือกได้หลายหน้า โพสต์เดียวแสดงได้หลายหน้าโดยไม่ต้องสร้างซ้ำ ติ๊กออก = นำโพสต์ออกจากหน้านั้น (ไม่ลบโพสต์) โพสต์ที่ซ่อนหรือยังเป็นฉบับร่างจะไม่แสดงบนหน้าเว็บ</small></fieldset>`}
   if(t==='hdr')return `<h3 class="fqhd">${l}</h3>`;
   if(t==='list')return fqLst(k,l,it);
   if(t==='plan')return fqPlan(it);
@@ -1514,7 +1518,7 @@ function fqEditor(ent,id){const C=FQE[ent],isNew=id==='new';
  const noPar=C.parent&&!C.parent().length;
  return `<p><a class="bk" href="#/admin/${ent}">← ${C.title}</a></p><h1>${isNew?'เพิ่ม':'แก้ไข'}${C.one}</h1>${dbBanner()}${noPar?`<div class="msg er">ต้องมี${C.pn}ก่อน <a href="${C.pl}">ไปจัดการ${C.pn}</a></div>`:''}<form id="af" onsubmit="return false">${C.fields.map(fi).join('')}<label for="f_status">สถานะ</label><select id="f_status" name="f_status"><option value="draft"${it.status==='published'?'':' selected'}>ซ่อน / ฉบับร่าง</option><option value="published"${it.status==='published'?' selected':''}>เผยแพร่</option></select><p><button type="button" class="btn b" onclick="fqSave('${ent}')">บันทึก</button> <a class="btn" href="#/admin/${ent}">กลับรายการ</a></p></form>`}
 function fqSync(ent){const C=FQE[ent],it=WC.fq;if(!it)return null;const d=new FormData($('af')),g=n=>STRIP(String(d.get(n)==null?'':d.get(n))).trim();
- C.fields.forEach(([k,,t])=>{const nm='f_'+k;if(t==='chk')it[k]=d.getAll(nm);else if(t!=='flower'&&d.has(nm))it[k]=g(nm)});
+ C.fields.forEach(([k,,t])=>{const nm='f_'+k;if(t==='chk')it[k]=d.getAll(nm);else if(t==='cpg'){if(d.has(nm+'_x'))it[k]=d.getAll(nm)}else if(t!=='flower'&&d.has(nm))it[k]=g(nm)});
  if(d.has('f_status'))it.status=d.get('f_status')==='published'?'published':'draft';
  if(ent==='faculties'&&d.has('fl_nameTh')){const w=it.flower=it.flower||{};w.nameTh=g('fl_nameTh');w.nameEn=g('fl_nameEn');w.meaning=g('fl_meaning');w.img=g('fl_img')}fqSyncX(ent,it,d,g);return it}
 async function mdUpload(file,dir){if(!SB||!DBH)throw {message:dbOff()};const ext=CM_MIME[file&&file.type];if(!ext)throw {message:'รองรับเฉพาะไฟล์ PNG, JPG, WebP, GIF'};if(file.size>5*1024*1024)throw {message:'ไฟล์ใหญ่เกิน 5 MB'};
@@ -1567,7 +1571,13 @@ function cpUrlBasic(u){const v=String(u||'').trim();
 function cpUrlCheck(u,k){const er=cpUrlBasic(u);if(er)return er;const pf=cpPf(k),ds=pf[2],h=cpHost(u).toLowerCase();
  if(ds&&!ds.some(d=>h===d||h.endsWith('.'+d)))return 'URL ไม่ตรงกับแพลตฟอร์มที่เลือก ('+pf[1]+') โดเมนที่รองรับ: '+ds.join(', ')+' — ถ้าเป็นแพลตฟอร์มอื่นให้เลือก "อื่น ๆ"';
  return ''}
+/* รายชื่อหน้าที่เลือกได้ = หน้าในตัว + หน้า CMS ที่มีอยู่จริงในระบบ */
+const cpPgList=()=>CP_BI.concat(getPages().filter(x=>x&&x.id).map(x=>[x.id,(x.title||x.slug||x.id)+(x.status==='published'?'':' (ฉบับร่าง)')]));
+const cpPgCount=p=>(Array.isArray(p.pages)?p.pages:['home','community']).filter(id=>cpPgList().some(x=>x[0]===id)).length;
 function cpClean(it){
+ if(it.cat==null)it.cat='';if(it.cat&&!CP_CAT.some(x=>x[0]===it.cat))return 'หมวดหมู่โพสต์ไม่ถูกต้อง';
+ if(Array.isArray(it.pages)){const ok=new Set(cpPgList().map(x=>x[0]));it.pages=[...new Set(it.pages.filter(id=>typeof id==='string'&&ok.has(id)))]}else it.pages=['home','community'];
+
  if(!CP_PF.some(x=>x[0]===it.platform))return 'แพลตฟอร์มไม่ถูกต้อง';
  it.url=String(it.url||'').trim();{const er=cpUrlCheck(it.url,it.platform);if(er)return er}
  it.author=String(it.author||'').trim();it.text=String(it.text||'').trim();
@@ -1578,19 +1588,30 @@ function cpClean(it){
  if(it.date&&!okD(it.date))return 'วันที่โพสต์ไม่ถูกต้อง';
  return ''}
 const cpAll=()=>fqCP().filter(p=>fqIsPub(p)&&!cpUrlBasic(p.url));
+const cpCatName=k=>{const c=CP_CAT.find(x=>x[0]===k);return c?c[1]:''};
+/* โพสต์นี้ถูกกำหนดให้แสดงในหน้า pid หรือไม่ (ไม่มี pages = โพสต์เก่า → หน้าแรกและหน้ารวมโพสต์) */
+const cpOn=(p,pid)=>Array.isArray(p.pages)?p.pages.includes(pid):(pid==='home'||pid==='community');
+const cpFor=(pid,cat)=>cpAll().filter(p=>cpOn(p,pid)&&(!cat||p.cat===cat));
+const CPF={};/* ตัวกรองหมวดหมู่ต่อหน้า (เก็บในหน่วยความจำ ไม่เรียกฐานข้อมูล) */
+function cpFilt(pid,cat){CPF[pid]=CP_CAT.some(x=>x[0]===cat)?cat:'';const h=location.hash;if(pid==='community'&&h!=='#/community'&&h!=='#/community/1'){location.hash='#/community';return}render()}
+const cpBar=(pid,all)=>{const cur=CPF[pid]||'',b=(k,t)=>`<button type="button" class="btn s${cur===k?' b':''}" aria-pressed="${cur===k}" onclick="cpFilt('${E(pid)}','${k}')">${E(t)}</button>`;return all.some(p=>p.cat)?`<div class="cpf" role="group" aria-label="กรองตามหมวดหมู่โพสต์">${b('','ทั้งหมด')}${CP_CAT.map(([k,t])=>b(k,t)).join('')}</div>`:''};
+const cpNone=()=>'<div class="empty-ev"><b>ไม่มีโพสต์</b></div>';
+/* ส่วนโพสต์ท้ายหน้า CMS: แสดงเมื่อมีโพสต์ที่เผยแพร่และถูกกำหนดให้แสดงในหน้านี้เท่านั้น (หน้าอื่นไม่เปลี่ยน) */
+function cpPageSec(pid){const all=cpFor(pid);if(!all.length)return '';const L=cpFor(pid,CPF[pid]||''),h=HD();
+ return `<section class="cps"><div class="cpt0"><h2>${E(h.pt||CP_T)}</h2></div>${cpBar(pid,all)}${L.length?`<div class="cpg">${L.map(cpCard).join('')}</div>`:cpNone()}</section>`}
 const cpHomeNOf=h=>{const v=h&&h.pn;if(v===null||v===undefined||v==='')return CP_DEF;const n=Math.floor(+v);return Number.isFinite(n)?Math.max(0,Math.min(CP_MAX,n)):CP_DEF};
 const cpHomeN=()=>cpHomeNOf(HD());
 function cpCard(p){const pf=p.platform==='other'?(cpHost(p.url)||'ลิงก์ภายนอก'):cpPf(p.platform)[1],img=!!p.image&&!cpUrlBasic(p.image),nm=String(p.author||'').trim(),tx=String(p.text||'').trim();
- return `<a class="cpc${img?'':' cpn'}" href="${E(p.url)}" target="_blank" rel="noopener noreferrer">${img?`<div class="cpm"><img src="${E(p.image)}" alt="ภาพประกอบโพสต์${nm?' ของ '+E(nm):''}" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.parentNode.parentNode.classList.add('cpn');this.parentNode.remove()"></div>`:''}<div class="cpb"><div class="cph"><span class="cpp">${E(pf)}</span>${okD(p.date)?`<span>${E(fmtD(p.date))}</span>`:''}</div>${nm?`<b class="cpa">${E(nm)}</b>`:''}${tx?`<p class="cpt">${E(tx)}</p>`:''}<span class="cpgo">ดูโพสต์ต้นฉบับ ${ic('ext')}<span class="sr">(เปิดในแท็บใหม่)</span></span></div></a>`}
-function cpHomeSec(){const h=HD(),n=cpHomeN();if(n<=0)return '';const all=cpAll(),L=all.slice(0,n),ttl=h.pt||CP_T;
+ return `<a class="cpc${img?'':' cpn'}" href="${E(p.url)}" target="_blank" rel="noopener noreferrer">${img?`<div class="cpm"><img src="${E(p.image)}" alt="ภาพประกอบโพสต์${nm?' ของ '+E(nm):''}" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.parentNode.parentNode.classList.add('cpn');this.parentNode.remove()"></div>`:''}<div class="cpb"><div class="cph"><span class="cpp">${E(pf)}</span>${cpCatName(p.cat)?`<span class="cpcat">${E(cpCatName(p.cat))}</span>`:''}${okD(p.date)?`<span>${E(fmtD(p.date))}</span>`:''}</div>${nm?`<b class="cpa">${E(nm)}</b>`:''}${tx?`<p class="cpt">${E(tx)}</p>`:''}<span class="cpgo">ดูโพสต์ต้นฉบับ ${ic('ext')}<span class="sr">(เปิดในแท็บใหม่)</span></span></div></a>`}
+function cpHomeSec(){const h=HD(),n=cpHomeN();if(n<=0)return '';const all=cpFor('home'),L=all.slice(0,n),ttl=h.pt||CP_T;
  if(!L.length)return Auth.canAccessAdmin()?`<section class="cps"><h2>${E(ttl)}</h2><div class="empty-ev">ยังไม่มีโพสต์ที่เผยแพร่ (ผู้เข้าชมทั่วไปจะไม่เห็นส่วนนี้) <a href="#/admin/cposts">เพิ่มโพสต์ที่หลังบ้าน</a></div></section>`:'';
- return `<section class="cps" aria-labelledby="cph"><div class="cpt0"><h2 id="cph">${E(ttl)}</h2>${all.length>L.length?`<a class="cpall" href="#/community">ดูโพสต์ทั้งหมด (${all.length}) ${ic('right')}</a>`:''}</div><div class="cpg">${L.map(cpCard).join('')}</div></section>`}
+ return `<section class="cps" aria-labelledby="cph"><div class="cpt0"><h2 id="cph">${E(ttl)}</h2>${all.length>L.length&&cpFor('community').length?`<a class="cpall" href="#/community">ดูโพสต์ทั้งหมด (${cpFor('community').length}) ${ic('right')}</a>`:''}</div><div class="cpg">${L.map(cpCard).join('')}</div></section>`}
 /* หน้ารวมโพสต์ #/community/<หน้า> — แบ่งหน้าละ CP_PER รายการ (ข้อมูลทั้งชุดมากับเอกสารเดียวกับส่วนอื่น แบ่งหน้าเฉพาะการแสดงผล รูปโหลดแบบ lazy) */
-function cpPage(pg){const all=cpAll(),tot=Math.max(1,Math.ceil(all.length/CP_PER)),h=HD();let n=parseInt(pg,10);if(!(n>=1))n=1;if(n>tot)n=tot;
+function cpPage(pg){const base=cpFor('community'),all=cpFor('community',CPF.community||''),tot=Math.max(1,Math.ceil(all.length/CP_PER)),h=HD();let n=parseInt(pg,10);if(!(n>=1))n=1;if(n>tot)n=tot;
  const L=all.slice((n-1)*CP_PER,n*CP_PER),ps=[];for(let i=1;i<=tot;i++)if(i===1||i===tot||Math.abs(i-n)<=1)ps.push(i);
  const it=[];ps.forEach((i,k)=>{if(k&&i-ps[k-1]>1)it.push('<span class="cpel" aria-hidden="true">…</span>');it.push(i===n?`<a href="#/community/${i}" aria-current="page" aria-label="หน้า ${i} (หน้าปัจจุบัน)">${i}</a>`:`<a href="#/community/${i}" aria-label="ไปหน้า ${i}">${i}</a>`)});
  const pv=n>1?`<a href="#/community/${n-1}" rel="prev">${ic('left')} ก่อนหน้า</a>`:'<span class="cpdis">ก่อนหน้า</span>',nx=n<tot?`<a href="#/community/${n+1}" rel="next">ถัดไป ${ic('right')}</a>`:'<span class="cpdis">ถัดไป</span>';
- return `<div class="w sec"><p><a class="bk" href="#/">← กลับหน้าแรก</a></p><h1>${E(h.pt||CP_T)}</h1>${L.length?`<p class="evm" aria-live="polite">โพสต์ทั้งหมด ${all.length} รายการ · หน้า ${n} จาก ${tot}</p><div class="cpg">${L.map(cpCard).join('')}</div>${tot>1?`<div class="cppg" role="navigation" aria-label="แบ่งหน้าโพสต์">${pv}${it.join('')}${nx}</div>`:''}`:`<div class="empty-ev"><b>ยังไม่มีโพสต์</b><br>${Auth.canAccessAdmin()?'<a href="#/admin/cposts">เพิ่มโพสต์ที่หลังบ้าน</a>':'กรุณากลับมาใหม่ภายหลัง'}</div>`}</div>`}
+ return `<div class="w sec"><p><a class="bk" href="#/">← กลับหน้าแรก</a></p><h1>${E(h.pt||CP_T)}</h1>${cpBar('community',base)}${L.length?`<p class="evm" aria-live="polite">โพสต์ทั้งหมด ${all.length} รายการ · หน้า ${n} จาก ${tot}</p><div class="cpg">${L.map(cpCard).join('')}</div>${tot>1?`<div class="cppg" role="navigation" aria-label="แบ่งหน้าโพสต์">${pv}${it.join('')}${nx}</div>`:''}`:`<div class="empty-ev"><b>ยังไม่มีโพสต์</b><br>${Auth.canAccessAdmin()?'<a href="#/admin/cposts">เพิ่มโพสต์ที่หลังบ้าน</a>':'กรุณากลับมาใหม่ภายหลัง'}</div>`}</div>`}
 PUB.community=cpPage;
 const cpAdminBox=()=>{const n=cpHomeN();return `<div class="msg ok">โพสต์ที่เผยแพร่ ${cpAll().length} รายการ · หน้าแรกแสดง ${n>0?n+' รายการบนสุดของรายการนี้':'ไม่แสดงส่วนโพสต์ (ตั้งเป็น 0)'} · <a href="#/community">เปิดหน้ารวมโพสต์</a> · <a href="#/admin/home">ตั้งค่าจำนวนที่หน้าแรก</a></div><p><small>โพสต์ใหม่จะถูกเพิ่มไว้บนสุด เรียงลำดับด้วยปุ่ม ขึ้น/ลง ระบบแสดงเฉพาะข้อมูลที่ผู้ดูแลกรอกเอง ไม่ดึงข้อมูลจากแพลตฟอร์มอัตโนมัติ</small></p>`};
 /* ===== หน้าแรก: KDS ในตัวเลข · ข่าวสารและประกาศ · กิจกรรมที่กำลังจะมาถึง
