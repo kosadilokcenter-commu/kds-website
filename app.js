@@ -163,7 +163,7 @@ async function evsave(id){evsync(id);const e=WC.ev.find(x=>x.id===id);e.updated=
 const secRaw=s=>{const t=E(s.text),tg=u=>u[0]==='#'?'':' target="_blank" rel="noopener noreferrer"';if(s.type==='heading')return `<h2>${t}</h2>`;if(s.type==='text')return `<p class="pl">${t}</p>`;if(s.type==='image')return okU(s.url)?`<img src="${E(s.url)}" alt="${E(s.alt)}" style="max-width:100%;height:auto;border-radius:16px;margin:12px 0">`:'';if(s.type==='button')return okL(s.url)?`<p><a class="btn b" href="${E(s.url)}"${tg(s.url)}>${E(s.label)}</a></p>`:'';if(s.type==='cards')return `<div class="grid">${(s.items||[]).map(c=>{const ed=elD(c.st),b=`${okU(c.m)?`<img src="${E(c.m)}" alt=""${okL(c.l)?'':` data-zoom="${E(c.m)}" style="cursor:zoom-in"`}>`:''}<div class="p"><h3>${E(c.t)}</h3><p class="pl">${E(c.d)}</p></div>`;return okL(c.l)?`<a class="card${ed.c}"${ed.a} href="${E(c.l)}"${tg(c.l)}>${b}</a>`:`<div class="card h${ed.c}"${ed.a}>${b}</div>`}).join('')}</div>`;if(s.type==='calendar')return calView();if(s.type==='campusmap')return cmView();if(s.type==='faculties')return facView();if(s.type==='people')return pplView();if(s.type==='courses')return crsView();if(s.type==='linkcards')return lcHtml(s);if(s.type==='clubs')return clubView();if(s.type==='news')return nwSecView(s);return ''};
 const secOne=s=>{const h=secRaw(s),a=h?elA(s.st,s.type,'se'):'';return a?`<div${a}>${h}</div>`:h};
 const secsHtml=(a,G)=>{a=a||[];G=G||[];let out='',i=0;while(i<a.length){const s=a[i],g=s.grp&&G.find(x=>x.id===s.grp);if(!g){out+=secOne(s);i++;continue}let j=i,h='';while(j<a.length&&a[j].grp===s.grp){h+=secOne(a[j]);j++}const b=elBuild(g.st,'group');out+=b.ds?`<div class="sg" data-e="${b.ds}" style="${b.st}">${h}</div>`:h;i=j}return out};
-const pageView=(p,pv)=>{PVW=!!pv;return `<div class="w sec${psC(p.id)}"${psA(p.id)}>${pv?`<div class="msg">ตัวอย่าง: หน้านี้สถานะ${p.status==='published'?'เผยแพร่':'ฉบับร่าง'} · <a href="#/admin/pages/edit/${p.id}">กลับไปแก้ไข</a></div>`:''}<h1>${E(p.title)}</h1>${p.sections&&p.sections.length?secsHtml(p.sections,p.groups):'<p style="opacity:.6">ยังไม่ได้เพิ่มเนื้อหา</p>'}${cpPageSec(p.id)}</div>`};
+const pageView=(p,pv)=>{PVW=!!pv;PPL_PG=p.id;return `<div class="w sec${psC(p.id)}"${psA(p.id)}>${pv?`<div class="msg">ตัวอย่าง: หน้านี้สถานะ${p.status==='published'?'เผยแพร่':'ฉบับร่าง'} · <a href="#/admin/pages/edit/${p.id}">กลับไปแก้ไข</a></div>`:''}<h1>${E(p.title)}</h1>${p.sections&&p.sections.length?secsHtml(p.sections,p.groups):'<p style="opacity:.6">ยังไม่ได้เพิ่มเนื้อหา</p>'}${cpPageSec(p.id)}${pplPageSec(p)}</div>`};
 const emptyPub=()=>'<div class="empty-pub"><h1>ยังไม่มีหน้าเว็บที่เผยแพร่</h1><p>เว็บไซต์นี้ยังไม่มีเนื้อหา กรุณากลับมาใหม่ภายหลัง</p></div>';
 /* ===== หน้าแรก: เนื้อหาเก็บใน settings.home (ฐานข้อมูลเดิม site/settings) ===== */
 const HD=()=>Object.assign({t:'',x:'',img:'',b1t:'',b1u:'',b2t:'',b2u:'',it:'',ix:'',iimg:'',sc:null,pt:'',pn:null,stx:false,stt:'',stu:'',stf:'',sl_mj:'',sl_fa:'',sl_stu:'',sl_stf:'',sn_mj:'',sn_fa:'',sta:'',nt:'',nn:null,et:'',en:null},getSet().home||{});
@@ -1194,7 +1194,7 @@ function fqSyncX(ent,it,d,g){const has=n=>d.has(n);
    (t.courses||[]).forEach(c=>{const n=s=>'c_'+c.id+'_'+s;if(has(n('code')))c.code=g(n('code'));if(has(n('name')))c.name=g(n('name'));if(has(n('en')))c.nameEn=g(n('en'));if(has(n('cr')))c.credits=g(n('cr'));if(has(n('desc')))c.desc=g(n('desc'));if(has(n('ty')))c.type=csTyK(d.get(n('ty')));if(has(n('den')))c.descEn=g(n('den'));if(has(n('sh')))c.show=d.get(n('sh'))!=='0'})})});
  if(ent==='faculties'&&has('tf_mark'))it.typo=d.get('tf_on')&&has('tf_h1')?Object.assign({on:true},tyRead('tf_',d)):(d.get('tf_on')?it.typo:null)}
 /* ตรวจและทำความสะอาดก่อนบันทึก: คืนข้อความผิดพลาดหรือ '' */
-function fqClean(ent,it){if(isPpl(ent)){if(!fqPT().some(t=>t.id===it.typeId))return 'ประเภทบุคลากรไม่ถูกต้อง';if(it.typeId==='pt_exec'){it.groupId='';it.departmentId=''}else{if(it.groupId&&!fqPG().some(g=>g.id===it.groupId))return 'กลุ่มสาระไม่ถูกต้อง';if(it.departmentId&&!fqPD().some(d=>d.id===it.departmentId))return 'ฝ่ายงานไม่ถูกต้อง'}}
+function fqClean(ent,it){if(isPpl(ent)){if(Array.isArray(it.pages)){const ok=new Set(getPages().map(x=>x.id));it.pages=[...new Set(it.pages.filter(id=>typeof id==='string'&&ok.has(id)))]}if(!fqPT().some(t=>t.id===it.typeId))return 'ประเภทบุคลากรไม่ถูกต้อง';if(it.typeId==='pt_exec'){it.groupId='';it.departmentId=''}else{if(it.groupId&&!fqPG().some(g=>g.id===it.groupId))return 'กลุ่มสาระไม่ถูกต้อง';if(it.departmentId&&!fqPD().some(d=>d.id===it.departmentId))return 'ฝ่ายงานไม่ถูกต้อง'}}
  if(ent==='ptypes'||ent==='pgroups'||ent==='pdepartments'){it.name=String(it.name||'').trim();if(!it.name)return 'กรุณากรอกชื่อ';if(it.name.length>80)return 'ชื่อต้องไม่เกิน 80 ตัวอักษร'}if(ent==='cposts')return cpClean(it);if(ent==='news')return nwClean(it);
  if(ent==='majors'){it.suitableFor=(Array.isArray(it.suitableFor)?it.suitableFor:[]).map(x=>String(x).trim()).filter(Boolean);if(it.suitableFor.length>30)return 'สาขาที่เหมาะกับผู้เรียนใส่ได้ไม่เกิน 30 ข้อ';if(it.suitableFor.some(x=>x.length>120))return 'สาขาที่เหมาะกับผู้เรียนแต่ละข้อต้องไม่เกิน 120 ตัวอักษร'}
  if(ent==='programs'){if(it.credits&&!/^\d{1,3}(\.\d+)?$/.test(it.credits))return 'จำนวนหน่วยกิตรวมต้องเป็นตัวเลข เช่น 132';
@@ -1376,6 +1376,7 @@ const pplOpt=(a)=>a.map(x=>[x.id,x.name+(fqIsPub(x)?'':' (ปิดใช้ง�
 const PH_K=[['type','หัวข้อประเภทบุคลากร',28],['dept','หัวข้อฝ่ายงาน',22],['group','หัวข้อกลุ่มสาระ/กลุ่มงาน',18]],PH_MIN=12,PH_MAX=64,PH_AL=[['left','ชิดซ้าย'],['center','กึ่งกลาง'],['right','ชิดขวา']];
 const pplHd=k=>{const d=PH_K.find(x=>x[0]===k),st=getSH('settings'),v=(st&&st.pplhead&&st.pplhead[k])||{},n=Math.round(+v.size);return {size:Number.isFinite(n)&&n>=PH_MIN&&n<=PH_MAX?n:d[2],align:PH_AL.some(a=>a[0]===v.align)?v.align:'left'}};
 const pplHs=k=>{const h=pplHd(k);return 'font-size:'+h.size+'px;text-align:'+h.align};
+const pplPgTxt=p=>{const L=pplPgList(),n=Array.isArray(p.pages)?p.pages.filter(id=>L.some(x=>x[0]===id)).length:pplDefPg().length;return n?'แสดง '+n+' หน้า':'ไม่ได้กำหนดหน้า'};
 const pplMig=it=>{if(!it.typeId)it.typeId=WC.fqEnt==='pexec'?'pt_exec':'pt_staff'};
 const FQE={
  fgroups:{one:'กลุ่มคณะ',title:'จัดการกลุ่มคณะ',pre:'fg',get:fqG,
@@ -1404,15 +1405,15 @@ const FQE={
   label:p=>p.nameTh,sub:p=>{const m=fqM().find(x=>x.id===p.majorId);return (m?m.nameTh+' › '+(fqName(fqF(),m.facultyId)||'-'):'ไม่มีแผนการเรียน')+' · '+fqLv(p.level)+' · '+(p.open==='open'?'เปิดรับสมัคร':'ปิดรับสมัคร')+' · '+(fqTui(p)!=null?fqTuiTxt(fqTui(p)):'ยังไม่ระบุค่าเล่าเรียน')},kids:()=>[],kidName:'',
   parent:()=>fqM(),pk:'majorId',pn:'แผนการเรียน',pl:'#/admin/majors'},
  pexec:{one:'ผู้บริหาร',title:'จัดการคณะผู้บริหาร',pre:'pp',get:fqPeople,store:'people',
-  blank:()=>({first:'',last:'',position:'',photo:'',typeId:'pt_exec',groupId:'',status:'draft'}),
-  fields:[['first','ชื่อ','text',1],['last','นามสกุล','text',1],['position','ตำแหน่ง','text'],['typeId','ประเภทบุคลากร (เปลี่ยนเพื่อย้ายไปหมวดอื่น)','sel',1,()=>pplOpt(fqPT())],['photo','รูปถ่าย','img']],
+  blank:()=>({first:'',last:'',position:'',photo:'',typeId:'pt_exec',groupId:'',pages:pplDefPg(),status:'draft'}),
+  fields:[['first','ชื่อ','text',1],['last','นามสกุล','text',1],['position','ตำแหน่ง','text'],['typeId','ประเภทบุคลากร (เปลี่ยนเพื่อย้ายไปหมวดอื่น)','sel',1,()=>pplOpt(fqPT())],['photo','รูปถ่าย','img'],['pages','หน้าที่แสดงรายชื่อนี้','cpg',0,()=>pplPgList(),()=>pplDefPg()]],
   filter:p=>pplTy(p)==='pt_exec',
-  label:p=>((p.first||'')+' '+(p.last||'')).trim(),sub:p=>p.position||'ยังไม่ระบุตำแหน่ง',kids:()=>[],kidName:''},
+  label:p=>((p.first||'')+' '+(p.last||'')).trim(),sub:p=>[p.position||'ยังไม่ระบุตำแหน่ง',pplPgTxt(p)].join(' · '),kids:()=>[],kidName:''},
  pstaff:{one:'อาจารย์/บุคลากร',title:'จัดการอาจารย์และบุคลากร',pre:'pp',get:fqPeople,store:'people',
-  blank:()=>({first:'',last:'',position:'',photo:'',typeId:'pt_staff',groupId:'',status:'draft'}),
-  fields:[['first','ชื่อ','text',1],['last','นามสกุล','text',1],['position','ตำแหน่ง','text'],['typeId','ประเภทบุคลากร','sel',1,()=>pplOpt(fqPT())],['departmentId','ฝ่ายงาน (ไม่บังคับ)','sel',0,()=>pplOpt(fqPD())],['groupId','กลุ่มสาระ/กลุ่มงาน (ไม่บังคับ)','sel',0,()=>pplOpt(fqPG())],['photo','รูปถ่าย','img']],
+  blank:()=>({first:'',last:'',position:'',photo:'',typeId:'pt_staff',groupId:'',pages:pplDefPg(),status:'draft'}),
+  fields:[['first','ชื่อ','text',1],['last','นามสกุล','text',1],['position','ตำแหน่ง','text'],['typeId','ประเภทบุคลากร','sel',1,()=>pplOpt(fqPT())],['departmentId','ฝ่ายงาน (ไม่บังคับ)','sel',0,()=>pplOpt(fqPD())],['groupId','กลุ่มสาระ/กลุ่มงาน (ไม่บังคับ)','sel',0,()=>pplOpt(fqPG())],['photo','รูปถ่าย','img'],['pages','หน้าที่แสดงรายชื่อนี้','cpg',0,()=>pplPgList(),()=>pplDefPg()]],
   filter:p=>pplTy(p)!=='pt_exec',
-  label:p=>((p.first||'')+' '+(p.last||'')).trim(),sub:p=>[p.position||'ยังไม่ระบุตำแหน่ง',fqName(fqPT(),pplTy(p),'name'),fqName(fqPD(),p.departmentId,'name')||'ไม่ระบุฝ่าย',fqName(fqPG(),p.groupId,'name')||'ไม่ระบุกลุ่มสาระ'].join(' · '),kids:()=>[],kidName:''},
+  label:p=>((p.first||'')+' '+(p.last||'')).trim(),sub:p=>[p.position||'ยังไม่ระบุตำแหน่ง',fqName(fqPT(),pplTy(p),'name'),fqName(fqPD(),p.departmentId,'name')||'ไม่ระบุฝ่าย',fqName(fqPG(),p.groupId,'name')||'ไม่ระบุกลุ่มสาระ',pplPgTxt(p)].join(' · '),kids:()=>[],kidName:''},
  ptypes:{one:'ประเภทบุคลากร',title:'จัดการประเภทบุคลากร',pre:'pt',get:fqPT,lock:t=>PPL_LOCK.includes(t.id),
   blank:()=>({name:'',status:'published'}),fields:[['name','ชื่อประเภท','text',1]],
   label:t=>t.name,sub:t=>fqPeople().filter(p=>pplTy(p)===t.id).length+' คน'+(PPL_LOCK.includes(t.id)?' · ประเภทพื้นฐาน (ลบไม่ได้ ปิดใช้งานได้)':''),kids:t=>fqPeople().filter(p=>pplTy(p)===t.id),kidName:'คน'},
@@ -1454,7 +1455,16 @@ const pplMakePage=()=>secPageMake('people','บุคลากรและที
 const PPL={key:null,q:''};
 const pplNorm=s=>String(s==null?'':s).toLowerCase().replace(/\s+/g,'');
 const pplName=p=>((p.first||'')+' '+(p.last||'')).trim();
-const pplAll=()=>{const ts=new Set(fqPT().filter(fqIsPub).map(t=>t.id));return fqPeople().filter(p=>fqIsPub(p)&&ts.has(pplTy(p)))};
+/* หน้าแสดงผลของบุคลากร: it.pages = อาร์เรย์ id หน้า CMS · ไม่มี pages (ข้อมูลเดิม) = แสดงทุกหน้าที่มีส่วนบุคลากรเหมือนเดิม */
+let PPL_PG='';/* id หน้าที่กำลังแสดง (ตั้งใน pageView) */
+const pplPgList=()=>getPages().filter(x=>x&&x.id).map(x=>[x.id,(x.title||x.slug||x.id)+(x.status==='published'?'':' (ฉบับร่าง)')]);
+const pplHasSec=pg=>(pg.sections||[]).some(s=>s&&s.type==='people');
+const pplDefPg=()=>getPages().filter(x=>x&&x.id&&pplHasSec(x)).map(x=>x.id);
+const pplOn=(p,pid)=>!pid||!Array.isArray(p.pages)||p.pages.includes(pid);
+const pplAllG=()=>{const ts=new Set(fqPT().filter(fqIsPub).map(t=>t.id));return fqPeople().filter(p=>fqIsPub(p)&&ts.has(pplTy(p)))};
+const pplAll=()=>pplAllG().filter(p=>pplOn(p,PPL_PG));
+/* หน้า CMS ที่ไม่มีส่วนบุคลากร แต่มีบุคลากรถูกกำหนดให้แสดงไว้ → ต่อท้ายรายชื่อให้ (หน้าอื่นไม่เปลี่ยน) */
+function pplPageSec(pg){if(pplHasSec(pg)||!pplAllG().some(p=>Array.isArray(p.pages)&&p.pages.includes(pg.id)))return '';return `<section style="margin-top:28px">${pplView()}</section>`}
 const pplMatch=p=>{const q=pplNorm(PPL.q);return !q||pplNorm((p.first||'')+(p.last||'')).includes(q)};
 const pplCard=p=>{const ph=okU(p.photo)?p.photo:'',nm=pplName(p);return `<div class=\"card h\" style=\"text-align:center\">${ph?`<img src=\"${E(ph)}\" alt=\"${E(nm)}\" loading=\"lazy\" data-zoom=\"${E(ph)}\" data-zalt=\"${E(nm)}\" style=\"aspect-ratio:3/4;height:auto;object-fit:cover;object-position:center top;cursor:zoom-in\">`:`<div aria-hidden=\"true\" style=\"aspect-ratio:3/4;display:flex;align-items:center;justify-content:center;font-size:3rem;opacity:.35;background:rgba(127,127,127,.12)\">${ic('user')}</div>`}<div class=\"p\" style=\"text-align:center\"><h3 style=\"text-align:center\">${E(nm)}</h3>${p.position?`<p class=\"pl\" style=\"text-align:center\">${E(p.position)}</p>`:''}</div></div>`};
 /* แสดงตามประเภท (ลำดับตามหลังบ้าน) → ภายในประเภทแยกตามกลุ่มสาระ (ลำดับตามหลังบ้าน) · กลุ่มที่ปิดใช้งานหรือไม่มี → "ไม่ระบุกลุ่มสาระ" · คณะผู้บริหารแสดงแบบไม่แบ่งกลุ่ม */
@@ -1467,7 +1477,7 @@ function pplDept(m,exec){if(exec)return pplSec(m,true);const ds=fqPD().filter(fq
  return ds.map(d=>blk(d.name,m.filter(p=>p.departmentId===d.id))).join('')+blk('ไม่ระบุฝ่าย',m.filter(p=>!di(p)))}
 function pplBody(all){const L=all.filter(pplMatch);return `<p class=\"evm\" aria-live=\"polite\">${PPL.q.trim()?'พบ '+L.length+' ท่าน':''}</p>${L.length?fqPT().filter(fqIsPub).map(t=>{const m=L.filter(p=>pplTy(p)===t.id);return m.length?`<h2 style=\"margin:30px 0 12px;${pplHs('type')}\">${E(t.name)}</h2>${pplDept(m,t.id==='pt_exec')}`:''}).join(''):'<div class=\"empty-ev\"><b>ไม่พบบุคลากรที่ตรงกับการค้นหา</b><br>ลองเปลี่ยนคำค้นหา</div>'}`}
 function pplView(){if(PPL.key!==location.hash){PPL.key=location.hash;PPL.q=''}
- const all=pplAll();if(!all.length)return `<div class="fq"><div class="empty-ev"><b>ยังไม่มีข้อมูลบุคลากรและทีมผู้บริหาร</b><br>${Auth.canAccessAdmin()?'<a href="#/admin/pstaff">เพิ่มข้อมูลที่หลังบ้าน</a>':'กรุณากลับมาใหม่ภายหลัง'}</div></div>`;
+ const all=pplAll();if(!all.length)return `<div class="fq"><div class="empty-ev"><b>${pplAllG().length?'ยังไม่มีบุคลากรที่กำหนดให้แสดงในหน้านี้':'ยังไม่มีข้อมูลบุคลากรและทีมผู้บริหาร'}</b><br>${Auth.canAccessAdmin()?'<a href="#/admin/pstaff">เพิ่มข้อมูลที่หลังบ้าน</a>':'กรุณากลับมาใหม่ภายหลัง'}</div></div>`;
  return `<div class="fq"><div class="cmt"><input id="pplq" type="search" placeholder="ค้นหาชื่อหรือนามสกุล" value="${E(PPL.q)}" oninput="pplFilter()" aria-label="ค้นหาชื่อหรือนามสกุล" autocomplete="off"></div><div id="pplb">${pplBody(all)}</div></div>`}
 function pplFilter(){const i=$('pplq');PPL.q=i?i.value:'';const b=$('pplb');if(b)b.innerHTML=pplBody(pplAll())}
 function secPageInfo(type){const P=getPages(),M=getMenu(),pg=P.find(p=>(p.sections||[]).some(s=>s.type===type)),mi=pg&&M.find(m=>m.kind==='cms'&&m.pageId===pg.id);return {pg,mi}}
@@ -1499,13 +1509,13 @@ function fqImg(k,l,it,nm){const p=fqPend().files[k],v=fqImgGet(it,k),src=p?p.url
  return `<label>${l}</label>${src?`<img class="fqpv" src="${E(src)}" alt="ตัวอย่างภาพ">${p?'<p><small>ภาพตัวอย่าง — ยังไม่ได้บันทึก จะอัปโหลดเมื่อกดบันทึก</small></p>':''}`:'<p><small>ยังไม่มีรูป</small></p>'}<input name="${nm}" value="${E(v)}" placeholder="ลิงก์รูป https:// (หรืออัปโหลด/เลือกจากคลังสื่อด้านล่าง)"><input type="file" accept="image/png,image/jpeg,image/webp,image/gif" onchange="fqPick('${k}',this)"><p><button type="button" class="btn s" onclick="fqLib('${k}')">เลือกจากคลังสื่อ</button> ${src?`<button type="button" class="btn s c" onclick="fqImgClear('${k}')">ลบรูป</button>`:''}</p>`}
 function fqEditor(ent,id){const C=FQE[ent],isNew=id==='new';
  if(!WC.fq||WC.fqEnt!==ent||WC.fq.id!==(isNew?WC.fq.id:id)){const ex=isNew?null:C.get().find(x=>x.id===id);if(!isNew&&!ex)return `<p><a class="bk" href="#/admin/${ent}">← ${C.title}</a></p><h1>ไม่พบรายการ</h1>`;WC.fq=isNew?Object.assign({id:mkId(C.pre)},C.blank()):clone(ex);WC.fqNew=isNew;WC.fqEnt=ent;fqMig(WC.fq)}
- const it=WC.fq,fi=fd=>{const [k,l,t,req,opt]=fd,nm='f_'+k,v=it[k],lb=`<label for="${nm}">${l}${req?' *':''}</label>`;
+ const it=WC.fq,fi=fd=>{const [k,l,t,req,opt,dflt]=fd,nm='f_'+k,v=it[k],lb=`<label for="${nm}">${l}${req?' *':''}</label>`;
   if(t==='text')return `${lb}<input id="${nm}" name="${nm}" value="${E(v)}">`;
   if(t==='num')return `${lb}<input id="${nm}" name="${nm}" type="text" inputmode="decimal" autocomplete="off" placeholder="เช่น 25000 (เว้นว่างได้ถ้ายังไม่มีข้อมูล)" value="${E(v)}">`;
   if(t==='area'||t==='area8')return `${lb}<textarea id="${nm}" name="${nm}" rows="${t==='area8'?8:4}">${E(v)}</textarea>`;
   if(t==='sel'){const o=opt();let g=null,h='';o.forEach(([a,b,gr])=>{if(gr!==undefined&&gr!==g){if(g!==null)h+='</optgroup>';h+=`<optgroup label="${E(gr)}">`;g=gr}h+=`<option value="${E(a)}"${v===a?' selected':''}>${E(b)}</option>`});if(g!==null)h+='</optgroup>';return `${lb}<select id="${nm}" name="${nm}"><option value="">— เลือก —</option>${h}</select>`}
   if(t==='chk')return `<fieldset><legend>${l}</legend>${FQ_LV.map(([a,b])=>`<label style="display:inline-block;margin-right:14px"><input type="checkbox" name="${nm}" value="${a}"${(v||[]).includes(a)?' checked':''} style="width:auto"> ${b}</label>`).join('')}</fieldset>`;
-  if(t==='cpg'){const cur=Array.isArray(v)?v:['home','community'],L=cpPgList(),ex=cur.filter(id=>!L.some(x=>x[0]===id));return `<fieldset><legend>${l}</legend><input type="hidden" name="${nm}_x" value="1">${L.concat(ex.map(id=>[id,'(หน้านี้ถูกลบแล้ว — ติ๊กออกเพื่อนำออก)'])).map(([a,b])=>`<label class="ck"><input type="checkbox" name="${nm}" value="${E(a)}"${cur.includes(a)?' checked':''}> ${E(b)}</label>`).join('')}<small>เลือกได้หลายหน้า โพสต์เดียวแสดงได้หลายหน้าโดยไม่ต้องสร้างซ้ำ ติ๊กออก = นำโพสต์ออกจากหน้านั้น (ไม่ลบโพสต์) โพสต์ที่ซ่อนหรือยังเป็นฉบับร่างจะไม่แสดงบนหน้าเว็บ</small></fieldset>`}
+  if(t==='cpg'){const cur=Array.isArray(v)?v:(dflt?dflt():['home','community']),L=opt?opt():cpPgList(),ex=cur.filter(id=>!L.some(x=>x[0]===id));return `<fieldset><legend>${l}</legend><input type="hidden" name="${nm}_x" value="1">${L.concat(ex.map(id=>[id,'(หน้านี้ถูกลบแล้ว — ติ๊กออกเพื่อนำออก)'])).map(([a,b])=>`<label class="ck"><input type="checkbox" name="${nm}" value="${E(a)}"${cur.includes(a)?' checked':''}> ${E(b)}</label>`).join('')}<small>เลือกได้หลายหน้า โพสต์เดียวแสดงได้หลายหน้าโดยไม่ต้องสร้างซ้ำ ติ๊กออก = นำโพสต์ออกจากหน้านั้น (ไม่ลบโพสต์) โพสต์ที่ซ่อนหรือยังเป็นฉบับร่างจะไม่แสดงบนหน้าเว็บ</small></fieldset>`}
   if(t==='hdr')return `<h3 class="fqhd">${l}</h3>`;
   if(t==='list')return fqLst(k,l,it);
   if(t==='plan')return fqPlan(it);
