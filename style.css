@@ -861,3 +861,5 @@ html.kld-on{overflow:hidden}
 .fcsu li::before{content:"";position:absolute;left:0;top:.6em;width:6px;height:6px;border-radius:50%;background:var(--gold)}
 /* โพสต์: ตัวกรองหมวดหมู่และป้ายหมวดหมู่ */
 .cpf{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 16px}.cpcat{font-weight:600;color:var(--fg)}
+/* หลังบ้าน: แถบแท็บโครงสร้างหลักสูตรและตารางเรียน */
+.cuh{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px}
