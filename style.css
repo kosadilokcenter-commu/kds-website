@@ -704,7 +704,7 @@ html.kld-on{overflow:hidden}
 .hbb:hover{background:var(--kds-primary);border-color:#fff}
 .hbp svg{transform:scaleX(-1)}
 @media(prefers-reduced-motion:reduce){.hst{transition:none}}
-.himg{display:flex;gap:6px;align-items:center;margin-bottom:6px}.himg input{flex:1;min-width:0}
+.himg{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:10px}.himg input{flex:1;min-width:0}.himgx{flex:0 0 100%;display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px}.himgpv{width:96px;height:54px;object-fit:cover;border-radius:8px;border:1px solid var(--line);background:var(--surface)}.himgst{flex:1 1 180px;min-width:0;overflow-wrap:break-word}
 
 /* ===== KDS: ส่วนข้อความ/สารจากผู้บริหาร (ข้อความซ้าย ภาพขวา) · ข่าวและโพสต์เป็นการ์ดแนวนอน ===== */
 .hn .hin{position:relative;overflow:hidden;background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:clamp(20px,4vw,40px);box-shadow:var(--shadow)}
