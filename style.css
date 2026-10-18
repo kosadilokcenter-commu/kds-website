@@ -801,3 +801,18 @@ html.kld-on{overflow:hidden}
 .cut .cus td{font-weight:700}.cut tfoot td{font-weight:700;border-top:2px solid var(--fg);border-bottom:0;background:var(--hover)}
 .cut .cuq .cuth th{outline:2px dashed var(--silver);outline-offset:-2px}
 @media(max-width:600px){.cut th,.cut td{padding:6px 7px;font-size:.88rem}}
+/* ค้นหารายวิชา + แสดงเฉพาะภาคเรียนที่มีข้อมูล + ขนาดฟอนต์จากหลังบ้าน (data-cu = ช่องที่ปรับ ตัวแปร --cu-*) */
+.cusb{margin:0 0 12px}.cuqi{width:100%;max-width:520px;padding:9px 14px;font:inherit}
+.cusr{margin:0 0 14px}.cusr:empty{margin:0}.cusc{margin:0 0 6px;color:var(--muted)}
+.cusl{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.cusl li{border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:9px 12px;overflow-wrap:anywhere}
+.cusl b{display:block}.cusm{display:flex;flex-wrap:wrap;gap:2px 14px;color:var(--muted);font-size:.88em}
+.cug.cug1{grid-template-columns:minmax(0,1fr)}
+.cu[data-cu~="ti"] .cuti{font-size:var(--cu-ti)}
+.cu[data-cu~="ti"] .cutt{font-size:calc(var(--cu-ti)*.55)}
+.cu[data-cu~="pl"] .cupl{font-size:var(--cu-pl)}
+.cu[data-cu~="th"] .cut thead th,.cu[data-cu~="th"] .cut .cuth th{font-size:var(--cu-th)}
+.cu[data-cu~="cs"] .cut td{font-size:var(--cu-cs)}
+.cu[data-cu~="nm"] .cut td.cun{font-size:var(--cu-nm)}
+.cu[data-cu~="tt"] .cut tbody tr.cus td,.cu[data-cu~="tt"] .cut tfoot tr.cut2 td{font-size:var(--cu-tt)}
+.cu[data-cu~="sr"] .cuqi,.cu[data-cu~="sr"] .cusr{font-size:var(--cu-sr)}
