@@ -868,3 +868,8 @@ html.kld-on{overflow:hidden}
 .ttt th,.ttt td{border:1px solid var(--line);padding:8px 10px;text-align:center;vertical-align:middle;overflow-wrap:anywhere}.ttt thead th{background:var(--hover)}.ttt tbody th{background:var(--hover);white-space:nowrap;position:sticky;left:0}
 .ttt td small,.ttt th small{color:var(--muted)}.ttt td input{width:100%;min-width:110px;margin:2px 0}.ttx{background:transparent}.tth{margin:14px 0 4px}
 
+/* ===== การ์ดเนื้อหาทั่วไป: ไอคอนที่อัปโหลดเอง อยู่ทางซ้ายของชื่อ คำอธิบายอยู่ใต้ชื่อ (การ์ดที่ไม่มีไอคอนไม่เปลี่ยน) ===== */
+.card .p .chd{display:flex;align-items:center;gap:12px;min-width:0;margin:0 0 .5em}
+.card .p .chd h3{margin:0;flex:1 1 auto;min-width:0;overflow-wrap:anywhere}
+.card .p img.cic{width:42px;height:42px;flex:none;object-fit:contain;border-radius:12px;display:block}
+.fqpv.cipv{width:42px;height:42px;max-width:42px;max-height:42px;object-fit:contain}
