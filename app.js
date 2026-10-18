@@ -47,7 +47,7 @@ const dbErr=(m,e)=>{const c=(e&&(e.code||e.status))||'error';say(m+': '+(ERR[c]|
 /* ===== State & data (ไม่มีค่าเริ่มต้นใด ๆ: ว่างจนกว่าผู้ดูแลจะสร้างเอง) ===== */
 const SHR={};let WC={},RL=null,DBH=null,toast=null,sbc=innerWidth<760,last='';
 const BASE={nameTh:BRAND.th,nameEn:BRAND.en,footer:''};
-const PVK=['ptypes','pgroups','pdepartments','timetable'];/* ประเภทบุคลากร/กลุ่มสาระ/ตารางเรียน: เก็บใน settings[k] (site_docs 'settings') ไม่เพิ่ม key ใหม่ */
+const PVK=['ptypes','pgroups','pdepartments','ctplans','ctcourses','cttables'];/* ประเภทบุคลากร/กลุ่มสาระ/แผนการเรียน/รายวิชาในโครงสร้างหลักสูตร/ตารางเรียน: เก็บใน settings[k] (site_docs 'settings') ไม่เพิ่ม key ใหม่ในฐานข้อมูล */
 const getSH=k=>{if(PVK.includes(k)){const st=SHR.settings!=null?SHR.settings:EMB.settings;return st&&Array.isArray(st[k])?st[k]:null}const a=SHR[k]!=null?SHR[k]:EMB[k];return a!=null?a:null};
 const getMenu=()=>getSH('menu')||[];
 const getEvents=()=>getSH('events')||[];
@@ -160,7 +160,7 @@ async function evsave(id){evsync(id);const e=WC.ev.find(x=>x.id===id);e.updated=
  if(e.img&&!okU(e.img))return say('URL ภาพต้องขึ้นต้นด้วย https://',false);if(e.url){const er=cpUrlBasic(e.url);if(er)return say('ลิงก์รายละเอียด: '+er,false)}if(!DBH)return say(dbOff(),false);{const fi=document.querySelector('#af input[name="ev_file"]');if(fi&&fi.files&&fi.files[0]){try{e.img=await mdUpload(fi.files[0],'events')}catch(er){return say('อัปโหลดรูปไม่สำเร็จ: '+((er&&er.message)||er),false)}}}
  try{await putDoc('events',WC.ev);WC={};say(e.status==='published'?'บันทึกและตั้งสถานะเผยแพร่แล้ว (ผู้เข้าชมทั่วไปเห็นทันที)':'บันทึกเป็นฉบับร่างแล้ว')}catch(er){dbErr('บันทึกไม่สำเร็จ',er)}}
 /* ===== Public rendering ===== */
-const secRaw=s=>{const t=E(s.text),tg=u=>u[0]==='#'?'':' target="_blank" rel="noopener noreferrer"';if(s.type==='heading')return `<h2>${t}</h2>`;if(s.type==='text')return `<p class="pl">${t}</p>`;if(s.type==='image')return okU(s.url)?`<img src="${E(s.url)}" alt="${E(s.alt)}" style="max-width:100%;height:auto;border-radius:16px;margin:12px 0">`:'';if(s.type==='button')return okL(s.url)?`<p><a class="btn b" href="${E(s.url)}"${tg(s.url)}>${E(s.label)}</a></p>`:'';if(s.type==='cards')return `<div class="grid">${(s.items||[]).map(c=>{const ed=elD(c.st),b=`${okU(c.m)?`<img src="${E(c.m)}" alt=""${okL(c.l)?'':` data-zoom="${E(c.m)}" style="cursor:zoom-in"`}>`:''}<div class="p"><h3>${E(c.t)}</h3><p class="pl">${E(c.d)}</p></div>`;return okL(c.l)?`<a class="card${ed.c}"${ed.a} href="${E(c.l)}"${tg(c.l)}>${b}</a>`:`<div class="card h${ed.c}"${ed.a}>${b}</div>`}).join('')}</div>`;if(s.type==='calendar')return calView();if(s.type==='campusmap')return cmView();if(s.type==='faculties')return facView();if(s.type==='people')return pplView();if(s.type==='courses')return crsView();if(s.type==='linkcards')return lcHtml(s);if(s.type==='clubs')return clubView();if(s.type==='news')return nwSecView(s);if(s.type==='timetable')return ttView();return ''};
+const secRaw=s=>{const t=E(s.text),tg=u=>u[0]==='#'?'':' target="_blank" rel="noopener noreferrer"';if(s.type==='heading')return `<h2>${t}</h2>`;if(s.type==='text')return `<p class="pl">${t}</p>`;if(s.type==='image')return okU(s.url)?`<img src="${E(s.url)}" alt="${E(s.alt)}" style="max-width:100%;height:auto;border-radius:16px;margin:12px 0">`:'';if(s.type==='button')return okL(s.url)?`<p><a class="btn b" href="${E(s.url)}"${tg(s.url)}>${E(s.label)}</a></p>`:'';if(s.type==='cards')return `<div class="grid">${(s.items||[]).map(c=>{const ed=elD(c.st),b=`${okU(c.m)?`<img src="${E(c.m)}" alt=""${okL(c.l)?'':` data-zoom="${E(c.m)}" style="cursor:zoom-in"`}>`:''}<div class="p"><h3>${E(c.t)}</h3><p class="pl">${E(c.d)}</p></div>`;return okL(c.l)?`<a class="card${ed.c}"${ed.a} href="${E(c.l)}"${tg(c.l)}>${b}</a>`:`<div class="card h${ed.c}"${ed.a}>${b}</div>`}).join('')}</div>`;if(s.type==='calendar')return calView();if(s.type==='campusmap')return cmView();if(s.type==='faculties')return facView();if(s.type==='people')return pplView();if(s.type==='courses')return crsView();if(s.type==='linkcards')return lcHtml(s);if(s.type==='clubs')return clubView();if(s.type==='news')return nwSecView(s);if(s.type==='timetable')return ctView();return ''};
 const secOne=s=>{const h=secRaw(s),a=h?elA(s.st,s.type,'se'):'';return a?`<div${a}>${h}</div>`:h};
 const secsHtml=(a,G)=>{a=a||[];G=G||[];let out='',i=0;while(i<a.length){const s=a[i],g=s.grp&&G.find(x=>x.id===s.grp);if(!g){out+=secOne(s);i++;continue}let j=i,h='';while(j<a.length&&a[j].grp===s.grp){h+=secOne(a[j]);j++}const b=elBuild(g.st,'group');out+=b.ds?`<div class="sg" data-e="${b.ds}" style="${b.st}">${h}</div>`:h;i=j}return out};
 const pageView=(p,pv)=>{PVW=!!pv;PPL_PG=p.id;return `<div class="w sec${psC(p.id)}"${psA(p.id)}>${pv?`<div class="msg">ตัวอย่าง: หน้านี้สถานะ${p.status==='published'?'เผยแพร่':'ฉบับร่าง'} · <a href="#/admin/pages/edit/${p.id}">กลับไปแก้ไข</a></div>`:''}<h1>${E(p.title)}</h1>${p.sections&&p.sections.length?secsHtml(p.sections,p.groups):'<p style="opacity:.6">ยังไม่ได้เพิ่มเนื้อหา</p>'}${cpPageSec(p.id)}${pplPageSec(p)}</div>`};
@@ -200,136 +200,109 @@ for(const [l,u] of [[h.b1t,h.b1u],[h.b2t,h.b2u]])if((l&&!okL(u))||(!l&&u))return
 if(!DBH)return say(dbOff(),false);try{await putDoc('settings',Object.assign({},getSH('settings')||{},{home:h,footer:STRIP(d.get('f')||'').trim()}));WC.hm=null;say('บันทึกเนื้อหาหน้าแรกเรียบร้อย ผู้เข้าชมเห็นทันที')}catch(e){dbErr('บันทึกไม่สำเร็จ',e)}}
 const PUB={p(sl){const q=getPages().find(x=>x.slug===sl);return q&&q.status==='published'?pageView(q):nf()},preview(id){const q=pgById(id);return q?pageView(q,1):nf()}};
 /* ===== Admin: shell ===== */
-const AG=[['ภาพรวม',[['dash','แดชบอร์ด']]],['จัดการเว็บไซต์',[['home','เนื้อหาหน้าแรก'],['news','จัดการข่าวสารและประกาศ'],['cposts','จัดการโพสต์'],['pages','จัดการเมนูและหน้าเว็บ'],['menu','แก้ไขเมนูแบบละเอียด'],['events','จัดการกิจกรรมปฏิทิน'],['campus','จัดการแผนผังสถาบัน'],['pexec','จัดการคณะผู้บริหาร'],['pstaff','จัดการอาจารย์และบุคลากร'],['ptypes','จัดการประเภทบุคลากร'],['pdepartments','จัดการฝ่ายงาน'],['pgroups','จัดการกลุ่มสาระการเรียนรู้'],['clubs','จัดการชมรมนักศึกษา'],['clubcats','จัดการหมวดหมู่ชมรม']]],['คณะและหลักสูตร',[['curriculum','หลักสูตรและตารางเรียน'],['typo','ตั้งค่าตัวอักษร']],true],['ตั้งค่า',[['settings','การตั้งค่าเว็บไซต์']]]];
+const AG=[['ภาพรวม',[['dash','แดชบอร์ด']]],['จัดการเว็บไซต์',[['home','เนื้อหาหน้าแรก'],['news','จัดการข่าวสารและประกาศ'],['cposts','จัดการโพสต์'],['pages','จัดการเมนูและหน้าเว็บ'],['menu','แก้ไขเมนูแบบละเอียด'],['events','จัดการกิจกรรมปฏิทิน'],['campus','จัดการแผนผังสถาบัน'],['pexec','จัดการคณะผู้บริหาร'],['pstaff','จัดการอาจารย์และบุคลากร'],['ptypes','จัดการประเภทบุคลากร'],['pdepartments','จัดการฝ่ายงาน'],['pgroups','จัดการกลุ่มสาระการเรียนรู้'],['clubs','จัดการชมรมนักศึกษา'],['clubcats','จัดการหมวดหมู่ชมรม']]],['คณะและหลักสูตร',[['curriculum','โครงสร้างหลักสูตรและตารางเรียน'],['fgroups','กลุ่มคณะ'],['typo','ตั้งค่าตัวอักษร']],true],['ตั้งค่า',[['settings','การตั้งค่าเว็บไซต์']]]];
 function adminNav(sec){return `<aside aria-label="เมนูหลังบ้าน"><b class="ab">${kitTile(30)}<span>Admin · ${BRAND.short}</span>${soundBtn()}${themeBtn()}</b><br><a href="#/">&#8592; ดูเว็บไซต์</a><small style="display:block;opacity:.7;margin:6px 0;word-break:break-all">${E(Auth.email)}</small><button type="button" class="btn s" onclick="doLogout()">ออกจากระบบ</button>${AG.map(([g,it,fold])=>{const ln=it.map(([k,t])=>{const on=sec===k;return `<a href="#/admin/${k}" class="${on?'on':''}"${on?' aria-current="page"':''}>${t}</a>`}).join('');return fold?`<details class="agd"${FQN.open||it.some(x=>x[0]===sec)?' open':''} ontoggle="FQN.open=this.open"><summary class="ag">${g}</summary>${ln}</details>`:`<div class="ag">${g}</div>${ln}`}).join('')}</aside>`}
 function sbt(){sbc=!sbc;render()}
 function admin(parts){if(!Auth.canAccessAdmin())return loginView();const sec=(parts[0]==='people'?'pstaff':parts[0])||'dash';if(sec!=='home')WC.hm=null;let main;
- if(sec==='dash')main=dashboard();else if(sec==='pages'&&parts[1]==='edit')main=pageEditor(parts[2]);else if(sec==='pages')main=pagesAdmin();else if(sec==='home')main=homeAdmin();else if(sec==='menu')main=menuAdmin();else if(sec==='events'&&parts[1]==='edit')main=eventEditor(parts[2]);else if(sec==='events')main=eventsAdmin();else if(sec==='campus'&&parts[1]==='layout')main=ceAdmin();else if(sec==='campus'&&parts[1]==='edit')main=cmpEditor(parts[2]);else if(sec==='campus')main=campusAdmin();else if(sec==='curriculum'||sec==='timetable'||sec==='plans'||(sec==='majors'&&!parts[1]))main=curTT();else if(sec==='courses')main=parts[1]==='edit'?cqEditor(parts[2]):parts[1]==='merge'?cqMerge():parts[1]==='program'?cqProg(parts[2]||''):cqAdmin();else if(FQE[sec])main=parts[1]==='edit'?fqEditor(sec,parts[2]):fqAdmin(sec);else if(sec==='typo')main=typoAdmin();else if(sec==='settings')main=settingsAdmin();else main='<p>ไม่พบเมนู</p>';
- return `<div class="adm${sbc?' c':''}">${adminNav(CUR_SEC.has(sec)?'curriculum':sec)}<main><button class="btn s" onclick="sbt()" aria-expanded="${!sbc}" aria-label="ย่อหรือขยายเมนู">${ic('menu')} เมนู</button>${toast?`<div class="msg ${toast.ok?'ok':'er'}">${E(toast.t)}</div>`:''}${curWrap(sec,parts,main)}</main></div>`}
-/* ===== โครงสร้างหลักสูตร: หน้ารวมเมนูหลังบ้านเดิม (กลุ่มคณะ/ระดับชั้น/สาขา/หลักสูตร · แผนการเรียน · คลังรายวิชา)
-   ใช้หน้าจอ ข้อมูล และระบบบันทึกเดิมทั้งหมด เส้นทางเดิม #/admin/majors|programs|plans|courses ยังใช้งานได้และแสดงแถบแท็บนี้ ===== */
-const CUR_SEC=new Set(['curriculum','timetable','fgroups','faculties','majors','programs','plans','courses']),CUR_ST=['fgroups','faculties','majors','programs'];
-const CUR_TABS=[['overview','ภาพรวม','#/admin/curriculum'],['structure','โครงสร้างหลักสูตร','#/admin/majors'],['plans','จัดรายวิชาตามชั้น/ภาค','#/admin/plans'],['courses','คลังรายวิชา','#/admin/courses']];
-function curWrap(sec,parts,main){if(!CUR_SEC.has(sec)||sec==='curriculum'||sec==='timetable'||sec==='plans'||(sec==='majors'&&!parts[1]))return main;return `<p><a href="#/admin/curriculum">&#8592; กลับหน้าหลักสูตรและตารางเรียน</a></p>${main}`;const k=sec==='curriculum'?'overview':CUR_ST.includes(sec)?'structure':sec,
- tabs=CUR_TABS.map(([t,l,h])=>`<a class="btn s${t===k?' b':''}" href="${h}"${t===k?' aria-current="page"':''}>${l}</a>`).join(''),
- sub=k==='structure'?`<div class="cuh" aria-label="ส่วนย่อยของโครงสร้างหลักสูตร">${[['fgroups','กลุ่มคณะ'],['faculties','ระดับชั้น'],['majors','แผนการเรียน'],['programs','หลักสูตร']].map(([t,l])=>`<a class="btn s${t===sec?' b':''}" href="#/admin/${t}">${l}</a>`).join('')}</div>`:'';
- return `<nav class="cuh" aria-label="โครงสร้างหลักสูตร">${tabs}</nav>${sub}${main}`}
-function curHome(){let nc=0;try{nc=cqIndex().size}catch(e){}
- const card=(t,d,n,h)=>`<div class="row"><b>${t}</b>${n!=null?' · '+n:''}<br><small>${d}</small><br><a class="btn s" href="${h}">เปิด</a></div>`;
- return `<h1>โครงสร้างหลักสูตร</h1><p>รวมการจัดการกลุ่มคณะ ระดับชั้น แผนการเรียน หลักสูตร การจัดรายวิชาตามชั้น/ภาค และคลังรายวิชาไว้ในที่เดียว ใช้ข้อมูลและการบันทึกชุดเดิมทั้งหมด ไม่มีการย้ายหรือลบข้อมูล</p>${dbBanner()}
-${card('แผนการเรียนและหลักสูตร','เพิ่ม แก้ไขชื่อ เรียงลำดับ เปิด/ปิดใช้งานแผนการเรียน (ม.1–ม.3 แผนทั่วไป · ม.4–ม.6 จัดการเองได้) และจัดการหลักสูตร',fqM().length+' แผนการเรียน · '+fqP().length+' หลักสูตร','#/admin/majors')}
-${card('จัดรายวิชาตามชั้น/ภาค','จัดรายวิชาตามระดับชั้น ภาคเรียน และหลักสูตร',null,'#/admin/plans')}
-${card('คลังรายวิชา','เพิ่ม แก้ไข ค้นหา รวม และเลือกใช้รายวิชาเดิม วิชารหัสเดียวกันถือเป็นวิชาเดียวกันทุกหลักสูตร',nc+' รายวิชา','#/admin/courses')}`}
-/* ===== ตารางเรียน ม.1–ม.6 × ภาคเรียนที่ 1–2: เก็บใน settings.timetable (อาร์เรย์ในเอกสาร site_docs 'settings' เดิม — ไม่เพิ่ม key/ตาราง/migration)
-   รายการ id 'cfg' = จำนวนคาบและเวลา · รายการ 'g<ชั้น>t<ภาค>' (ม.1–3) / 'g<ชั้น>p<id แผน>t<ภาค>' (ม.4–6) = {g,t,planId?,pub,cells:{'<วัน>_<คาบ0>':{code?,name,note?}}} · วิชาเลือกจากคลังรายวิชา (cqIndex) หรือพิมพ์เองได้ (เช่น พัก ชุมนุม) ===== */
-const TT_G=[1,2,3,4,5,6],TT_T=[1,2],TT_D=[['mon','จันทร์'],['tue','อังคาร'],['wed','พุธ'],['thu','พฤหัสบดี'],['fri','ศุกร์']],TT_NMAX=12,TT_DN=8,TT_TM=['08:30-09:20','09:20-10:10','10:10-11:00','11:00-11:50','11:50-12:40','12:40-13:30','13:30-14:20','14:20-15:10'],TT_NAME=120,TT_NOTE=60,TT_GEN='แผนการเรียนทั่วไป';
-const ttArr=()=>{const v=getSH('timetable');return Array.isArray(v)?v.filter(x=>x&&x.id):[]};
-const ttCfg=()=>{const c=ttArr().find(x=>x.id==='cfg')||{},n=Math.floor(+c.n);return {n:Number.isFinite(n)&&n>=1&&n<=TT_NMAX?n:TT_DN,times:Array.isArray(c.times)?c.times.map(x=>String(x==null?'':x)):[]}};
-const ttTime=(c,i)=>c.times[i]!=null&&c.times[i]!==''?c.times[i]:(c.times.length?'':(TT_TM[i]||''));
-/* แผนการเรียน = รายการใน majors เดิม (id คงที่ 'mj…') · scope 'lower' = ม.1–ม.3 แผนทั่วไป (มีได้แผนเดียว) · อื่น ๆ/ไม่มี = 'upper' ม.4–ม.6 · เปิดใช้งาน = เผยแพร่
-   ตารางเรียน ม.1–3: id g<ชั้น>t<ภาค> (หนึ่งห้องต่อชั้น) · ม.4–6: id g<ชั้น>p<id แผน>t<ภาค> อ้างอิงแผนด้วย id ไม่ใช้ชื่อ (เปลี่ยนชื่อแผนแล้วตารางไม่หลุด) */
-const spScope=m=>m&&m.scope==='lower'?'lower':'upper';
-const ttLowerPlan=()=>fqM().find(m=>spScope(m)==='lower')||null;
-const ttPlanName=id=>{const m=fqM().find(x=>x.id===id);return m?(m.nameTh||'(ไม่มีชื่อ)'):''};
-const ttRefs=pid=>ttArr().filter(x=>x.planId===pid);
-const ttRefTxt=x=>'ตารางเรียน ม.'+x.g+' ภาคเรียนที่ '+x.t;
-const ttKey=(g,t,p)=>g>=4&&p?'g'+g+'p'+p+'t'+t:'g'+g+'t'+t,ttGet=(g,t,p)=>ttArr().find(x=>x.id===ttKey(g,t,p))||null;
-const ttPlansAdm=()=>fqM().filter(m=>spScope(m)==='upper');/* ม.4–6: เฉพาะแผนที่เปิดใช้งาน (+แผนที่ปิดแต่มีตารางอยู่แล้ว) ตามลำดับที่ตั้งไว้ */
-const ttPlansPub=()=>fqM().filter(m=>spScope(m)==='upper'&&fqIsPub(m));
-const ttOkG=v=>TT_G.includes(+v)?+v:1,ttOkT=v=>TT_T.includes(+v)?+v:1;
-const TTS={g:1,t:1,p:'',prog:''},TTV={g:1,t:1,p:''};let TTD=false;
-function ttDirty(){TTD=true}
-function ttErr(m){const x=$('tterr');if(!x)return say(m,false);x.textContent=m;x.hidden=false;try{x.scrollIntoView({block:'center'})}catch(e){}}
-function ttSel(k,v){if(TTD&&!confirm('มีการแก้ไขที่ยังไม่ได้บันทึก ต้องการเปลี่ยนโดยไม่บันทึกหรือไม่?'))return;TTS[k]=k==='g'?ttOkG(v):k==='t'?ttOkT(v):String(v);TTD=false;render()}
-function ttProg(v){TTS.prog=String(v);const dl=$('ttl');if(dl)dl.innerHTML=ttCourses().map(e=>`<option value="${E(ttOptTxt(e))}"></option>`).join('')}
-function ttvSel(k,v){TTV[k]=k==='g'?ttOkG(v):k==='t'?ttOkT(v):String(v);render()}
-function ttIdx(){try{return cqIndex()}catch(e){return new Map()}}
-const ttOptTxt=e=>e.code+' — '+e.name;
-function ttCourses(){let src=null;if(TTS.prog){const p=fqP().find(x=>x.id===TTS.prog);if(p)src=[p]}let m;try{m=cqIndex(src||undefined)}catch(e){m=new Map()}return [...m.values()].filter(e=>e.code).sort((a,b)=>String(a.code).localeCompare(String(b.code)))}
-/* ข้อความที่พิมพ์/เลือก → {code?,name}: ขึ้นต้นด้วยรหัสวิชาในคลัง = วิชาจากคลัง ไม่เช่นนั้นเป็นข้อความอิสระ */
-function ttResolve(raw,idx){const first=raw.split(' — ')[0].trim(),e=idx.get(cqNorm(first));return e&&e.code?{code:String(e.code),name:String(e.name||e.code)}:{name:raw}}
-/* แผนที่ใช้กับตารางของชั้น g: ม.4–6 = แผนที่เลือก · ม.1–3 = แผนทั่วไป (ถ้ามี) */
-const ttPlanOf=(g,p)=>g>=4?(p?fqM().find(m=>m.id===p)||null:null):ttLowerPlan();
-const ttPlanLbl=(g,p)=>{const m=ttPlanOf(g,p);return m?(m.nameTh||'(ไม่มีชื่อ)'):(g>=4?'':TT_GEN)};
-function ttAdmin(){const g=TTS.g=ttOkG(TTS.g),t=TTS.t=ttOkT(TTS.t),cfg=ttCfg(),plans=g>=4?ttPlansAdm():[];if(g>=4&&!plans.some(m=>m.id===TTS.p))TTS.p=plans[0]?plans[0].id:'';const pid=g>=4?TTS.p:'',it=(g>=4&&!pid?null:ttGet(g,t,pid))||{cells:{}},cells=it.cells||{},idx=ttIdx(),list=ttCourses(),op=(a,v,l)=>`<option value="${E(v)}"${String(a)===String(v)?' selected':''}>${E(l)}</option>`,
- gb=TT_G.map(n=>`<button type="button" class="btn s${n===g?' b':''}" aria-pressed="${n===g}" onclick="ttSel('g',${n})">ม.${n}</button>`).join(''),tb=TT_T.map(n=>`<button type="button" class="btn s${n===t?' b':''}" aria-pressed="${n===t}" onclick="ttSel('t',${n})">ภาคเรียนที่ ${n}</button>`).join(''),
- pb=g>=4?(plans.length?`<div class="cuh" role="group" aria-label="แผนการเรียน">${plans.map(m=>`<button type="button" class="btn s${m.id===pid?' b':''}" aria-pressed="${m.id===pid}" onclick="ttSel('p','${E(m.id)}')">${E(m.nameTh||'(ไม่มีชื่อ)')}${fqIsPub(m)?'':' (ปิดใช้งาน)'}</button>`).join('')}</div>`:`<div class="msg er">ม.${g} ยังไม่มีแผนการเรียนที่เปิดใช้งาน <a href="#/admin/curriculum">ไปเพิ่มแผนในส่วนที่ 1</a></div>`):`<p><small>ม.1–ม.3 ใช้แผนการเรียนทั่วไป หนึ่งห้องต่อระดับชั้น · แผน: <b>${E(ttPlanLbl(g))}</b>${ttLowerPlan()?'':' (ยังไม่ได้สร้างในรายการแผนการเรียน — <a href="#/admin/curriculum">สร้างได้ในส่วนที่ 1</a>)'}</small></p>`,
- legacy=g>=4&&pid&&!ttGet(g,t,pid)?ttGet(g,t):null,
- show=(c)=>{if(!c)return '';const e=c.code&&idx.get(cqNorm(c.code));return c.code?c.code+' — '+(e&&e.name?e.name:c.name):c.name},
- head=Array.from({length:cfg.n},(_,p)=>`<th scope="col">คาบ ${p+1}${ttTime(cfg,p)?'<br><small>'+E(ttTime(cfg,p))+'</small>':''}</th>`).join(''),
- rows=TT_D.map(([dk,dn])=>`<tr><th scope="row">${dn}</th>${Array.from({length:cfg.n},(_,p)=>{const c=cells[dk+'_'+p];return `<td><input list="ttl" name="c_${dk}_${p}" value="${E(show(c))}" maxlength="${TT_NAME+20}" placeholder="วิชา" aria-label="${dn} คาบ ${p+1} วิชา"><input name="n_${dk}_${p}" value="${E(c&&c.note||'')}" maxlength="${TT_NOTE}" placeholder="ผู้สอน/ห้อง" aria-label="${dn} คาบ ${p+1} ผู้สอนหรือห้อง"></td>`}).join('')}</tr>`).join(''),
- can=!(g>=4&&!pid),lbl=ttPlanLbl(g,pid);
- return `<h2 id="tt">2. ตารางเรียน</h2><p>เลือกชั้น ม.1–ม.6 และภาคเรียนที่ 1 หรือ 2 แล้วจัดตาราง (ม.4–ม.6 ต้องเลือกแผนการเรียนก่อน แต่ละชั้น/ภาค/แผนแยกตารางกัน) เลือกวิชาจากคลังรายวิชา หรือพิมพ์เองได้ (เช่น พัก ชุมนุม)</p><div id="tterr" class="msg er" role="alert" hidden></div>${secPageBox('timetable','ตารางเรียน','timetable','ttMakePage')}
-<div class="cuh" role="group" aria-label="ระดับชั้น">${gb}</div>${pb}<div class="cuh" role="group" aria-label="ภาคเรียน">${tb}</div>
-${can?`${legacy?`<div class="msg">มีตารางเดิมของ ม.${g} ภาคเรียนที่ ${t} ที่ยังไม่ระบุแผนการเรียน <button type="button" class="btn s" onclick="ttAdopt()">นำมาใช้กับแผน ${E(lbl)}</button></div>`:''}<form id="ttf" onsubmit="return false" oninput="ttDirty()"><h2>ม.${g}${lbl?' · '+E(lbl):''} · ภาคเรียนที่ ${t} ${it.id?(it.pub?'<span class="tag">เผยแพร่</span>':'<span class="tag">ฉบับร่าง</span>'):'<span class="tag">ยังไม่มีตาราง</span>'}</h2>
-<label for="ttprog">ตัวช่วยเลือกวิชา: จำกัดรายการเฉพาะหลักสูตร (ไม่บังคับ)</label><select id="ttprog" onchange="ttProg(this.value)" oninput="event.stopPropagation()">${op(TTS.prog,'','ทุกหลักสูตร (คลังรายวิชาทั้งหมด)')}${fqP().map(p=>op(TTS.prog,p.id,p.nameTh)).join('')}</select>
-<datalist id="ttl">${list.map(e=>`<option value="${E(ttOptTxt(e))}"></option>`).join('')}</datalist>
-<div class="ttw"><table class="ttt"><thead><tr><th scope="col">วัน</th>${head}</tr></thead><tbody>${rows}</tbody></table></div>
-${list.length?'':'<p><small>ยังไม่มีรายวิชาในคลัง เพิ่มได้ที่ <a href="#/admin/courses">คลังรายวิชา</a> หรือพิมพ์ชื่อวิชาเองในช่อง</small></p>'}
-<label class="ck"><input type="checkbox" name="pub" value="1"${it.pub?' checked':''}> เผยแพร่ตารางนี้บนเว็บไซต์</label>
-<p><button type="button" class="btn b" onclick="ttSave()">บันทึกตาราง ม.${g} ภาคเรียนที่ ${t}</button> <button type="button" class="btn c" onclick="ttClearAsk()"${it.id?'':' disabled'}>ลบตารางนี้</button> <a class="btn" href="#/timetable/${g}/${t}">ดูหน้าเว็บ</a></p></form>`:''}
-<form id="ttc" onsubmit="return false"><fieldset class="fqfs"><legend>จำนวนคาบและเวลา (ใช้ร่วมทุกระดับชั้นและแผนการเรียน)</legend><label for="tt_n">จำนวนคาบต่อวัน (1–${TT_NMAX})</label><input id="tt_n" name="tt_n" type="number" min="1" max="${TT_NMAX}" step="1" value="${cfg.n}"><div class="g2">${Array.from({length:cfg.n},(_,p)=>`<div><label for="tt_t${p}">เวลาคาบ ${p+1}</label><input id="tt_t${p}" name="tt_t${p}" maxlength="30" value="${E(ttTime(cfg,p))}" placeholder="เช่น 08:30-09:20"></div>`).join('')}</div><p><button type="button" class="btn" onclick="ttCfgSave()">บันทึกคาบและเวลา</button> <small>ถ้าลดจำนวนคาบ ข้อมูลคาบที่เกินจะถูกซ่อนแต่ยังเก็บไว้ ถ้าเพิ่มกลับจะเห็นอีกครั้ง บันทึกตารางก่อนเปลี่ยนจำนวนคาบ</small></p></fieldset></form>`}
-async function ttPut(arr,msg){try{await putDoc('timetable',arr);TTD=false;say(msg)}catch(e){const c=(e&&(e.code||e.status))||'error';ttErr('บันทึกไม่สำเร็จ: '+(ERR[c]||(e&&e.message)||'เกิดข้อผิดพลาดที่ไม่ทราบสาเหตุ')+' ('+c+')')}}
-function ttSave(){if(!DBH)return ttErr(dbOff());const f=$('ttf');if(!f)return;const d=new FormData(f),cfg=ttCfg(),idx=ttIdx(),g=ttOkG(TTS.g),t=ttOkT(TTS.t),pid=g>=4?TTS.p:'';if(g>=4&&!pid)return ttErr('กรุณาเลือกแผนการเรียนก่อนบันทึก');if(g>=4&&!ttPlanOf(g,pid))return ttErr('ไม่พบแผนการเรียนนี้แล้ว กรุณาเลือกแผนใหม่');
- const old=ttGet(g,t,pid),cells={},gv=n=>STRIP(String(d.get(n)==null?'':d.get(n))).trim();
- /* คาบที่เกินจำนวนคาบปัจจุบัน (ซ่อนอยู่) คงไว้ตามเดิม */
- if(old&&old.cells)Object.keys(old.cells).forEach(k=>{const p=+k.split('_')[1];if(p>=cfg.n)cells[k]=old.cells[k]});
- for(const [dk,dn] of TT_D)for(let p=0;p<cfg.n;p++){const raw=gv('c_'+dk+'_'+p),note=gv('n_'+dk+'_'+p);if(!raw&&!note)continue;if(!raw)return ttErr(dn+' คาบ '+(p+1)+': กรุณากรอกวิชา (หรือเว้นว่างทั้งผู้สอน/ห้อง)');
-  const c=ttResolve(raw,idx);if([...c.name].length>TT_NAME)return ttErr(dn+' คาบ '+(p+1)+': ชื่อวิชายาวเกิน '+TT_NAME+' ตัวอักษร');if([...note].length>TT_NOTE)return ttErr(dn+' คาบ '+(p+1)+': ผู้สอน/ห้องยาวเกิน '+TT_NOTE+' ตัวอักษร');if(note)c.note=note;cells[dk+'_'+p]=c}
- const low=g<4?ttLowerPlan():null,item={id:ttKey(g,t,pid),g,t,pub:d.get('pub')==='1',cells};if(g>=4)item.planId=pid;else if(low)item.planId=low.id;
- const arr=ttArr().slice(),i=arr.findIndex(x=>x.id===item.id);if(i>=0)arr[i]=item;else arr.push(item);ttPut(arr,'บันทึกตาราง ม.'+g+' ภาคเรียนที่ '+t+' เรียบร้อย')}
-function ttAdopt(){if(!DBH)return ttErr(dbOff());const g=ttOkG(TTS.g),t=ttOkT(TTS.t),pid=TTS.p,old=ttGet(g,t);if(g<4||!pid||!old||ttGet(g,t,pid))return;if(!confirm('ย้ายตารางเดิมของ ม.'+g+' ภาคเรียนที่ '+t+' ไปเป็นของแผน "'+ttPlanLbl(g,pid)+'" หรือไม่'))return;
- ttPut(ttArr().map(x=>x.id===old.id?Object.assign({},x,{id:ttKey(g,t,pid),planId:pid}):x),'ย้ายตารางเดิมเข้าแผนเรียบร้อย')}
-function ttCfgSave(){if(!DBH)return ttErr(dbOff());const f=$('ttc');if(!f)return;const d=new FormData(f),n=Math.floor(+d.get('tt_n')),old=ttCfg();if(!Number.isFinite(n)||n<1||n>TT_NMAX)return ttErr('จำนวนคาบต้องเป็นจำนวนเต็ม 1–'+TT_NMAX);
- const times=[];for(let p=0;p<n;p++){const v=d.has('tt_t'+p)?STRIP(String(d.get('tt_t'+p)||'')).trim():ttTime(old,p);if([...v].length>30)return ttErr('เวลาคาบ '+(p+1)+' ยาวเกิน 30 ตัวอักษร');times.push(v)}
- for(let p=n;p<old.times.length;p++)times.push(old.times[p]);/* คงเวลาคาบที่ซ่อนไว้ */
- const arr=ttArr().filter(x=>x.id!=='cfg');arr.unshift({id:'cfg',n,times});ttPut(arr,'บันทึกจำนวนคาบและเวลาเรียบร้อย')}
-function ttClearAsk(){const g=ttOkG(TTS.g),t=ttOkT(TTS.t),pid=g>=4?TTS.p:'',it=ttGet(g,t,pid);if(!it)return;if(!confirm('ลบตารางเรียน ม.'+g+(ttPlanLbl(g,pid)?' '+ttPlanLbl(g,pid):'')+' ภาคเรียนที่ '+t+' ทั้งตารางหรือไม่ (ลบแล้วกู้คืนไม่ได้ ไม่กระทบรายวิชาในคลังและแผนการเรียน)'))return;ttPut(ttArr().filter(x=>x.id!==it.id),'ลบตาราง ม.'+g+' ภาคเรียนที่ '+t+' แล้ว')}
-const ttMakePage=()=>secPageMake('timetable','ตารางเรียน','timetable');
-/* ===== หน้าจัดการใหม่หน้าเดียว: หลักสูตรและตารางเรียน (#/admin/curriculum) — ส่วนที่ 1 โครงสร้างหลักสูตร (แผนการเรียนใน majors เดิม) · ส่วนที่ 2 ตารางเรียน (ttAdmin เดิม)
-   ไม่เพิ่มตาราง/คีย์ใหม่: แผน = site_docs 'majors' (scope lower/upper) · ตาราง = settings.timetable · คลังรายวิชา = cqIndex เดิม · ทางเข้าเก่า (#/admin/timetable|plans|majors) แสดงหน้านี้ ===== */
-const LCP_NAME=80;
-const lcpFa=sc=>{const F=fqF(),M=fqM(),m=M.find(x=>spScope(x)===sc&&F.some(f=>f.id===x.facultyId))||M.find(x=>F.some(f=>f.id===x.facultyId));return m?m.facultyId:(F[0]?F[0].id:'')};
-const lcpRow=m=>{const refs=ttRefs(m.id).length,pg=fqP().filter(p=>p.majorId===m.id).length;return `<div class="row"><label for="lcpn_${E(m.id)}" class="sr">ชื่อแผน</label><input id="lcpn_${E(m.id)}" value="${E(m.nameTh||'')}" maxlength="${LCP_NAME}" aria-label="ชื่อแผนการเรียน"> <label class="ck"><input type="checkbox" id="lcpe_${E(m.id)}"${fqIsPub(m)?' checked':''}> เปิดใช้งาน</label> <button type="button" class="btn s b" data-id="${E(m.id)}" onclick="lcpSave(this.dataset.id)">บันทึก</button> <button type="button" class="btn s c" data-id="${E(m.id)}" onclick="lcpDel(this.dataset.id)">ลบ</button><br><small>ตารางเรียนที่ใช้แผนนี้ ${refs} ตาราง${pg?' · '+pg+' หลักสูตร':''}</small></div>`};
-function lcpPlans(){const M=fqM(),low=ttLowerPlan(),up=M.filter(m=>spScope(m)==='upper');
- if(!fqF().length)return `<h2>1. โครงสร้างหลักสูตร</h2><div class="msg er">ยังไม่มีระดับชั้นในระบบ จึงสร้างแผนการเรียนไม่ได้ <a href="#/admin/faculties">เพิ่มระดับชั้น</a> ก่อน</div>`;
- return `<h2>1. โครงสร้างหลักสูตร</h2><p><small>คลังรายวิชา: <a href="#/admin/courses">เพิ่ม/แก้ไขรายวิชา</a> (ใช้ร่วมกับตารางเรียนด้านล่าง)</small></p>
-<h3>ม.1–ม.3 · แผนการเรียนทั่วไป</h3>${low?lcpRow(low):`<p><small>ยังไม่มีแผนทั่วไป</small></p><p><button type="button" class="btn s b" onclick="lcpAdd('lower')">เพิ่มแผนการเรียนทั่วไป</button></p>`}
-<h3>ม.4–ม.6 · แผนการเรียน (${up.length} แผน)</h3>${up.length?up.map(lcpRow).join(''):'<p><small>ยังไม่มีแผน ม.4–ม.6</small></p>'}
-<p>${up.length?'':'<button type="button" class="btn s b" onclick="lcpSeed()">สร้างแผนเริ่มต้น 7 แผน</button> '}<button type="button" class="btn s" onclick="lcpAdd('upper')">+ เพิ่มแผน ม.4–ม.6</button></p>
-<p><small>แผนที่สร้างใหม่จะ "ปิดใช้งาน" ไว้ก่อน (ยังไม่แสดงบนหน้าเว็บ) แก้ชื่อแล้วติ๊ก "เปิดใช้งาน" เมื่อพร้อม · ตารางเรียนจัดได้ทุกแผนแม้ยังปิดใช้งาน</small></p>`}
-function curTT(){return `<h1>หลักสูตรและตารางเรียน</h1>${dbBanner()}${lcpPlans()}${ttAdmin()}`}
-async function lcpPut(arr,msg){if(!DBH)return say(dbOff(),false);try{await putDoc('majors',arr);say(msg)}catch(e){dbErr('บันทึกไม่สำเร็จ',e)}}
-function lcpSave(id){const m=fqM().find(x=>x.id===id),n=$('lcpn_'+id),e=$('lcpe_'+id);if(!m||!n||!e)return say('ไม่พบแผนนี้แล้ว',false);const nm=STRIP(n.value).trim();if(!nm)return say('กรุณากรอกชื่อแผน',false);if([...nm].length>LCP_NAME)return say('ชื่อแผนต้องไม่เกิน '+LCP_NAME+' ตัวอักษร',false);
- lcpPut(clone(fqM()).map(x=>x.id===id?Object.assign(x,{nameTh:nm,status:e.checked?'published':'draft'}):x),'บันทึกแผน "'+nm+'" เรียบร้อย')}
-function lcpAdd(sc){if(sc==='lower'&&ttLowerPlan())return say('มีแผนการเรียนทั่วไป ม.1–ม.3 อยู่แล้ว',false);const fa=lcpFa(sc);if(!fa)return say('ยังไม่มีระดับชั้นในระบบ',false);const cur=clone(fqM()),n=cur.filter(x=>spScope(x)==='upper').length;
- cur.push({id:mkId('mj'),facultyId:fa,nameTh:sc==='lower'?TT_GEN:'แผนการเรียนที่ '+(n+1),nameEn:'',desc:'',suitableFor:[],levels:[],scope:sc==='lower'?'lower':'upper',status:'draft'});lcpPut(cur,'เพิ่มแผนแล้ว (ปิดใช้งาน) แก้ชื่อและเปิดใช้งานได้ด้านล่าง')}
-function lcpSeed(){if(fqM().some(m=>spScope(m)==='upper'))return say('มีแผน ม.4–ม.6 อยู่แล้ว',false);const fa=lcpFa('upper');if(!fa)return say('ยังไม่มีระดับชั้นในระบบ',false);
- lcpPut(clone(fqM()).concat(Array.from({length:7},(_,i)=>({id:mkId('mj')+i,facultyId:fa,nameTh:'แผนการเรียนที่ '+(i+1),nameEn:'',desc:'',suitableFor:[],levels:[],scope:'upper',status:'draft'}))),'สร้างแผน ม.4–ม.6 เริ่มต้น 7 แผนแล้ว (ปิดใช้งาน)')}
-function lcpDel(id){const m=fqM().find(x=>x.id===id);if(!m)return;const r=ttRefs(id).map(ttRefTxt),pg=fqP().filter(p=>p.majorId===id);
- if(r.length||pg.length)return say('ลบ "'+(m.nameTh||'')+'" ไม่ได้ เพราะยังมี '+[r.length?r.length+' ตารางเรียน':'',pg.length?pg.length+' หลักสูตร':''].filter(Boolean).join(' และ ')+' อ้างอิงอยู่ (ติ๊กปิดใช้งานแทนได้ ข้อมูลเดิมไม่หาย)',false);
- if(!confirm('ลบแผน "'+(m.nameTh||'')+'" ถาวรหรือไม่ (ยังไม่มีตารางเรียนหรือหลักสูตรใช้แผนนี้)'))return;lcpPut(clone(fqM()).filter(x=>x.id!==id),'ลบแผนแล้ว')}
-
-/* หน้าแสดงผล: #/timetable/<ม.1–6>/<ภาค> หรือส่วน "ตารางเรียน" ในหน้า CMS · ผู้เข้าชมเห็นเฉพาะตารางที่เผยแพร่ของแผนที่เปิดใช้งาน ทีมงานเห็นฉบับร่างพร้อมป้ายบอก · ชื่อแผนอ่านสดจากรายการแผนการเรียน */
-function ttView(){const g=TTV.g=ttOkG(TTV.g),t=TTV.t=ttOkT(TTV.t),adm=Auth.canAccessAdmin(),cfg=ttCfg(),plans=g>=4?ttPlansPub():[];if(g>=4&&!plans.some(m=>m.id===TTV.p))TTV.p=plans[0]?plans[0].id:'';const pid=g>=4?TTV.p:'',it=g>=4&&!pid?null:ttGet(g,t,pid),lbl=ttPlanLbl(g,pid),
- gb=TT_G.map(n=>`<button type="button" class="btn s${n===g?' b':''}" aria-pressed="${n===g}" onclick="ttvSel('g',${n})">ม.${n}</button>`).join(''),tb=TT_T.map(n=>`<button type="button" class="btn s${n===t?' b':''}" aria-pressed="${n===t}" onclick="ttvSel('t',${n})">ภาคเรียนที่ ${n}</button>`).join(''),
- pb=g>=4&&plans.length?`<div class="cuh" role="group" aria-label="เลือกแผนการเรียน">${plans.map(m=>`<button type="button" class="btn s${m.id===pid?' b':''}" aria-pressed="${m.id===pid}" onclick="ttvSel('p','${E(m.id)}')">${E(m.nameTh||'(ไม่มีชื่อ)')}</button>`).join('')}</div>`:'',
- bar=`<div class="cuh" role="group" aria-label="เลือกระดับชั้น">${gb}</div>${pb}<div class="cuh" role="group" aria-label="เลือกภาคเรียน">${tb}</div>`;
- if(!it||(!it.pub&&!adm))return `<div class="fq">${bar}<div class="empty-ev"><b>ยังไม่มีตารางเรียน ม.${g}${lbl?' '+E(lbl):''} ภาคเรียนที่ ${t}</b><br>${adm?'<a href="#/admin/timetable">จัดตารางเรียนที่หลังบ้าน</a>':'กรุณากลับมาใหม่ภายหลัง'}</div></div>`;
- const cells=it.cells||{},head=Array.from({length:cfg.n},(_,p)=>`<th scope="col">คาบ ${p+1}${ttTime(cfg,p)?'<br><small>'+E(ttTime(cfg,p))+'</small>':''}</th>`).join(''),
- rows=TT_D.map(([dk,dn])=>`<tr><th scope="row">${dn}</th>${Array.from({length:cfg.n},(_,p)=>{const c=cells[dk+'_'+p];return c?`<td><b>${E(c.name)}</b>${c.code?`<br><small>${E(c.code)}</small>`:''}${c.note?`<br><small>${E(c.note)}</small>`:''}</td>`:'<td class="ttx"></td>'}).join('')}</tr>`).join(''),ttl='ตารางเรียน ม.'+g+(lbl?' '+lbl:'')+' ภาคเรียนที่ '+t;
- return `<div class="fq">${bar}${it.pub?'':'<div class="msg er">ฉบับร่าง — ผู้เข้าชมทั่วไปยังไม่เห็นตารางนี้ (เปิดเผยแพร่ได้ที่หลังบ้าน)</div>'}<h2 class="tth">${E(ttl)}</h2><div class="ttw"><table class="ttt"><caption class="sr">${E(ttl)}</caption><thead><tr><th scope="col">วัน</th>${head}</tr></thead><tbody>${rows}</tbody></table></div></div>`}
-PUB.timetable=(a,b)=>{if(a)TTV.g=ttOkG(a);if(b)TTV.t=ttOkT(b);return `<div class="w sec"><p><a class="bk" href="#/">← กลับหน้าแรก</a></p><h1>ตารางเรียน</h1>${ttView()}</div>`};
-/* ตั้งค่าเริ่มต้นแผนการเรียน (แสดงในหน้าจัดการแผนการเรียนเมื่อยังไม่มี): ม.4–ม.6 เริ่มต้น 7 แผน (ชื่อชั่วคราว แก้ไขได้ เพิ่ม/ลดได้ไม่ล็อกจำนวน) · แผนทั่วไป ม.1–ม.3 หนึ่งแผน — สร้างเป็น "ปิดใช้งาน" ให้ผู้ดูแลตั้งชื่อแล้วเปิดใช้งานเอง */
-function spPanel(){const F=fqF(),M=fqM(),needUp=!M.some(m=>spScope(m)==='upper'),needLow=!ttLowerPlan();if(!needUp&&!needLow)return '';
- if(!F.length)return `<div class="msg er">ต้องมีระดับชั้นก่อนจึงจะสร้างแผนการเรียนได้ <a href="#/admin/faculties">ไปจัดการระดับชั้น</a></div>`;
- return `<div class="msg"><b>ตั้งค่าเริ่มต้น</b><br><label for="spfa">สร้างแผนใต้ระดับชั้น</label><select id="spfa">${F.map(f=>`<option value="${E(f.id)}">${E(f.nameTh)}</option>`).join('')}</select>${needUp?` <button type="button" class="btn s" onclick="spSeed('upper')">เพิ่มแผนการเรียน ม.4–ม.6 เริ่มต้น 7 แผน</button>`:''}${needLow?` <button type="button" class="btn s" onclick="spSeed('lower')">เพิ่มแผนการเรียนทั่วไป (ม.1–ม.3)</button>`:''}<br><small>แผนที่สร้างจะอยู่สถานะซ่อน (ปิดใช้งาน) ให้แก้ชื่อแล้วกดเผยแพร่เมื่อพร้อมใช้ เพิ่มหรือลบแผนภายหลังได้ ไม่ได้ล็อกไว้ที่ 7 แผน</small></div>`}
-async function spSeed(kind){if(!DBH)return say(dbOff(),false);const fa=$('spfa')&&$('spfa').value;if(!fa||!fqF().some(f=>f.id===fa))return say('กรุณาเลือกระดับชั้น',false);const cur=fqM().slice();
- if(kind==='lower'&&ttLowerPlan())return say('มีแผนการเรียนทั่วไป ม.1–ม.3 อยู่แล้ว',false);if(kind==='upper'&&cur.some(m=>spScope(m)==='upper'))return say('มีแผนการเรียน ม.4–ม.6 อยู่แล้ว',false);
- const mk=(n,i,sc)=>({id:mkId('mj')+i,facultyId:fa,nameTh:n,nameEn:'',desc:'',suitableFor:[],levels:[],scope:sc,status:'draft'});
- const add=kind==='lower'?[mk(TT_GEN,0,'lower')]:Array.from({length:7},(_,i)=>mk('แผนการเรียนที่ '+(i+1),i,'upper'));
- try{await putDoc('majors',cur.concat(add));say('เพิ่ม'+(kind==='lower'?'แผนการเรียนทั่วไป':'แผนการเรียน ม.4–ม.6 เริ่มต้น 7 แผน')+'แล้ว (สถานะซ่อน) แก้ชื่อและเผยแพร่เมื่อพร้อมใช้')}catch(e){dbErr('บันทึกไม่สำเร็จ',e)}}
+ if(sec==='dash')main=dashboard();else if(sec==='pages'&&parts[1]==='edit')main=pageEditor(parts[2]);else if(sec==='pages')main=pagesAdmin();else if(sec==='home')main=homeAdmin();else if(sec==='menu')main=menuAdmin();else if(sec==='events'&&parts[1]==='edit')main=eventEditor(parts[2]);else if(sec==='events')main=eventsAdmin();else if(sec==='campus'&&parts[1]==='layout')main=ceAdmin();else if(sec==='campus'&&parts[1]==='edit')main=cmpEditor(parts[2]);else if(sec==='campus')main=campusAdmin();else if(sec==='curriculum')main=ctAdmin();else if(FQE[sec])main=parts[1]==='edit'?fqEditor(sec,parts[2]):fqAdmin(sec);else if(sec==='typo')main=typoAdmin();else if(sec==='settings')main=settingsAdmin();else main='<p>ไม่พบเมนู</p>';
+ return `<div class="adm${sbc?' c':''}">${adminNav(sec)}<main><button class="btn s" onclick="sbt()" aria-expanded="${!sbc}" aria-label="ย่อหรือขยายเมนู">${ic('menu')} เมนู</button>${toast?`<div class="msg ${toast.ok?'ok':'er'}">${E(toast.t)}</div>`:''}${main}</main></div>`}
 const dbBanner=()=>`<div class="msg ${DBH&&CW!==false?'ok':'er'}">${DBH?(CW===false?'เชื่อมต่อฐานข้อมูลแล้ว แต่บัญชีนี้ไม่มีสิทธิ์เขียนข้อมูล (ดูได้อย่างเดียว) ต้องเป็นเจ้าของหรือผู้แก้ไข':'เชื่อมต่อ Supabase แล้ว บันทึกลงฐานข้อมูลจริง (เฉพาะทีมงานที่ได้รับอนุญาต)'):dbOff()}</div>`;
+/* ===== โครงสร้างหลักสูตรและตารางเรียน (ระบบใหม่ เมนูเดียว #/admin/curriculum) — ไม่เพิ่มตาราง/คีย์ในฐานข้อมูล: เก็บเป็นอาร์เรย์ใน settings (site_docs 'settings') เหมือน ptypes/pgroups
+   ctplans   = แผนการเรียน ม.4–ม.6 [{id,code,name}] (รหัสแผน '1' = แสดง '/1' · รหัสห้อง = ชั้น+'/'+รหัสแผน เช่น ม.4/1) · ม.1–ม.3 ใช้แผนทั่วไปแผนเดียวต่อชั้น (ไม่เก็บเป็นรายการ)
+   ctcourses = รายวิชาในโครงสร้างหลักสูตร [{id,g,t,p?,code,name,credits}] แยกตามชั้น g · ภาคเรียน t · แผน p (เฉพาะ ม.4–ม.6)
+   cttables  = ตารางเรียน [{id,g,t,p?,pub,home,cells:{'<วัน>_<คาบ0>':{cid?,code?,name,room?,teacher?}}}] id 'g<ชั้น>t<ภาค>' (ม.1–3) / 'g<ชั้น>p<id แผน>t<ภาค>' (ม.4–6) · id 'cfg' = จำนวนคาบและเวลา
+   ข้อมูลระบบเดิม (majors/programs/settings.timetable) ไม่ถูกลบหรือย้าย แต่ระบบใหม่ไม่ใช้ ===== */
+const CT_G=[1,2,3,4,5,6],CT_T=[1,2],CT_D=[['mon','จันทร์'],['tue','อังคาร'],['wed','พุธ'],['thu','พฤหัสบดี'],['fri','ศุกร์']],CT_NMAX=12,CT_DN=8,CT_TM=['08:30-09:20','09:20-10:10','10:10-11:00','11:00-11:50','11:50-12:40','12:40-13:30','13:30-14:20','14:20-15:10'],CT_NAME=120,CT_CODE=20,CT_NOTE=60,CT_PNAME=80,CT_GEN='ทั่วไป';
+const CT_SEED=[['pl1','1','วิทย์ - คณิต'],['pl2','2','ศิลป์ - คำนวณ'],['pl3','3','ศิลป์ - จีน'],['pl4','4','ศิลป์ - ญี่ปุ่น'],['pl5','5','ศิลป์ - ฝรั่งเศส'],['pl6','6','ศิลป์ - ทั่วไป'],['pl7','7','ศิลป์ - คหกรรม']].map(([id,code,name])=>({id,code,name}));
+const CT={tab:'struct',g:1,t:1,p:'',edit:'',dirty:false,seeded:false},CTV={g:1,t:1,p:''};
+const ctPlansRaw=()=>getSH('ctplans'),ctPlans=()=>(ctPlansRaw()||[]).filter(x=>x&&x.id),ctCrs=()=>(getSH('ctcourses')||[]).filter(x=>x&&x.id),ctTabs=()=>(getSH('cttables')||[]).filter(x=>x&&x.id);
+const ctOkG=v=>CT_G.includes(+v)?+v:1,ctOkT=v=>CT_T.includes(+v)?+v:1;
+const ctPlan=id=>ctPlans().find(x=>x.id===id)||null;
+const ctKey=(g,t,p)=>g>=4?'g'+g+'p'+p+'t'+t:'g'+g+'t'+t;
+const ctTab=(g,t,p)=>ctTabs().find(x=>x.id===ctKey(g,t,p))||null;
+const ctScope=(g,t,p)=>ctCrs().filter(c=>c.g===g&&c.t===t&&(g<4||c.p===p));
+/* ชื่อห้องเรียน: ม.4–6 = ม.<ชั้น>/<รหัสแผน> · ม.1–3 = ม.<ชั้น> · แสดงคู่กับชื่อแผนเสมอ เช่น ม.4/1 — แผนการเรียนวิทย์ - คณิต */
+function ctRoom(g,p){if(g<4)return 'ม.'+g;const pl=ctPlan(p);return 'ม.'+g+'/'+(pl?pl.code:'?')}
+function ctRoomLbl(g,p){if(g<4)return 'ม.'+g+' — แผนการเรียน'+CT_GEN;const pl=ctPlan(p);return ctRoom(g,p)+' — แผนการเรียน'+(pl?pl.name:'(ไม่พบแผน)')}
+const ctCfg=()=>{const c=ctTabs().find(x=>x.id==='cfg')||{},n=Math.floor(+c.n);return {n:Number.isFinite(n)&&n>=1&&n<=CT_NMAX?n:CT_DN,times:Array.isArray(c.times)?c.times.map(x=>String(x==null?'':x)):[]}};
+const ctTime=(c,i)=>c.times[i]!=null&&c.times[i]!==''?c.times[i]:(c.times.length?'':(CT_TM[i]||''));
+const ctCOpt=c=>c.code?c.code+' — '+c.name:c.name;
+const ctCellTxt=(c,crs)=>{if(!c)return '';const x=c.cid&&crs.find(k=>k.id===c.cid);return x?ctCOpt(x):(c.code?c.code+' — '+c.name:c.name)};
+const ctUsedBy=cid=>ctTabs().filter(x=>x.cells&&Object.values(x.cells).some(c=>c&&c.cid===cid));
+function ctErr(m){const x=$('cterr');if(!x)return say(m,false);x.textContent=m;x.hidden=false;try{x.scrollIntoView({block:'center'})}catch(e){}}
+function ctDirty(){CT.dirty=true}
+function ctSel(k,v){if(CT.dirty&&!confirm('มีการแก้ไขที่ยังไม่ได้บันทึก ต้องการเปลี่ยนโดยไม่บันทึกหรือไม่?'))return;CT[k]=k==='g'?ctOkG(v):k==='t'?ctOkT(v):k==='tab'?(v==='table'?'table':'struct'):String(v);if(k!=='edit')CT.edit='';CT.dirty=false;render()}
+function ctvSel(k,v){CTV[k]=k==='g'?ctOkG(v):k==='t'?ctOkT(v):String(v);render()}
+async function ctPut(key,arr,msg,onErr){try{await putDoc(key,arr);CT.dirty=false;say(msg)}catch(e){const c=(e&&(e.code||e.status))||'error';(onErr||ctErr)('บันทึกไม่สำเร็จ: '+(ERR[c]||(e&&e.message)||'เกิดข้อผิดพลาดที่ไม่ทราบสาเหตุ')+' ('+c+')')}}
+/* แผนเริ่มต้น 7 แผน: สร้างครั้งเดียวเมื่อยังไม่เคยมีรายการ ctplans (id คงที่ pl1–pl7 จึงไม่เกิดแผนซ้ำ) */
+async function ctSeed(manual){if(!DBH||CW===false)return;if(ctPlansRaw()!==null){if(manual)say('มีแผนการเรียนอยู่แล้ว ไม่สร้างซ้ำ',false);return}await ctPut('ctplans',CT_SEED.map(x=>Object.assign({},x)),'สร้างแผนการเรียน ม.4–ม.6 เริ่มต้น 7 แผนแล้ว แก้ชื่อ เพิ่ม หรือลบได้')}
+/* ---------- แผนการเรียน ม.4–ม.6 ---------- */
+function ctPlanRow(m){const nc=ctCrs().filter(c=>c.p===m.id).length,nt=ctTabs().filter(x=>x.p===m.id).length;return `<div class="row"><b>/${E(m.code)}</b> <label class="sr" for="ctpn_${E(m.id)}">ชื่อแผน /${E(m.code)}</label><input id="ctpn_${E(m.id)}" value="${E(m.name)}" maxlength="${CT_PNAME}" style="max-width:320px"> <button type="button" class="btn s b" data-id="${E(m.id)}" onclick="ctPSave(this.dataset.id)">บันทึกชื่อ</button> <button type="button" class="btn s c" data-id="${E(m.id)}" onclick="ctPDel(this.dataset.id)">ลบ</button><br><small>ห้อง ม.4/${E(m.code)} · ม.5/${E(m.code)} · ม.6/${E(m.code)} · รายวิชา ${nc} รายการ · ตารางเรียน ${nt} ตาราง</small></div>`}
+function ctPlansBox(){const P=ctPlans();return `<h2>แผนการเรียน</h2><p><small>ม.1–ม.3 ใช้แผนการเรียนทั่วไปแผนเดียวในแต่ละระดับชั้น (ไม่ต้องตั้งค่า) · ม.4–ม.6 มีแผนด้านล่าง รหัสแผน (เช่น /1) ต่างจากรหัสห้อง (เช่น ม.4/1) ห้องเรียนคือระดับชั้น + รหัสแผน</small></p>${P.length?P.map(ctPlanRow).join(''):`<p><small>ยังไม่มีแผนการเรียน ม.4–ม.6</small></p>${ctPlansRaw()===null?'<p><button type="button" class="btn b" onclick="ctSeed(true)">สร้างแผนเริ่มต้น 7 แผน</button></p>':''}`}<p><button type="button" class="btn s" onclick="ctPAdd()">+ เพิ่มแผนการเรียน</button></p>`}
+function ctPSave(id){const m=ctPlan(id),n=$('ctpn_'+id);if(!m||!n)return say('ไม่พบแผนนี้แล้ว',false);const nm=STRIP(n.value).trim();if(!nm)return say('กรุณากรอกชื่อแผน',false);if([...nm].length>CT_PNAME)return say('ชื่อแผนต้องไม่เกิน '+CT_PNAME+' ตัวอักษร',false);ctPut('ctplans',clone(ctPlans()).map(x=>x.id===id?Object.assign(x,{name:nm}):x),'บันทึกชื่อแผน /'+m.code+' เรียบร้อย',m=>say(m,false))}
+function ctPAdd(){if(!DBH)return say(dbOff(),false);const P=clone(ctPlans()),mx=P.reduce((a,x)=>Math.max(a,parseInt(x.code,10)||0),0),code=String(mx+1);P.push({id:mkId('pl'),code,name:'แผนการเรียนใหม่'});ctPut('ctplans',P,'เพิ่มแผน /'+code+' แล้ว กรุณาแก้ชื่อแผน',m=>say(m,false))}
+function ctPDel(id){const m=ctPlan(id);if(!m)return;const nc=ctCrs().filter(c=>c.p===id).length,nt=ctTabs().filter(x=>x.p===id).length;if(nc||nt)return say('ลบแผน /'+m.code+' "'+m.name+'" ไม่ได้ เพราะยังมีรายวิชา '+nc+' รายการ และตารางเรียน '+nt+' ตารางอ้างอิงอยู่ กรุณาลบรายการเหล่านั้นก่อน',false);if(!DBH)return say(dbOff(),false);if(!confirm('ลบแผน /'+m.code+' "'+m.name+'" ถาวรหรือไม่ (ยังไม่มีรายวิชาหรือตารางใช้แผนนี้)'))return;if(CT.p===id)CT.p='';ctPut('ctplans',clone(ctPlans()).filter(x=>x.id!==id),'ลบแผนแล้ว',m=>say(m,false))}
+/* ---------- โครงสร้างหลักสูตร: รายวิชาตามชั้น/ภาค/แผน ---------- */
+function ctCForm(c){return `<fieldset class="fqfs"><legend>${c.id?'แก้ไขรายวิชา':'เพิ่มรายวิชา'}</legend><div class="g2"><div><label for="cc_code">รหัสวิชา</label><input id="cc_code" maxlength="${CT_CODE}" value="${E(c.code||'')}" placeholder="เช่น ท21101"></div><div><label for="cc_cr">หน่วยกิต</label><input id="cc_cr" maxlength="5" inputmode="decimal" value="${E(c.credits||'')}" placeholder="เช่น 1.5"></div></div><label for="cc_name">ชื่อรายวิชา *</label><input id="cc_name" maxlength="${CT_NAME}" value="${E(c.name||'')}"><p><button type="button" class="btn b" onclick="ctCSave()">บันทึกรายวิชา</button> <button type="button" class="btn" onclick="ctSel('edit','')">ยกเลิก</button></p></fieldset>`}
+function ctStruct(g,t,pid,can){const L=ctScope(g,t,pid),ed=CT.edit==='new'?{}:L.find(c=>c.id===CT.edit);
+ if(!can)return '';
+ return `<h2>รายวิชา ${E(ctRoomLbl(g,pid))} · ภาคเรียนที่ ${t}</h2><p><small>รายวิชาที่กำหนดที่นี่จะถูกนำไปเลือกในตารางเรียนของห้อง/แผนและภาคเรียนเดียวกันโดยอัตโนมัติ</small></p>${L.length?`<div class="cqw"><table class="cqt"><thead><tr><th>รหัสวิชา</th><th>ชื่อรายวิชา</th><th>หน่วยกิต</th><th><span class="sr">จัดการ</span></th></tr></thead><tbody>${L.map(c=>`<tr><td data-l="รหัสวิชา">${E(c.code||'-')}</td><td data-l="ชื่อรายวิชา">${E(c.name)}</td><td data-l="หน่วยกิต">${E(c.credits||'-')}</td><td><button type="button" class="btn s" data-id="${E(c.id)}" onclick="ctSel('edit',this.dataset.id)">แก้ไข</button> <button type="button" class="btn s c" data-id="${E(c.id)}" onclick="ctCDel(this.dataset.id)">ลบ</button></td></tr>`).join('')}</tbody></table></div>`:'<div class="empty-ev">ยังไม่มีรายวิชาในชั้น/ภาค/แผนนี้</div>'}${ed?ctCForm(ed):'<p><button type="button" class="btn b" onclick="ctSel(\'edit\',\'new\')">+ เพิ่มรายวิชา</button></p>'}`}
+function ctCSave(){if(!DBH)return say(dbOff(),false);const g=ctOkG(CT.g),t=ctOkT(CT.t),pid=g>=4?CT.p:'';if(g>=4&&!ctPlan(pid))return say('กรุณาเลือกแผนการเรียนก่อน',false);
+ const code=STRIP($('cc_code').value).trim(),name=STRIP($('cc_name').value).trim(),cr=STRIP($('cc_cr').value).trim();
+ if(!name)return say('กรุณากรอกชื่อรายวิชา',false);if([...name].length>CT_NAME)return say('ชื่อรายวิชายาวเกิน '+CT_NAME+' ตัวอักษร',false);if([...code].length>CT_CODE)return say('รหัสวิชายาวเกิน '+CT_CODE+' ตัวอักษร',false);
+ if(cr&&!/^\d{1,2}(\.\d{1,2})?$/.test(cr))return say('หน่วยกิตต้องเป็นตัวเลข เช่น 1 หรือ 1.5',false);
+ const norm=s=>String(s||'').replace(/\s+/g,'').toUpperCase(),all=clone(ctCrs()),id=CT.edit==='new'?'':CT.edit;
+ if(code&&all.some(c=>c.id!==id&&c.g===g&&c.t===t&&(g<4||c.p===pid)&&norm(c.code)===norm(code)))return say('รหัสวิชา '+code+' มีอยู่แล้วในชั้น/ภาค/แผนนี้',false);
+ if(id){const c=all.find(x=>x.id===id);if(!c)return say('ไม่พบรายวิชานี้แล้ว (อาจถูกลบโดยผู้ดูแลคนอื่น)',false);Object.assign(c,{code,name,credits:cr})}
+ else{const c={id:mkId('cs'),g,t,code,name,credits:cr};if(g>=4)c.p=pid;all.push(c)}
+ CT.edit='';ctPut('ctcourses',all,id?'แก้ไขรายวิชาเรียบร้อย':'เพิ่มรายวิชาเรียบร้อย',m=>say(m,false))}
+function ctCDel(id){const c=ctCrs().find(x=>x.id===id);if(!c)return;const u=ctUsedBy(id);if(u.length)return say('ลบ "'+c.name+'" ไม่ได้ เพราะถูกใช้ในตารางเรียน '+u.length+' ตาราง ('+u.slice(0,4).map(x=>ctRoom(x.g,x.p)+' ภาค '+x.t).join(', ')+') กรุณานำออกจากตารางก่อน',false);if(!DBH)return say(dbOff(),false);if(!confirm('ลบรายวิชา "'+c.name+'" ออกจากโครงสร้างหลักสูตรหรือไม่'))return;ctPut('ctcourses',clone(ctCrs()).filter(x=>x.id!==id),'ลบรายวิชาแล้ว',m=>say(m,false))}
+/* ---------- ตารางเรียน ---------- */
+function ctTable(g,t,pid,can){const cfg=ctCfg(),it=(can&&ctTab(g,t,pid))||{cells:{}},cells=it.cells||{},crs=ctScope(g,t,pid);
+ if(!can)return '';
+ const head=Array.from({length:cfg.n},(_,p)=>`<th scope="col">คาบ ${p+1}${ctTime(cfg,p)?'<br><small>'+E(ctTime(cfg,p))+'</small>':''}</th>`).join(''),
+ rows=CT_D.map(([dk,dn])=>`<tr><th scope="row">${dn}</th>${Array.from({length:cfg.n},(_,p)=>{const c=cells[dk+'_'+p];return `<td><input list="ctl" name="c_${dk}_${p}" value="${E(ctCellTxt(c,crs))}" maxlength="${CT_NAME+30}" placeholder="วิชา" aria-label="${dn} คาบ ${p+1} วิชา"><input name="r_${dk}_${p}" value="${E(c&&c.room||'')}" maxlength="${CT_NOTE}" placeholder="ห้อง" aria-label="${dn} คาบ ${p+1} ห้องเรียน"><input name="n_${dk}_${p}" value="${E(c&&c.teacher||'')}" maxlength="${CT_NOTE}" placeholder="ครู" aria-label="${dn} คาบ ${p+1} ครูผู้สอน"></td>`}).join('')}</tr>`).join('');
+ return `<form id="ctf" onsubmit="return false" oninput="ctDirty()"><h2>${E(ctRoomLbl(g,pid))} · ภาคเรียนที่ ${t} ${it.id?(it.pub?'<span class="tag">เผยแพร่</span>':'<span class="tag">ฉบับร่าง</span>'):'<span class="tag">ยังไม่มีตาราง</span>'}</h2>
+<datalist id="ctl">${crs.map(c=>`<option value="${E(ctCOpt(c))}"></option>`).join('')}</datalist>
+<label for="cthome">ห้องประจำ (ใช้แสดงในคาบที่ไม่ได้ระบุห้อง)</label><input id="cthome" name="home" maxlength="${CT_NOTE}" value="${E(it.home||'')}" placeholder="เช่น อาคาร 2 ห้อง 421">
+${crs.length?'':'<div class="msg er">ห้อง/แผนและภาคเรียนนี้ยังไม่มีรายวิชาในโครงสร้างหลักสูตร <button type="button" class="btn s" onclick="ctSel(\'tab\',\'struct\')">ไปเพิ่มรายวิชา</button> (หรือพิมพ์ชื่อกิจกรรมเอง เช่น พัก ชุมนุม ในช่องวิชา)</div>'}
+<p><small>เลือกวิชาจากรายการของห้อง/แผนนี้ (พิมพ์ค้นหาได้) แต่ละคาบระบุห้องเรียนและครูผู้สอนแยกกันได้ เว้นห้องว่าง = ใช้ห้องประจำ</small></p>
+<div class="ttw"><table class="ttt"><thead><tr><th scope="col">วัน</th>${head}</tr></thead><tbody>${rows}</tbody></table></div>
+<label class="ck"><input type="checkbox" name="pub" value="1"${it.pub?' checked':''}> เผยแพร่ตารางนี้บนเว็บไซต์</label>
+<p><button type="button" class="btn b" onclick="ctTSave()">บันทึกตาราง ${E(ctRoom(g,pid))} ภาคเรียนที่ ${t}</button> <button type="button" class="btn c" onclick="ctTClearAsk()"${it.id?'':' disabled'}>ลบตารางนี้</button> <a class="btn" href="#/timetable/${g}/${t}">ดูหน้าเว็บ</a></p></form>
+<form id="ctc" onsubmit="return false"><fieldset class="fqfs"><legend>จำนวนคาบและเวลา (ใช้ร่วมทุกห้อง)</legend><label for="ct_n">จำนวนคาบต่อวัน (1–${CT_NMAX})</label><input id="ct_n" name="ct_n" type="number" min="1" max="${CT_NMAX}" step="1" value="${cfg.n}"><div class="g2">${Array.from({length:cfg.n},(_,p)=>`<div><label for="ct_t${p}">เวลาคาบ ${p+1}</label><input id="ct_t${p}" name="ct_t${p}" maxlength="30" value="${E(ctTime(cfg,p))}" placeholder="เช่น 08:30-09:20"></div>`).join('')}</div><p><button type="button" class="btn" onclick="ctCfgSave()">บันทึกคาบและเวลา</button> <small>ถ้าลดจำนวนคาบ ข้อมูลคาบที่เกินจะถูกซ่อนแต่ยังเก็บไว้ บันทึกตารางก่อนเปลี่ยนจำนวนคาบ</small></p></fieldset></form>`}
+function ctTSave(){if(!DBH)return ctErr(dbOff());const f=$('ctf');if(!f)return;const d=new FormData(f),cfg=ctCfg(),g=ctOkG(CT.g),t=ctOkT(CT.t),pid=g>=4?CT.p:'';if(g>=4&&!ctPlan(pid))return ctErr('กรุณาเลือกแผนการเรียนก่อนบันทึก');
+ const crs=ctScope(g,t,pid),by=new Map(crs.map(c=>[ctCOpt(c),c])),old=ctTab(g,t,pid),cells={},gv=n=>STRIP(String(d.get(n)==null?'':d.get(n))).trim(),home=gv('home');
+ if([...home].length>CT_NOTE)return ctErr('ห้องประจำยาวเกิน '+CT_NOTE+' ตัวอักษร');
+ if(old&&old.cells)Object.keys(old.cells).forEach(k=>{if(+k.split('_')[1]>=cfg.n)cells[k]=old.cells[k]});
+ for(const [dk,dn] of CT_D)for(let p=0;p<cfg.n;p++){const raw=gv('c_'+dk+'_'+p),room=gv('r_'+dk+'_'+p),tc=gv('n_'+dk+'_'+p);if(!raw&&!room&&!tc)continue;if(!raw)return ctErr(dn+' คาบ '+(p+1)+': กรุณาเลือกหรือกรอกวิชา (หรือเว้นว่างทั้งห้องและครู)');
+  if([...raw].length>CT_NAME)return ctErr(dn+' คาบ '+(p+1)+': ชื่อวิชายาวเกิน '+CT_NAME+' ตัวอักษร');if([...room].length>CT_NOTE)return ctErr(dn+' คาบ '+(p+1)+': ห้องเรียนยาวเกิน '+CT_NOTE+' ตัวอักษร');if([...tc].length>CT_NOTE)return ctErr(dn+' คาบ '+(p+1)+': ชื่อครูยาวเกิน '+CT_NOTE+' ตัวอักษร');
+  const m=by.get(raw),c=m?{cid:m.id,code:m.code||'',name:m.name}:{name:raw};if(room)c.room=room;if(tc)c.teacher=tc;cells[dk+'_'+p]=c}
+ const item={id:ctKey(g,t,pid),g,t,pub:d.get('pub')==='1',home,cells};if(g>=4)item.p=pid;
+ const arr=ctTabs().slice(),i=arr.findIndex(x=>x.id===item.id);if(i>=0)arr[i]=item;else arr.push(item);ctPut('cttables',arr,'บันทึกตาราง '+ctRoom(g,pid)+' ภาคเรียนที่ '+t+' เรียบร้อย')}
+function ctCfgSave(){if(!DBH)return ctErr(dbOff());const f=$('ctc');if(!f)return;const d=new FormData(f),n=Math.floor(+d.get('ct_n')),old=ctCfg();if(!Number.isFinite(n)||n<1||n>CT_NMAX)return ctErr('จำนวนคาบต้องเป็นจำนวนเต็ม 1–'+CT_NMAX);
+ const times=[];for(let p=0;p<n;p++){const v=d.has('ct_t'+p)?STRIP(String(d.get('ct_t'+p)||'')).trim():ctTime(old,p);if([...v].length>30)return ctErr('เวลาคาบ '+(p+1)+' ยาวเกิน 30 ตัวอักษร');times.push(v)}
+ for(let p=n;p<old.times.length;p++)times.push(old.times[p]);const arr=ctTabs().filter(x=>x.id!=='cfg');arr.unshift({id:'cfg',n,times});ctPut('cttables',arr,'บันทึกจำนวนคาบและเวลาเรียบร้อย')}
+function ctTClearAsk(){const g=ctOkG(CT.g),t=ctOkT(CT.t),pid=g>=4?CT.p:'',it=ctTab(g,t,pid);if(!it)return;if(!confirm('ลบตารางเรียน '+ctRoomLbl(g,pid)+' ภาคเรียนที่ '+t+' ทั้งตารางหรือไม่ (ลบแล้วกู้คืนไม่ได้ ไม่กระทบรายวิชาในโครงสร้างหลักสูตร)'))return;ctPut('cttables',ctTabs().filter(x=>x.id!==it.id),'ลบตาราง '+ctRoom(g,pid)+' ภาคเรียนที่ '+t+' แล้ว')}
+const ctMakePage=()=>secPageMake('timetable','ตารางเรียน','timetable');
+/* ---------- หน้าจัดการหน้าเดียว ---------- */
+function ctAdmin(){const g=CT.g=ctOkG(CT.g),t=CT.t=ctOkT(CT.t),P=ctPlans();if(g>=4&&!P.some(m=>m.id===CT.p))CT.p=P[0]?P[0].id:'';const pid=g>=4?CT.p:'',can=!(g>=4&&!pid);
+ if(ctPlansRaw()===null&&DBH&&CW!==false&&!CT.seeded){CT.seeded=true;setTimeout(()=>ctSeed(false),0)}
+ const gb=CT_G.map(n=>`<button type="button" class="btn s${n===g?' b':''}" aria-pressed="${n===g}" onclick="ctSel('g',${n})">ม.${n}</button>`).join(''),tb=CT_T.map(n=>`<button type="button" class="btn s${n===t?' b':''}" aria-pressed="${n===t}" onclick="ctSel('t',${n})">ภาคเรียนที่ ${n}</button>`).join(''),
+ pb=g>=4?(P.length?`<div class="cuh" role="group" aria-label="แผนการเรียน (ห้องเรียน)">${P.map(m=>`<button type="button" class="btn s${m.id===pid?' b':''}" aria-pressed="${m.id===pid}" data-id="${E(m.id)}" onclick="ctSel('p',this.dataset.id)">${E('ม.'+g+'/'+m.code+' — '+m.name)}</button>`).join('')}</div>`:'<div class="msg er">ยังไม่มีแผนการเรียน ม.4–ม.6 เพิ่มแผนได้ในหัวข้อ "แผนการเรียน" ด้านล่าง</div>'):`<p><small>${E(ctRoomLbl(g))}</small></p>`,
+ tabs=`<nav class="cuh" aria-label="ส่วนของระบบ"><button type="button" class="btn s${CT.tab==='struct'?' b':''}" aria-pressed="${CT.tab==='struct'}" onclick="ctSel('tab','struct')">1. โครงสร้างหลักสูตร</button><button type="button" class="btn s${CT.tab==='table'?' b':''}" aria-pressed="${CT.tab==='table'}" onclick="ctSel('tab','table')">2. ตารางเรียน</button></nav>`;
+ return `<h1>โครงสร้างหลักสูตรและตารางเรียน</h1>${dbBanner()}<div id="cterr" class="msg er" role="alert" hidden></div>${tabs}<div class="cuh" role="group" aria-label="ระดับชั้น">${gb}</div>${pb}<div class="cuh" role="group" aria-label="ภาคเรียน">${tb}</div>
+${CT.tab==='table'?secPageBox('timetable','ตารางเรียน','timetable','ctMakePage')+ctTable(g,t,pid,can):ctStruct(g,t,pid,can)+ctPlansBox()}`}
+/* ---------- หน้าเว็บ (ผู้เข้าชม): #/timetable/<ม.1–6>/<ภาค> หรือส่วน "ตารางเรียน" ในหน้า CMS · เห็นเฉพาะตารางที่เผยแพร่ ทีมงานเห็นฉบับร่างพร้อมป้าย ---------- */
+function ctView(){const g=CTV.g=ctOkG(CTV.g),t=CTV.t=ctOkT(CTV.t),adm=Auth.canAccessAdmin(),cfg=ctCfg(),P=g>=4?ctPlans():[];if(g>=4&&!P.some(m=>m.id===CTV.p))CTV.p=P[0]?P[0].id:'';const pid=g>=4?CTV.p:'',it=g>=4&&!pid?null:ctTab(g,t,pid),lbl=g>=4&&!pid?'':ctRoomLbl(g,pid),
+ gb=CT_G.map(n=>`<button type="button" class="btn s${n===g?' b':''}" aria-pressed="${n===g}" onclick="ctvSel('g',${n})">ม.${n}</button>`).join(''),tb=CT_T.map(n=>`<button type="button" class="btn s${n===t?' b':''}" aria-pressed="${n===t}" onclick="ctvSel('t',${n})">ภาคเรียนที่ ${n}</button>`).join(''),
+ pb=g>=4&&P.length?`<div class="cuh" role="group" aria-label="เลือกห้องเรียน/แผนการเรียน">${P.map(m=>`<button type="button" class="btn s${m.id===pid?' b':''}" aria-pressed="${m.id===pid}" data-id="${E(m.id)}" onclick="ctvSel('p',this.dataset.id)">${E('ม.'+g+'/'+m.code+' — '+m.name)}</button>`).join('')}</div>`:'',
+ bar=`<div class="cuh" role="group" aria-label="เลือกระดับชั้น">${gb}</div>${pb}<div class="cuh" role="group" aria-label="เลือกภาคเรียน">${tb}</div>`;
+ if(!it||(!it.pub&&!adm))return `<div class="fq">${bar}<div class="empty-ev"><b>ยังไม่มีตารางเรียน ${E(lbl||'ม.'+g)} ภาคเรียนที่ ${t}</b><br>${adm?'<a href="#/admin/curriculum">จัดตารางเรียนที่หลังบ้าน</a>':'กรุณากลับมาใหม่ภายหลัง'}</div></div>`;
+ const cells=it.cells||{},crs=ctCrs(),head=Array.from({length:cfg.n},(_,p)=>`<th scope="col">คาบ ${p+1}${ctTime(cfg,p)?'<br><small>'+E(ctTime(cfg,p))+'</small>':''}</th>`).join(''),
+ rows=CT_D.map(([dk,dn])=>`<tr><th scope="row">${dn}</th>${Array.from({length:cfg.n},(_,p)=>{const c=cells[dk+'_'+p];if(!c)return '<td class="ttx"></td>';const x=c.cid&&crs.find(k=>k.id===c.cid),nm=x?x.name:c.name,cd=x?x.code:c.code,rm=c.room||it.home||'';return `<td><b>${E(nm)}</b>${cd?`<br><small>${E(cd)}</small>`:''}${rm?`<br><small>ห้อง ${E(rm)}</small>`:''}${c.teacher?`<br><small>${E(c.teacher)}</small>`:''}</td>`}).join('')}</tr>`).join(''),ttl='ตารางเรียน '+lbl+' ภาคเรียนที่ '+t;
+ return `<div class="fq">${bar}${it.pub?'':'<div class="msg er">ฉบับร่าง — ผู้เข้าชมทั่วไปยังไม่เห็นตารางนี้ (เปิดเผยแพร่ได้ที่หลังบ้าน)</div>'}<h2 class="tth">${E(ttl)}</h2><div class="ttw"><table class="ttt"><caption class="sr">${E(ttl)}</caption><thead><tr><th scope="col">วัน</th>${head}</tr></thead><tbody>${rows}</tbody></table></div></div>`}
+PUB.timetable=(a,b)=>{if(a)CTV.g=ctOkG(a);if(b)CTV.t=ctOkT(b);return `<div class="w sec"><p><a class="bk" href="#/">← กลับหน้าแรก</a></p><h1>ตารางเรียน</h1>${ctView()}</div>`};
 /* ===== Admin: dashboard ===== */
 function dashboard(){const P=getPages(),M=getMenu(),pb=P.filter(x=>x.status==='published').length,rc=P.filter(x=>x.updated).sort((a,b)=>b.updated-a.updated).slice(0,5);
  const start=(!M.length&&!P.length)?`<div class="hint"><h2>เริ่มสร้างเว็บไซต์</h2><p>เว็บไซต์ยังว่างอยู่ เริ่มจากสร้างเมนูแรก หรือสร้างหน้าแรกโดยตรง</p><button class="btn b" onclick="qask('')">สร้างเมนูแรก</button> <button class="btn" onclick="pnew(1)">สร้างหน้าแรก</button></div>`:'';
@@ -359,9 +332,9 @@ function pageEditor(id){if(!WC.pg)WC.pg=clone(getPages());const p=WC.pg.find(x=>
  const o=(a,v)=>a.map(([k,t])=>`<option value="${k}" ${v===k?'selected':''}>${t}</option>`).join('');
  const sec=(s,i)=>{const n=s.id+'_',f=(l,k,v,ta)=>`<label>${l}</label>${ta?`<textarea name="${n}${k}">${E(v)}</textarea>`:`<input name="${n}${k}" value="${E(v)}" placeholder="${/(^|_)(u|m|l)$/.test(k)?'ตัวอย่าง: https://example.com':''}">`}`;let b='';
   if(s.type==='heading')b=f('ข้อความหัวข้อ','tx',s.text);else if(s.type==='text')b=f('ข้อความ','tx',s.text,1);else if(s.type==='image')b=f('URL รูปภาพ (https://)','u',s.url)+f('คำอธิบายภาพ','a',s.alt);else if(s.type==='button')b=f('ข้อความบนปุ่ม','lb',s.label)+f('URL ปลายทาง (https:// หรือ #/หน้า)','u',s.url);
-  else if(s.type==='courses')b='<p>ส่วนนี้แสดงหน้าค้นหารายวิชาทั้งหมด ข้อมูลมาจากแผนการศึกษาในหมวด <a href="#/admin/courses">ค้นหารายวิชา</a> และ <a href="#/admin/programs">หลักสูตร</a> (แสดงเฉพาะหลักสูตรที่เผยแพร่ และรายวิชาที่ไม่ได้ซ่อน)</p>';else if(s.type==='faculties')b='<p>ส่วนนี้แสดงรายการคณะและวิทยาลัย ข้อมูลมาจากหมวด <a href="#/admin/faculties">คณะและหลักสูตร</a></p>';else if(s.type==='people')b='<p>ส่วนนี้แสดงรายชื่อบุคลากรและทีมผู้บริหาร ข้อมูลมาจาก <a href="#/admin/pstaff">จัดการอาจารย์และบุคลากร</a> และ <a href="#/admin/pexec">จัดการคณะผู้บริหาร</a> (แยกตามประเภทและกลุ่มสาระ)</p>';else if(s.type==='campusmap')b='<p>ส่วนนี้แสดงแผนผังสถาบัน ข้อมูลมาจาก <a href="#/admin/campus">จัดการแผนผังสถาบัน</a></p>';else if(s.type==='calendar')b='<p>ส่วนนี้แสดงปฏิทินและรายการกิจกรรม ข้อมูลมาจากชุดเดียวกับ <a href="#/admin/events">จัดการกิจกรรมปฏิทิน</a></p>';
+  else if(s.type==='courses')b='<p>ส่วนนี้แสดงหน้าค้นหารายวิชาทั้งหมด ข้อมูลมาจากแผนการศึกษาของหลักสูตรเดิมที่บันทึกไว้ (แสดงเฉพาะหลักสูตรที่เผยแพร่ และรายวิชาที่ไม่ได้ซ่อน)</p>';else if(s.type==='faculties')b='<p>ส่วนนี้แสดงรายการคณะและวิทยาลัย ข้อมูลมาจากข้อมูลคณะเดิมที่บันทึกไว้</p>';else if(s.type==='people')b='<p>ส่วนนี้แสดงรายชื่อบุคลากรและทีมผู้บริหาร ข้อมูลมาจาก <a href="#/admin/pstaff">จัดการอาจารย์และบุคลากร</a> และ <a href="#/admin/pexec">จัดการคณะผู้บริหาร</a> (แยกตามประเภทและกลุ่มสาระ)</p>';else if(s.type==='campusmap')b='<p>ส่วนนี้แสดงแผนผังสถาบัน ข้อมูลมาจาก <a href="#/admin/campus">จัดการแผนผังสถาบัน</a></p>';else if(s.type==='calendar')b='<p>ส่วนนี้แสดงปฏิทินและรายการกิจกรรม ข้อมูลมาจากชุดเดียวกับ <a href="#/admin/events">จัดการกิจกรรมปฏิทิน</a></p>';
   else if(s.type==='news')b=nwSecEd(s,n,id);
-  else if(s.type==='timetable')b='<p>ส่วนนี้แสดงตารางเรียน ม.1–ม.6 (เลือกระดับชั้นและภาคเรียนได้) ข้อมูลมาจาก <a href="#/admin/timetable">ตารางเรียน</a> (แสดงเฉพาะตารางที่เผยแพร่)</p>';
+  else if(s.type==='timetable')b='<p>ส่วนนี้แสดงตารางเรียน ม.1–ม.6 (เลือกระดับชั้นและภาคเรียนได้) ข้อมูลมาจาก <a href="#/admin/curriculum">โครงสร้างหลักสูตรและตารางเรียน</a> (แสดงเฉพาะตารางที่เผยแพร่)</p>';
   else if(s.type==='clubs')b='<p>ส่วนนี้แสดงหน้ารวมชมรมนักศึกษา ข้อมูลมาจาก <a href="#/admin/clubs">จัดการชมรมนักศึกษา</a> และ <a href="#/admin/clubcats">จัดการหมวดหมู่ชมรม</a> (แสดงเฉพาะชมรมที่เผยแพร่)</p>';
   else if(s.type==='linkcards')b=(s.items||[]).map((c,j)=>`<div class="row"><b>การ์ด ${j+1}</b> <button type="button" class="btn s" onclick="imv('${id}','${s.id}',${j},-1)">ขึ้น</button> <button type="button" class="btn s" onclick="imv('${id}','${s.id}',${j},1)">ลง</button> <button type="button" class="btn s c" onclick="idel('${id}','${s.id}',${j})">ลบการ์ด</button>${f('ชื่อการ์ด',j+'_t',c.t)}${f('คำอธิบายสั้น',j+'_d',c.d,1)}${f('ข้อความบนปุ่ม',j+'_b',c.b)}${f('URL ปลายทาง (https:// ถ้าว่างจะแสดง "ยังไม่ได้ตั้งค่าลิงก์")',j+'_u',c.u)}<label>ไอคอน</label><select name="${n}${j}_i">${o(ICONS,c.i||'')}</select>${elCardUI(s,c,j)}</div>`).join('')+`<button type="button" class="btn s" onclick="iadd('${id}','${s.id}')">+ เพิ่มการ์ด</button>`;
   else b=(s.items||[]).map((c,j)=>`<div class="row"><b>การ์ด ${j+1}</b> <button type="button" class="btn s c" onclick="idel('${id}','${s.id}',${j})">ลบการ์ด</button>${f('ชื่อ',j+'_t',c.t)}${f('คำอธิบาย',j+'_d',c.d,1)}${f('URL รูปภาพ',j+'_m',c.m)}${f('ลิงก์',j+'_l',c.l)}${elCardUI(s,c,j)}</div>`).join('')+`<button type="button" class="btn s" onclick="iadd('${id}','${s.id}')">+ เพิ่มการ์ด</button>`;
@@ -412,381 +385,12 @@ async function msave(){msync();mnorm();const M=WC.menu,pl=()=>WC.pg||(WC.pg=clon
 const SETF=[['nameTh','ชื่อเว็บไซต์ (ไทย)','t'],['nameEn','ชื่อภาษาอังกฤษ','t'],['footer','ข้อความท้ายเว็บ (ว่างได้)','a']];
 function settingsAdmin(){const s=getSet();return `<h1>การตั้งค่าเว็บไซต์</h1>${dbBanner()}<form id="af" onsubmit="return false">${SETF.map(([k,l,t])=>`<label>${l}</label>${t==='a'?`<textarea name="${k}">${E(s[k])}</textarea>`:`<input name="${k}" value="${E(s[k])}">`}`).join('')}<p><button type="button" class="btn b" onclick="setSave()">บันทึก</button></p></form>`}
 async function setSave(){const d=new FormData($('af')),o={};SETF.forEach(([k])=>o[k]=STRIP(d.get(k)||'').trim());if(!o.nameTh)return say('ต้องระบุชื่อเว็บไซต์',false);if(!DBH)return say(dbOff(),false);try{await putDoc('settings',Object.assign({},getSH('settings')||{},o));say('บันทึกการตั้งค่าเรียบร้อย')}catch(e){dbErr('บันทึกไม่สำเร็จ',e)}}
-/* ===== Admin: ค้นหารายวิชา (Course Search) — MVP รอบนำร่อง =====
-   ไม่มีตารางรายวิชากลางในระบบเดิม: รายวิชาเก็บฝังในแผนการศึกษาของแต่ละหลักสูตร (programs[].plan[].terms[].courses[])
-   จึงสร้าง "ดัชนีรายวิชากลาง" จากข้อมูลเดิมโดยรวมตามรหัสวิชา (Course = รหัสวิชา, CurriculumCourse = รายการวิชาในแต่ละหลักสูตร)
-   แก้ข้อมูลกลางครั้งเดียว ระบบเขียนค่าเดียวกันกลับทุกหลักสูตรที่ใช้รหัสนั้น (ไม่แตะประเภทวิชา/วิชาบังคับก่อน/การซ่อนของแต่ละหลักสูตร) */
-const CQ={q:'',fac:'',maj:'',lv:'',sc:'',n:50};
 const CQ_F=['code','name','nameEn','credits','desc','descEn','scope'];
-/* ขอบเขตการใช้วิชา (ข้อมูลกลางของวิชา เก็บใน field scope ของรายวิชา ไม่ได้หมายความว่าต้องเปิดเป็นหมู่เรียนเดียวกัน) */
-const CQ_SC=[['university','ระดับมหาวิทยาลัย'],['faculty','ระดับคณะ'],['major','ระดับสาขา']];
-const cqScLbl=v=>(CQ_SC.find(x=>x[0]===v)||[,''])[1];
-const cqScTag=v=>v&&cqScLbl(v)?` <span class="tag">${E(cqScLbl(v))}</span>`:'';
-function cqScopeErr(sc,ps){if(!sc)return '';if(!CQ_SC.some(x=>x[0]===sc))return 'ขอบเขตการใช้วิชาไม่ถูกต้อง';const mj=new Map(fqM().map(m=>[m.id,m])),fa=new Set(),ma=new Set();
- ps.forEach(p=>{ma.add(p.majorId);const m=mj.get(p.majorId);fa.add(m?m.facultyId:'')});
- if(sc==='faculty'&&fa.size>1)return 'ขอบเขต "ระดับคณะ" แต่วิชานี้ใช้ใน '+fa.size+' คณะ ให้เลือกขอบเขตระดับมหาวิทยาลัย หรือปรับการใช้วิชา';
- if(sc==='major'&&ma.size>1)return 'ขอบเขต "ระดับสาขา" แต่วิชานี้ใช้ใน '+ma.size+' สาขา ให้เลือกขอบเขตระดับคณะหรือมหาวิทยาลัย หรือปรับการใช้วิชา';return ''}
 const cqNorm=c=>String(c||'').trim().replace(/\s+/g,'').toUpperCase();
-const cqRe=/^\d+(\.\d+)?(\s*\(\d+-\d+-\d+\))?$/;
-function cqIndex(src){const M=new Map(),mj=new Map(fqM().map(x=>[x.id,x])),fc=new Map(fqF().map(x=>[x.id,x]));
- (src||fqP()).forEach(p=>{const m=mj.get(p.majorId),f=m&&fc.get(m.facultyId);fqCsAll(p.plan).forEach(({c})=>{const k=cqNorm(c.code);if(!k)return;
-  let e=M.get(k);if(!e){e={key:k,uses:[]};CQ_F.forEach(x=>e[x]='');M.set(k,e)}
-  CQ_F.forEach(x=>{if(!e[x]&&c[x])e[x]=c[x]});e.uses.push({p,m,f,c})})});
- M.forEach(e=>{e.mixed=e.uses.some(u=>CQ_F.some(x=>String(u.c[x]||'')!==String(e[x]||'')));e.lvs=[...new Set(e.uses.map(u=>u.p.level))]});
- return M}
-function cqHay(e){return [e.code,e.name,e.nameEn,...e.uses.flatMap(u=>[u.p.nameTh,u.m&&u.m.nameTh,u.f&&u.f.nameTh,fqLv(u.p.level)])].join(' ').toLowerCase()}
-function cqFilter(){const q=CQ.q.trim().toLowerCase();
- return [...cqIndex().values()].filter(e=>(!q||cqHay(e).includes(q))&&(!CQ.fac||e.uses.some(u=>u.f&&u.f.id===CQ.fac))&&(!CQ.maj||e.uses.some(u=>u.m&&u.m.id===CQ.maj))&&(!CQ.lv||e.uses.some(u=>u.p.level===CQ.lv))&&(!CQ.sc||(CQ.sc==='none'?!e.scope:e.scope===CQ.sc)))
-  .sort((a,b)=>a.key.localeCompare(b.key))}
-function cqSet(k,v){CQ[k]=v;if(k==='fac'&&CQ.maj&&!fqM().some(m=>m.id===CQ.maj&&m.facultyId===v))CQ.maj='';if(k!=='n')CQ.n=50;
- const a=document.activeElement,id=a&&a.id==='cqq'?a.selectionStart:null;render();if(id!=null){const n=$('cqq');if(n){n.focus();try{n.setSelectionRange(id,id)}catch(e){}}}}
-const cqUseTxt=e=>{const s=new Set();e.uses.forEach(u=>s.add((u.f?u.f.nameTh:'ไม่มีคณะ')+' › '+(u.m?u.m.nameTh:'ไม่มีสาขา')));return [...s]};
-function cqAdmin(){const L=cqFilter(),tot=cqIndex().size,vis=L.slice(0,CQ.n),
- fo=fqF().slice().sort((a,b)=>(a.nameTh||'').localeCompare(b.nameTh||'')),mo=fqM().filter(m=>!CQ.fac||m.facultyId===CQ.fac).sort((a,b)=>(a.nameTh||'').localeCompare(b.nameTh||''));
- const op=(a,v,l)=>`<option value="${E(v)}"${a===v?' selected':''}>${E(l)}</option>`;
- return `<h1>ค้นหารายวิชา</h1><p>ค้นหาและแก้ไขข้อมูลกลางของรายวิชาจากทุกหลักสูตรในที่เดียว วิชาที่มีรหัสเดียวกันถือเป็นวิชาเดียวกันและจะอัปเดตตรงกันทุกหลักสูตร</p>${dbBanner()}${secPageBox('courses','รายวิชาทั้งหมด','courses','crsMakePage')}
- <p><a class="btn" href="#/admin/courses/program">จัดรายวิชาตามหลักสูตร (4 ประเภท)</a></p><div class="g2"><div><label for="cqq">ค้นหา (รหัสวิชา ชื่อวิชาไทย/อังกฤษ คณะ สาขา)</label><input id="cqq" type="search" value="${E(CQ.q)}" oninput="cqSet('q',this.value)" placeholder="เช่น ENG101 หรือ แคลคูลัส"></div>
- <div><label for="cqlv">ระดับการศึกษา</label><select id="cqlv" onchange="cqSet('lv',this.value)">${op(CQ.lv,'','ทุกระดับ')}${FQ_LV.map(([k,l])=>op(CQ.lv,k,l)).join('')}</select></div>
- <div><label for="cqfa">คณะ/วิทยาลัย</label><select id="cqfa" onchange="cqSet('fac',this.value)">${op(CQ.fac,'','ทุกคณะ')}${fo.map(f=>op(CQ.fac,f.id,f.nameTh)).join('')}</select></div>
- <div><label for="cqsc">ขอบเขตการใช้วิชา</label><select id="cqsc" onchange="cqSet('sc',this.value)">${op(CQ.sc,'','ทุกขอบเขต')}${CQ_SC.map(([k,l])=>op(CQ.sc,k,l)).join('')}${op(CQ.sc,'none','ยังไม่กำหนด')}</select></div>
- <div><label for="cqmj">สาขาวิชา${CQ.fac?'':' (เลือกคณะเพื่อกรองเฉพาะสาขาของคณะนั้น)'}</label><select id="cqmj" onchange="cqSet('maj',this.value)">${op(CQ.maj,'','ทุกสาขา')}${mo.map(m=>op(CQ.maj,m.id,m.nameTh)).join('')}</select></div></div>
- <p class="evm" role="status" aria-live="polite">พบ ${L.length} จาก ${tot} รายวิชา <button type="button" class="btn s" onclick="cqReload()">โหลดข้อมูลล่าสุด</button></p>
- ${CQ.sel.size?`<div class="msg">เลือกแล้ว ${CQ.sel.size} รายการ (เลือกข้ามผลการค้นหาได้) <a class="btn b s${CQ.sel.size<2?' dis':''}" href="${CQ.sel.size<2?'javascript:void 0':'#/admin/courses/merge'}"${CQ.sel.size<2?' aria-disabled="true" title="ต้องเลือกอย่างน้อย 2 รายการ"':''}>รวมรายวิชาที่เลือก</a> <button type="button" class="btn s" onclick="cqSelClear()">ล้างที่เลือก</button></div>`:'<p><small>ติ๊กเลือกวิชาที่เป็นวิชาเดียวกันแต่ใส่รหัสต่างกัน แล้วกด "รวมรายวิชา"</small></p>'}${tot?'':'<div class="hint"><p>ยังไม่มีรายวิชาในระบบ รายวิชาจะแสดงที่นี่เมื่อมีการเพิ่มรายวิชาในแผนการศึกษาของหลักสูตร (จัดการหลักสูตร)</p></div>'}
- ${L.length?`<div class="cqw"><table class="cqt"><thead><tr><th><span class="sr">เลือก</span></th><th>รหัสวิชา</th><th>ชื่อวิชาภาษาไทย</th><th>ชื่อวิชาภาษาอังกฤษ</th><th>หน่วยกิต</th><th>คณะและสาขาที่เปิดสอน</th><th>ระดับ</th><th></th></tr></thead><tbody>${vis.map(e=>{const us=cqUseTxt(e);return `<tr><td><input type="checkbox" class="cqck" aria-label="เลือกรายวิชา ${E(e.code)}"${CQ.sel.has(e.key)?' checked':''} onchange="cqSel('${E(e.key)}',this.checked)"></td><td data-l="รหัสวิชา"><b>${E(e.code)}</b></td><td data-l="ชื่อไทย">${E(e.name)}${cqScTag(e.scope)}${e.mixed?' <span class="tag" title="ข้อมูลในแต่ละหลักสูตรยังไม่ตรงกัน บันทึกครั้งเดียวจะทำให้ตรงกัน">ไม่ตรงกัน</span>':''}</td><td data-l="ชื่ออังกฤษ">${E(e.nameEn)}</td><td data-l="หน่วยกิต">${E(e.credits)}</td><td data-l="คณะ/สาขา">${us.slice(0,3).map(E).join('<br>')}${us.length>3?`<br><small>และอีก ${us.length-3} สาขา</small>`:''}<br><small>${e.uses.length} หลักสูตร</small></td><td data-l="ระดับ">${e.lvs.map(fqLv).map(E).join(', ')}</td><td><a class="btn s" href="#/admin/courses/edit/${encodeURIComponent(e.key)}">ดู/แก้ไข</a></td></tr>`}).join('')}</tbody></table></div>${L.length>vis.length?`<p><button type="button" class="btn" onclick="cqSet('n',CQ.n+50)">แสดงเพิ่ม (เหลืออีก ${L.length-vis.length})</button></p>`:''}`:(tot?'<p>ไม่พบรายวิชาที่ตรงกับเงื่อนไข</p>':'')}`}
-async function cqReload(){if(!DBH)return say(dbOff(),false);try{await loadAll();WC={};say('โหลดข้อมูลล่าสุดแล้ว')}catch(e){dbErr('โหลดข้อมูลไม่สำเร็จ',e)}}
-const cqPick=(e)=>{const o={};CQ_F.forEach(x=>o[x]=e[x]||'');return o};
-function cqEditor(raw){let k='';try{k=cqNorm(decodeURIComponent(raw||''))}catch(er){}
- const e=cqIndex().get(k);
- if(!e)return `<p><a class="bk" href="#/admin/courses">← ค้นหารายวิชา</a></p><div class="msg er">ไม่พบรายวิชารหัส "${E(k)}" (อาจถูกแก้ไขรหัสหรือลบโดยผู้ดูแลคนอื่น)</div>`;
- if(!WC.cq||WC.cq.key!==k){const snap={};e.uses.forEach(u=>snap[u.c.id]=JSON.stringify(CQ_F.map(x=>String(u.c[x]||''))));WC.cq={key:k,f:cqPick(e),snap}}
- const f=WC.cq.f,fi=(n,l,req,ph)=>`<label for="cq_${n}">${l}${req?' *':''}</label><input id="cq_${n}" name="${n}" value="${E(f[n])}"${ph?` placeholder="${ph}"`:''}${req?' aria-required="true"':''}>`;
- return `<p><a class="bk" href="#/admin/courses">← ค้นหารายวิชา</a></p><h1>${E(e.code)} ${E(e.name)}</h1>${dbBanner()}
- ${e.mixed?'<div class="msg">ข้อมูลรายวิชานี้ในแต่ละหลักสูตรยังไม่ตรงกัน เมื่อบันทึกจะทำให้ทุกหลักสูตรใช้ค่าเดียวกับที่แสดงด้านล่าง</div>':''}
- <h2>ข้อมูลกลางของรายวิชา</h2><p>การแก้ไขจะมีผลกับทุกหลักสูตรที่ใช้รหัสวิชานี้ (${e.uses.length} หลักสูตร)</p>
- <form id="cqf" onsubmit="return false" oninput="cqSync()">${fi('code','รหัสวิชา',1)}<div class="g2"><div>${fi('name','ชื่อวิชาภาษาไทย',1)}</div><div>${fi('nameEn','ชื่อวิชาภาษาอังกฤษ',1)}</div></div>${fi('credits','จำนวนหน่วยกิต',1,'3 หรือ 3(3-0-6)')}
- <label for="cq_scope">ขอบเขตการใช้วิชา</label><select id="cq_scope" name="scope"><option value="">ยังไม่กำหนด</option>${CQ_SC.map(([v,l])=>`<option value="${v}"${f.scope===v?' selected':''}>${l}</option>`).join('')}</select><p><small>ใช้ระบุว่าวิชานี้ใช้ร่วมกันในระดับใด (มหาวิทยาลัย/คณะ/สาขา) ไม่ได้หมายความว่าต้องเปิดเป็นหมู่เรียนเดียวกัน การจัดหมู่เรียนจะเป็นส่วนของระบบลงทะเบียนในอนาคต</small></p>
- <label for="cq_desc">คำอธิบายรายวิชา (ถ้ามี)</label><textarea id="cq_desc" name="desc" rows="4">${E(f.desc)}</textarea>
- <label for="cq_descEn">คำอธิบายรายวิชาภาษาอังกฤษ (ถ้ามี)</label><textarea id="cq_descEn" name="descEn" rows="4">${E(f.descEn)}</textarea>
- <p><button type="button" class="btn b" onclick="cqSave()">บันทึก</button> <a class="btn" href="#/admin/courses">ยกเลิก</a></p></form>
- <h2>หลักสูตรที่ใช้รายวิชานี้</h2><p><small>คณะ สาขา และระดับการศึกษาของวิชามาจากหลักสูตรที่ใช้วิชานี้ ปรับได้ที่หน้าแก้ไขหลักสูตร (ประเภทวิชาและวิชาบังคับก่อนเป็นค่าของแต่ละหลักสูตร ไม่เปลี่ยนจากหน้านี้)</small></p>
- ${e.uses.map(u=>`<div class="row"><b>${E(u.p.nameTh)}</b> ${stTag(u.p)}<br><small>${E(u.f?u.f.nameTh:'ไม่มีคณะ')} › ${E(u.m?u.m.nameTh:'ไม่มีสาขา')} · ${E(fqLv(u.p.level))} · ${E(csTy(u.c.type))}${u.c.show===false?' · ซ่อนอยู่':''}</small> <a class="btn s" href="#/admin/courses/program/${E(u.p.id)}">จัดรายวิชา</a> <a class="btn s" href="#/admin/programs/edit/${E(u.p.id)}">เปิดหลักสูตร</a></div>`).join('')}`}
-function cqSync(){const fm=$('cqf');if(!fm||!WC.cq)return;const d=new FormData(fm);CQ_F.forEach(x=>{if(d.has(x))WC.cq.f[x]=String(d.get(x)||'')})}
-async function cqSave(){cqSync();const w=WC.cq;if(!w)return;if(!DBH)return say(dbOff(),false);
- const f={};CQ_F.forEach(x=>f[x]=w.f[x].trim());
- if(!f.code)return say('ต้องระบุรหัสวิชา',false);if(!f.name)return say('ต้องระบุชื่อวิชาภาษาไทย',false);if(!f.nameEn)return say('ต้องระบุชื่อวิชาภาษาอังกฤษ',false);
- if(!f.credits)return say('ต้องระบุจำนวนหน่วยกิต',false);if(!cqRe.test(f.credits)||!(parseFloat(f.credits)>=0&&parseFloat(f.credits)<=30))return say('หน่วยกิตไม่ถูกต้อง (ใช้ เช่น 3 หรือ 3(3-0-6) และไม่เกิน 30)',false);
- try{
-  const {data,error}=await SB.from('site_docs').select('key,data');if(error)throw error;
-  const row=(data||[]).find(r=>r.key==='programs'),P=Array.isArray(row&&row.data)?clone(row.data):[];
-  const hit=[],hp=[],nk=cqNorm(f.code);
-  P.forEach(p=>fqCsAll(p.plan).forEach(({c})=>{if(cqNorm(c.code)===w.key){hit.push(c);hp.push(p)}}));
-  const cur={};hit.forEach(c=>cur[c.id]=JSON.stringify(CQ_F.map(x=>String(c[x]||''))));
-  const ids=Object.keys(w.snap),stale=ids.length!==hit.length||ids.some(i=>cur[i]!==w.snap[i]);
-  if(stale){if(row)SHR.programs=row.data;WC.cq=null;return say('รายวิชานี้ถูกผู้ดูแลคนอื่นแก้ไขหรือเปลี่ยนแปลงไปก่อนหน้า จึงยังไม่บันทึกทับ ระบบโหลดข้อมูลล่าสุดมาแสดงแล้ว กรุณาตรวจสอบและแก้ไขอีกครั้ง',false)}
-  {const se=cqScopeErr(f.scope,hp);if(se)return say(se,false)}
-  if(nk!==w.key&&cqIndex(P).has(nk))return say('รหัสวิชา "'+f.code+'" มีอยู่แล้วในระบบ หากเป็นวิชาเดียวกันให้แก้ไขที่รายวิชานั้นแทน',false);
-  hit.forEach(c=>CQ_F.forEach(x=>{c[x]=f[x]}));
-  await putDoc('programs',P);
-  WC.cq=null;if(nk!==w.key){const h='#/admin/courses/edit/'+encodeURIComponent(nk);if(window.history&&history.replaceState)history.replaceState(null,'',h);else location.hash=h;last=h}
-  say('บันทึกเรียบร้อย อัปเดต '+hit.length+' หลักสูตรแล้ว')
- }catch(e){dbErr('บันทึกไม่สำเร็จ',e)}}
 
 /* ===== รวมรายวิชา (Merge Courses): เลือกหลายรหัสที่เป็นวิชาเดียวกัน → รหัสหลักเดียว =====
    เขียนกลับเฉพาะ code/name/nameEn/credits/desc/descEn ของรายวิชาที่เลือก ไม่แตะ type/pre/show/id ของแต่ละหลักสูตร
    ตรวจซ้ำกับข้อมูลล่าสุดในฐานข้อมูลก่อนเขียน แล้วเขียนเอกสาร programs ครั้งเดียว (ไม่เกิดการแก้ไขเพียงบางส่วน) */
-CQ.sel=new Set();
-const cqFv=(f,v)=>f==='scope'?cqScLbl(v):v;
-const CQ_M=[['scope','ขอบเขตการใช้วิชา'],['name','ชื่อวิชาภาษาไทย'],['nameEn','ชื่อวิชาภาษาอังกฤษ'],['credits','จำนวนหน่วยกิต'],['desc','คำอธิบายรายวิชา'],['descEn','คำอธิบายรายวิชาภาษาอังกฤษ']];
-const cqSnap=c=>JSON.stringify(CQ_F.map(x=>String(c[x]||'')));
-function cqSel(k,on){on?CQ.sel.add(k):CQ.sel.delete(k);render()}
-function cqSelClear(){CQ.sel.clear();render()}
-function cqMerge(){const idx=cqIndex(),ks=[...CQ.sel].filter(k=>idx.has(k)).sort(),bk='<p><a class="bk" href="#/admin/courses">← ค้นหารายวิชา</a></p>';
- if(ks.length<2)return bk+'<h1>รวมรายวิชา</h1><div class="msg er">ต้องเลือกรายวิชาอย่างน้อย 2 รายการจากหน้าค้นหาก่อน</div>';
- const L=ks.map(k=>idx.get(k));
- if(!WC.mg||WC.mg.ks.join('|')!==ks.join('|')){const snap={};L.forEach(e=>e.uses.forEach(u=>snap[u.c.id]=cqSnap(u.c)));const pick={};CQ_M.forEach(([f])=>{const i=L.findIndex(e=>e[f]);pick[f]=L[0][f]?0:Math.max(i,0)});WC.mg={ks,snap,primary:0,pick,E:L.map(cqPick)}}
- const w=WC.mg,rd=(n,i,on)=>`<input type="radio" class="cqck" name="${n}" value="${i}"${on?' checked':''}>`;
- return `${bk}<h1>รวมรายวิชา</h1>${dbBanner()}<p>รวม ${ks.length} รายการที่เลือกให้เป็นรายวิชาเดียวภายใต้รหัสหลัก ระบบจะเปลี่ยนรหัสและข้อมูลกลางในทุกหลักสูตรที่ใช้วิชาเหล่านี้ ส่วนประเภทวิชา วิชาบังคับก่อน และสถานะการแสดงผลของแต่ละหลักสูตรคงเดิม</p>
- <form id="mgf" onsubmit="return false" onchange="cqMgSync()">
- <h2>1. รายวิชาที่เลือก และเลือกรหัสหลัก</h2><div class="cqw"><table class="cqt"><thead><tr><th>รหัสหลัก</th><th>รหัสวิชา</th><th>ชื่อวิชา</th><th>หน่วยกิต</th><th>หลักสูตรที่ใช้</th></tr></thead><tbody>${L.map((e,i)=>`<tr><td data-l="รหัสหลัก"><label>${rd('mgp',i,w.primary===i)}</label></td><td data-l="รหัสวิชา"><b>${E(e.code)}</b></td><td data-l="ชื่อวิชา">${E(e.name)}<br><small>${E(e.nameEn)}</small></td><td data-l="หน่วยกิต">${E(e.credits)}</td><td data-l="หลักสูตร">${e.uses.map(u=>E(u.p.nameTh)+' <small>('+E(u.f?u.f.nameTh:'-')+')</small>').join('<br>')}</td></tr>`).join('')}</tbody></table></div>
- <h2>2. กำหนดข้อมูลกลางที่จะใช้</h2><p><small>ช่องที่ข้อมูลตรงกันทุกรายการไม่ต้องเลือก ช่องที่ต่างกันให้เลือกค่าที่ต้องการ</small></p>
- ${CQ_M.map(([f,l])=>{const vs=L.map(e=>e[f]||''),same=vs.every(v=>v===vs[0]);return `<fieldset><legend>${l}</legend>${same?`<p>ตรงกันทุกรายการ: ${vs[0]?E(cqFv(f,vs[0])):'<small>(ว่าง)</small>'}</p>`:vs.map((v,i)=>`<label>${rd('mg_'+f,i,w.pick[f]===i)} <small>${E(L[i].code)}:</small> ${v?E(cqFv(f,v)):'<small>(ว่าง/ไม่กำหนด)</small>'}</label>`).join('')}</fieldset>`}).join('')}
- <p><button type="button" class="btn b" onclick="cqMgAsk()">ตรวจสอบและสรุปผลก่อนรวม</button> <a class="btn" href="#/admin/courses">ยกเลิก</a></p></form>`}
-function cqMgSync(){const fm=$('mgf'),w=WC.mg;if(!fm||!w)return;const d=new FormData(fm);if(d.has('mgp'))w.primary=+d.get('mgp');CQ_M.forEach(([f])=>{if(d.has('mg_'+f))w.pick[f]=+d.get('mg_'+f)})}
-const cqMgFinal=w=>{const o={code:w.E[w.primary].code};CQ_M.forEach(([f])=>o[f]=w.E[w.pick[f]][f]);Object.keys(o).forEach(k=>o[k]=String(o[k]||'').trim());return o};
-function cqMgCalc(P,w){const keys=new Set(w.ks),fin=cqMgFinal(w),errs=[],hit=[],byP=new Map();
- P.forEach(p=>fqCsAll(p.plan).forEach(({c})=>{if(keys.has(cqNorm(c.code))){hit.push({p,c});if(!byP.has(p.id))byP.set(p.id,[]);byP.get(p.id).push(c)}}));
- const ids=Object.keys(w.snap),stale=ids.length!==hit.length||hit.some(({c})=>w.snap[c.id]!==cqSnap(c));
- if(!fin.code)errs.push('ต้องระบุรหัสหลัก');if(!fin.name)errs.push('ชื่อวิชาภาษาไทยที่เลือกเป็นค่าว่าง กรุณาเลือกค่าที่มีข้อมูล');if(!fin.nameEn)errs.push('ชื่อวิชาภาษาอังกฤษที่เลือกเป็นค่าว่าง กรุณาเลือกค่าที่มีข้อมูล');
- if(!fin.credits||!cqRe.test(fin.credits)||!(parseFloat(fin.credits)>=0&&parseFloat(fin.credits)<=30))errs.push('หน่วยกิตที่เลือกว่างหรือไม่ถูกต้อง (ใช้ เช่น 3 หรือ 3(3-0-6) และไม่เกิน 30)');
- byP.forEach((cs,id)=>{if(cs.length>1){const p=P.find(x=>x.id===id);errs.push('หลักสูตร "'+p.nameTh+'" มีวิชาที่เลือกอยู่ '+cs.length+' รายการ (รหัส '+cs.map(c=>c.code).join(', ')+') การรวมจะทำให้รหัสซ้ำในหลักสูตรเดียวกัน ต้องแก้ไขในหลักสูตรนั้นก่อน')}});
- {const se=cqScopeErr(fin.scope,[...byP.keys()].map(id=>P.find(p=>p.id===id)));if(se)errs.push(se)}
- const chg=hit.filter(({c})=>CQ_F.some(f=>String(c[f]||'')!==fin[f]));
- return {fin,errs,hit,stale,chg,progs:[...new Set(chg.map(x=>x.p.id))].map(id=>P.find(p=>p.id===id))}}
-function cqMgAsk(){cqMgSync();const w=WC.mg;if(!w)return;const r=cqMgCalc(fqP(),w);
- const ls=r.chg.map(({p,c})=>`<li>${E(p.nameTh)}: ${E(c.code)} → <b>${E(r.fin.code)}</b>${c.name!==r.fin.name||String(c.credits)!==r.fin.credits?' (ปรับชื่อ/หน่วยกิต)':''}</li>`).join('');
- $('md').innerHTML=`<div class="modal wide" role="dialog" aria-modal="true"><div><h3>สรุปก่อนรวมรายวิชา</h3>
- ${r.errs.length?`<div class="msg er"><b>ยังรวมไม่ได้:</b><ul>${r.errs.map(x=>`<li>${E(x)}</li>`).join('')}</ul></div>`:`<p>รวม ${w.ks.length} รหัสเป็น <b>${E(r.fin.code)}</b> — ${E(r.fin.name)} / ${E(r.fin.nameEn)} (${E(r.fin.credits)} หน่วยกิต)</p>
- <p>ผลกระทบ: <b>${r.chg.length}</b> รายการในแผนการศึกษา จาก <b>${r.progs.length}</b> หลักสูตร</p><ul>${ls||'<li>ไม่มีรายการที่ต้องเปลี่ยน</li>'}</ul><p><small>การดำเนินการนี้แก้ข้อมูลรายวิชาเดิมในทุกหลักสูตรข้างต้น และย้อนกลับอัตโนมัติไม่ได้</small></p>`}
- <p>${r.errs.length?'':'<button type="button" class="btn b" onclick="cqMgDo()">ยืนยันการรวม</button> '}<button type="button" class="btn" onclick="$(\'md\').innerHTML=\'\'">${r.errs.length?'ปิด':'ยกเลิก'}</button></p></div></div>`}
-async function cqMgDo(){$('md').innerHTML='';const w=WC.mg;if(!w)return;if(!DBH)return say(dbOff(),false);
- try{const {data,error}=await SB.from('site_docs').select('key,data');if(error)throw error;
-  const row=(data||[]).find(r=>r.key==='programs'),P=Array.isArray(row&&row.data)?clone(row.data):[],r=cqMgCalc(P,w);
-  if(r.stale){if(row)SHR.programs=row.data;WC.mg=null;return say('รายวิชาที่เลือกถูกผู้ดูแลคนอื่นแก้ไขหรือเปลี่ยนแปลงไปก่อนหน้า จึงยังไม่ได้รวมอะไรเลย ระบบโหลดข้อมูลล่าสุดแล้ว กรุณาตรวจสอบและทำใหม่',false)}
-  if(r.errs.length)return say('ไม่สามารถรวมได้: '+r.errs[0],false);
-  r.hit.forEach(({c})=>CQ_F.forEach(f=>{c[f]=r.fin[f]}));
-  if(!r.hit.every(({c})=>cqNorm(c.code)===cqNorm(r.fin.code)))throw {message:'ตรวจสอบผลลัพธ์ไม่ผ่าน ยกเลิกการบันทึก'};
-  await putDoc('programs',P);
-  CQ.sel.clear();CQ.q=r.fin.code;CQ.fac='';CQ.maj='';CQ.lv='';WC={};const h='#/admin/courses';if(window.history&&history.replaceState)history.replaceState(null,'',h);else location.hash=h;last=h;
-  say('รวมรายวิชาเรียบร้อย: '+w.ks.length+' รหัสเป็น '+r.fin.code+' ปรับ '+r.chg.length+' รายการใน '+r.progs.length+' หลักสูตร')
- }catch(e){dbErr('รวมรายวิชาไม่สำเร็จ (ไม่มีข้อมูลถูกแก้ไข)',e)}}
-
-/* ===== จัดรายวิชาตามหลักสูตร: 4 ประเภท (ประเภทวิชาเป็นค่าของแต่ละหลักสูตร: programs[].plan[].terms[].courses[].type) =====
-   คลังรายวิชา = ดัชนีจากรหัสวิชาในทุกหลักสูตร (cqIndex) เพิ่ม = คัดลอกข้อมูลกลางเข้าแผนการศึกษาของหลักสูตรนี้ นำออก = เอาออกจากหลักสูตรนี้เท่านั้น */
-const CQP={q:'',ty:'required',term:''};
-async function cqFresh(){const {data,error}=await SB.from('site_docs').select('key,data');if(error)throw error;const r=(data||[]).find(x=>x.key==='programs');return Array.isArray(r&&r.data)?clone(r.data):[]}
-const cqUses=(P,k)=>P.filter(p=>fqCsAll(p.plan).some(({c})=>cqNorm(c.code)===k)).length;
-function cqProg(pid){const bk='<p><a class="bk" href="#/admin/courses">← ค้นหารายวิชา</a></p>',PL=fqP(),p=PL.find(x=>x.id===pid);
- const fo=fqF(),mj=new Map(fqM().map(m=>[m.id,m])),opts=fo.map(f=>{const ps=PL.filter(x=>{const m=mj.get(x.majorId);return m&&m.facultyId===f.id});return ps.length?`<optgroup label="${E(f.nameTh)}">${ps.map(x=>`<option value="${E(x.id)}"${x.id===pid?' selected':''}>${E(x.nameTh)} (${E(fqLv(x.level))})</option>`).join('')}</optgroup>`:''}).join('')+PL.filter(x=>!mj.get(x.majorId)).map(x=>`<option value="${E(x.id)}"${x.id===pid?' selected':''}>${E(x.nameTh)}</option>`).join('');
- const sel=`<label for="cqps">เลือกหลักสูตรที่ต้องการจัดการ</label><select id="cqps" onchange="location.hash='#/admin/courses/program/'+this.value"><option value="">— เลือกหลักสูตร —</option>${opts}</select>`;
- if(!p)return `${bk}<h1>จัดรายวิชาตามหลักสูตร</h1>${dbBanner()}${sel}${pid?'<div class="msg er">ไม่พบหลักสูตรนี้</div>':'<p><small>เลือกหลักสูตรเพื่อจัดรายวิชาเป็น วิชาบังคับ / วิชาเลือกเฉพาะทาง / วิชาเลือกในหลักสูตร / วิชาเลือกเสรี</small></p>'}`;
- const m=mj.get(p.majorId),f=m&&fo.find(x=>x.id===m.facultyId),all=fqCsAll(p.plan),have=new Set(all.map(x=>cqNorm(x.c.code)).filter(Boolean)),
- terms=all.length||(p.plan||[]).some(y=>(y.terms||[]).length)?(p.plan||[]).flatMap((y,yi)=>(y.terms||[]).map((t,ti)=>({id:t.id,l:(y.name||'ชั้นปีที่ '+(yi+1))+' › '+(t.name||'ภาคการศึกษาที่ '+(ti+1))}))):[];
- if(!terms.some(t=>t.id===CQP.term))CQP.term=terms[0]?terms[0].id:'';
- const loc=new Map();(p.plan||[]).forEach((y,yi)=>(y.terms||[]).forEach((t,ti)=>(t.courses||[]).forEach(c=>loc.set(c.id,t.id))));
- const tsel=(cur,fn)=>`<select aria-label="ประเภทวิชา" onchange="${fn}">${CS_TY.map(([v,l])=>`<option value="${v}"${csTyK(cur)===v?' selected':''}>${l}</option>`).join('')}</select>`;
- const grp=CS_TY.map(([k,l])=>{const it=all.filter(x=>csTyK(x.c.type)===k),cr=it.reduce((s,x)=>s+(parseFloat(x.c.credits)||0),0);
-  return `<h2>${l} <small>(${it.length} วิชา${it.length?' · '+cr+' หน่วยกิต':''})</small></h2>${it.length?`<div class="cqw"><table class="cqt"><thead><tr><th>รหัสวิชา</th><th>ชื่อวิชา</th><th>หน่วยกิต</th><th>ชั้นปี/ภาคที่แนะนำ</th><th>ประเภทวิชา</th><th></th></tr></thead><tbody>${it.map(({c})=>`<tr><td data-l="รหัสวิชา"><b>${E(c.code)}</b></td><td data-l="ชื่อวิชา">${E(c.name)}<br><small>${E(c.nameEn)}</small>${cqScTag(c.scope)}${c.show===false?' <span class="tag">ซ่อนอยู่</span>':''}</td><td data-l="หน่วยกิต">${E(c.credits)}</td><td data-l="ภาค"><select aria-label="ชั้นปีและภาคการศึกษาที่แนะนำ" onchange="cqPgMove('${E(c.id)}',this.value)">${terms.map(t=>`<option value="${E(t.id)}"${loc.get(c.id)===t.id?' selected':''}>${E(t.l)}</option>`).join('')}</select></td><td data-l="ประเภท">${tsel(c.type,`cqPgType('${E(c.id)}',this.value)`)}</td><td><button type="button" class="btn s c" onclick="cqPgDelAsk('${E(c.id)}')">นำออก</button></td></tr>`).join('')}</tbody></table></div>`:'<p><small>ยังไม่มีรายวิชาในประเภทนี้</small></p>'}`}).join('');
- const q=CQP.q.trim().toLowerCase(),lib=[...cqIndex().values()].filter(e=>!have.has(e.key)&&(!q||cqHay(e).includes(q))).sort((a,b)=>a.key.localeCompare(b.key)),
- add=`<h2>เพิ่มรายวิชาจากคลังรายวิชา</h2><div class="g2"><div><label for="cqpq">ค้นหา (รหัสวิชา หรือชื่อวิชา)</label><input id="cqpq" type="search" value="${E(CQP.q)}" oninput="cqpSet('q',this.value)"></div>
- <div><label for="cqpty">เพิ่มเป็นประเภท</label><select id="cqpty" onchange="cqpSet('ty',this.value)">${CS_TY.map(([v,l])=>`<option value="${v}"${CQP.ty===v?' selected':''}>${l}</option>`).join('')}</select></div></div>
- ${terms.length?`<label for="cqptm">เพิ่มเข้าภาคการศึกษา</label><select id="cqptm" onchange="cqpSet('term',this.value)">${terms.map(t=>`<option value="${E(t.id)}"${CQP.term===t.id?' selected':''}>${E(t.l)}</option>`).join('')}</select>`:'<p><small>หลักสูตรนี้ยังไม่มีชั้นปี/ภาคการศึกษา ระบบจะสร้าง "ชั้นปีที่ 1" ให้อัตโนมัติเมื่อเพิ่มวิชา</small></p>'}
- <p class="evm" role="status" aria-live="polite">${q?'พบ '+lib.length+' รายวิชาในคลังที่ยังไม่อยู่ในหลักสูตรนี้':'วิชาในคลังที่ยังไม่อยู่ในหลักสูตรนี้ '+lib.length+' รายวิชา (พิมพ์เพื่อค้นหา)'}</p>
- ${lib.slice(0,20).map(e=>`<div class="row"><b>${E(e.code)}</b> ${E(e.name)} <small>/ ${E(e.nameEn)} · ${E(e.credits)} หน่วยกิต · ใช้ใน ${e.uses.length} หลักสูตร</small> <button type="button" class="btn s b" data-k="${E(e.key)}" onclick="cqPgAdd(this.dataset.k)">เพิ่ม</button></div>`).join('')}${lib.length>20?`<p><small>แสดง 20 รายการแรก พิมพ์ค้นหาเพื่อกรองเพิ่ม</small></p>`:''}`;
- return `${bk}<h1>จัดรายวิชา: ${E(p.nameTh)}</h1>${dbBanner()}<p>${E(f?f.nameTh:'ไม่มีคณะ')} › ${E(m?m.nameTh:'ไม่มีสาขา')} · ${E(fqLv(p.level))} ${stTag(p)} · <a href="#/admin/programs/edit/${E(p.id)}">เปิดหน้าแก้ไขหลักสูตร</a></p>${sel}${grp}${add}`}
-function cqpSet(k,v){CQP[k]=v;const a=document.activeElement,s=a&&a.id==='cqpq'?a.selectionStart:null;render();if(s!=null){const n=$('cqpq');if(n){n.focus();try{n.setSelectionRange(s,s)}catch(e){}}}}
-const cqPgId=()=>(location.hash.split('/')[4]||'');
-async function cqPgRun(fn,okMsg){if(!DBH)return say(dbOff(),false);
- try{const P=await cqFresh(),p=P.find(x=>x.id===cqPgId());if(!p){SHR.programs=P;return say('ไม่พบหลักสูตรนี้ (อาจถูกลบโดยผู้ดูแลคนอื่น)',false)}
-  const er=fn(P,p);if(er){SHR.programs=P;return say(er,false)}await putDoc('programs',P);say(okMsg)}catch(e){dbErr('บันทึกไม่สำเร็จ',e)}}
-function cqPgAdd(k){cqPgRun((P,p)=>{const e=cqIndex(P).get(k);if(!e)return 'ไม่พบรายวิชานี้ในคลังแล้ว (อาจถูกเปลี่ยนรหัสหรือถูกนำออก) โหลดข้อมูลล่าสุดแล้ว';
-  if(fqCsAll(p.plan).some(({c})=>cqNorm(c.code)===k))return 'หลักสูตรนี้มีรายวิชา '+e.code+' อยู่แล้ว';
-  if(!CS_TY.some(x=>x[0]===CQP.ty))return 'ประเภทวิชาไม่ถูกต้อง';
-  {const se=cqScopeErr(e.scope,[...e.uses.map(u=>u.p),p]);if(se)return 'เพิ่มวิชา '+e.code+' ไม่ได้: '+se}
-  if(!Array.isArray(p.plan))p.plan=[];let t=null;p.plan.forEach(y=>(y.terms||[]).forEach(x=>{if(x.id===CQP.term)t=x}));
-  if(!t){let yr=p.plan.find(y=>Array.isArray(y.terms)&&y.terms.length);if(yr)t=yr.terms[0];else{if(p.plan.length>=6)return 'แผนการศึกษารองรับสูงสุด 6 ชั้นปี';yr={id:mkId('yr'),name:'ชั้นปีที่ '+(p.plan.length+1),note:'',terms:[fqNewTerm('ภาคการศึกษาที่ 1'),fqNewTerm('ภาคการศึกษาที่ 2')]};p.plan.push(yr);t=yr.terms[0]}}
-  if(!Array.isArray(t.courses))t.courses=[];
-  t.courses.push({id:mkId('cs'),code:e.code,name:e.name,nameEn:e.nameEn,credits:e.credits,type:CQP.ty,desc:e.desc,descEn:e.descEn,scope:e.scope||'',pre:[],show:true});return ''},'เพิ่มรายวิชาเข้าหลักสูตรเรียบร้อย')}
-function cqPgType(cid,ty){cqPgRun((P,p)=>{if(!CS_TY.some(x=>x[0]===ty))return 'ประเภทวิชาไม่ถูกต้อง';const x=fqCsAll(p.plan).find(y=>y.c.id===cid);if(!x)return 'ไม่พบรายวิชานี้ในหลักสูตรแล้ว (อาจถูกนำออกโดยผู้ดูแลคนอื่น) โหลดข้อมูลล่าสุดแล้ว';x.c.type=ty;return ''},'เปลี่ยนประเภทวิชาเรียบร้อย')}
-function cqPgMove(cid,tid){cqPgRun((P,p)=>{const x=fqCsAll(p.plan).find(y=>y.c.id===cid);if(!x)return 'ไม่พบรายวิชานี้ในหลักสูตรแล้ว โหลดข้อมูลล่าสุดแล้ว';let t=null;(p.plan||[]).forEach(y=>(y.terms||[]).forEach(z=>{if(z.id===tid)t=z}));if(!t)return 'ไม่พบภาคการศึกษาปลายทาง';if(t===x.t)return '';
-  x.t.courses=x.t.courses.filter(c=>c.id!==cid);t.courses=(t.courses||[]).concat([x.c]);return ''},'ย้ายวิชาไปภาคการศึกษาที่แนะนำเรียบร้อย')}
-function cqPgDelAsk(cid){const p=fqP().find(x=>x.id===cqPgId()),x=p&&fqCsAll(p.plan).find(y=>y.c.id===cid);if(!x)return;const c=x.c,k=cqNorm(c.code),dep=fqCsAll(p.plan).filter(y=>y.c.id!==cid&&(y.c.pre||[]).includes(cid)).map(y=>y.c.code||y.c.name);
- const sole=!k||cqUses(fqP(),k)<2;
- $('md').innerHTML=`<div class="modal" role="dialog" aria-modal="true"><div><h3>นำรายวิชาออกจากหลักสูตร</h3><p><b>${E(c.code)}</b> ${E(c.name)}</p>${sole?`<div class="msg er">ยังนำออกไม่ได้: วิชานี้${k?'ไม่ได้ใช้ในหลักสูตรอื่น':'ยังไม่มีรหัสวิชา'} หากนำออก ข้อมูลวิชาจะหายไปจากคลังรายวิชา (ปัจจุบันคลังคำนวณจากแผนการศึกษาของหลักสูตรต่าง ๆ)</div>`:`<p>จะนำวิชานี้ออกจากหลักสูตรนี้เท่านั้น ข้อมูลวิชาในคลังและหลักสูตรอื่นไม่เปลี่ยน</p>${dep.length?`<p><small>วิชาที่ใช้วิชานี้เป็นวิชาบังคับก่อนในหลักสูตรนี้: ${E(dep.join(', '))} ระบบจะเอาเงื่อนไขนั้นออก</small></p>`:''}`}
- <p>${sole?'':`<button type="button" class="btn c" onclick="cqPgDel('${E(cid)}')">ยืนยันนำออก</button> `}<button type="button" class="btn" onclick="$('md').innerHTML=''">${sole?'ปิด':'ยกเลิก'}</button></p></div></div>`}
-function cqPgDel(cid){$('md').innerHTML='';cqPgRun((P,p)=>{const x=fqCsAll(p.plan).find(y=>y.c.id===cid);if(!x)return 'ไม่พบรายวิชานี้ในหลักสูตรแล้ว โหลดข้อมูลล่าสุดแล้ว';const k=cqNorm(x.c.code);if(!k||cqUses(P,k)<2)return 'ไม่สามารถนำออกได้: วิชานี้จะหายไปจากคลังรายวิชา';
-  x.t.courses=x.t.courses.filter(c=>c.id!==cid);fqPurgePre(p.plan,[cid]);return ''},'นำรายวิชาออกจากหลักสูตรเรียบร้อย (ข้อมูลวิชาในคลังยังอยู่)')}
-
-/* ===== จัดการแผนการศึกษาแบบรวมศูนย์ (เฟส 1): เลือก คณะ → สาขา → หลักสูตร → ชั้นปี → ภาคการศึกษา แล้วดูรายวิชาและเพิ่มวิชาจากคลังกลาง
-   ใช้ข้อมูลเดิม programs[].plan[].terms[].courses[] ไม่เพิ่ม field/ตารางใหม่ และเรียกใช้ cqIndex/cqFresh/putDoc/cqScopeErr ของเดิม
-   ประเภทวิชา (type) และวิชาบังคับก่อน (pre) อยู่ในรายวิชาของแต่ละหลักสูตรเหมือนเดิม การเพิ่มวิชาเขียนเฉพาะหลักสูตรที่เลือก
-   ยังไม่รวม: สร้างวิชาใหม่ที่ไม่มีในคลัง, เพิ่มหลายแถวพร้อมกัน (เฟสถัดไป) */
-const PM={fac:'',maj:'',prog:'',yr:'',tm:'',q:'',at:'',sel:new Set(),n:20,ed:null,nw:null,nwE:{},nwC:{},nwG:''};
-const pmYn=(y,i)=>y.name||'ชั้นปีที่ '+(i+1),pmTn=(t,i)=>t.name||'ภาคการศึกษาที่ '+(i+1),pmNm=(a,b)=>(a.nameTh||'').localeCompare(b.nameTh||'','th');
-function pmSet(k,v){PM[k]=v;if(k==='q')PM.n=20;const o=['fac','maj','prog','yr','tm'],i=o.indexOf(k);if(i>=0){o.slice(i+1).forEach(x=>PM[x]='');PM.q='';PM.n=20;PM.sel.clear();PM.ed=null;PM.nw=null;PM.nwE={};PM.nwC={};PM.nwG=''}
- const a=document.activeElement,s=a&&a.id==='pmq'?a.selectionStart:null;render();if(s!=null){const n=$('pmq');if(n){n.focus();try{n.setSelectionRange(s,s)}catch(e){}}}}
-function pmView(){const F=fqF().slice().sort(pmNm),M=fqM(),P=fqP(),mo=M.filter(m=>m.facultyId===PM.fac).sort(pmNm);
- if(!F.some(f=>f.id===PM.fac))PM.fac='';
- if(!mo.some(m=>m.id===PM.maj))PM.maj='';
- const po=PM.maj?P.filter(p=>p.majorId===PM.maj).sort(pmNm):[],p=po.find(x=>x.id===PM.prog);if(!p)PM.prog='';
- const yo=p&&Array.isArray(p.plan)?p.plan.filter(y=>y&&y.id):[],y=yo.find(x=>x.id===PM.yr);if(!y)PM.yr='';
- const to=y&&Array.isArray(y.terms)?y.terms.filter(t=>t&&t.id):[],t=to.find(x=>x.id===PM.tm);if(!t)PM.tm='';
- const sl=(id,lb,k,cur,ops,ph,off)=>`<div><label for="${id}">${lb}</label><select id="${id}" onchange="pmSet('${k}',this.value)"${off?' disabled':''}><option value="">${ph}</option>${ops.map(([v,l])=>`<option value="${E(v)}"${cur===v?' selected':''}>${E(l)}</option>`).join('')}</select></div>`;
- const head=`<h1>จัดการแผนการศึกษา</h1><p>เลือก คณะ → สาขา → หลักสูตร → ชั้นปี → ภาคการศึกษา เพื่อดูรายวิชาในภาคนั้นและเพิ่มวิชาจากคลังรายวิชากลาง ตารางแผนการศึกษาเดิมยังแก้ไขได้ที่หน้า <a href="#/admin/programs">จัดการหลักสูตร</a> และ <a href="#/admin/courses/program">จัดรายวิชาตามหลักสูตร</a></p>${dbBanner()}
- <div class="g2">${sl('pmf','คณะ/วิทยาลัย','fac',PM.fac,F.map(f=>[f.id,f.nameTh]),'— เลือกคณะ —')}${sl('pmm','สาขาวิชา','maj',PM.maj,mo.map(m=>[m.id,m.nameTh]),PM.fac?'— เลือกสาขา —':'เลือกคณะก่อน',!PM.fac)}
- ${sl('pmp','หลักสูตร','prog',PM.prog,po.map(x=>[x.id,x.nameTh+' ('+fqLv(x.level)+')']),PM.maj?(po.length?'— เลือกหลักสูตร —':'สาขานี้ยังไม่มีหลักสูตร'):'เลือกสาขาก่อน',!PM.maj)}${sl('pmy','ชั้นปี','yr',PM.yr,yo.map((x,i)=>[x.id,pmYn(x,i)]),p?(yo.length?'— เลือกชั้นปี —':'หลักสูตรนี้ยังไม่มีชั้นปี'):'เลือกหลักสูตรก่อน',!p)}
- ${sl('pmt','ภาคการศึกษา','tm',PM.tm,to.map((x,i)=>[x.id,pmTn(x,i)]),y?(to.length?'— เลือกภาคการศึกษา —':'ชั้นปีนี้ยังไม่มีภาคการศึกษา'):'เลือกชั้นปีก่อน',!y)}</div>`;
- if(p&&!yo.length)return head+`<div class="hint"><p>หลักสูตรนี้ยังไม่มีชั้นปีและภาคการศึกษา กรุณาสร้างแผนการศึกษาที่ <a href="#/admin/programs/edit/${E(p.id)}">หน้าแก้ไขหลักสูตร</a> ก่อน</p></div>`;
- if(!t)return head+'<p><small>เลือกให้ครบทั้ง 5 ช่อง ระบบจะแสดงรายวิชาในภาคการศึกษาที่เลือก</small></p>';
- const yi=yo.indexOf(y),ti=to.indexOf(t),cs=(t.courses||[]).filter(Boolean),all=fqCsAll(p.plan),byId=new Map(all.map(x=>[x.c.id,x.c])),have=new Set(all.map(x=>cqNorm(x.c.code)).filter(Boolean)),
- tot=cs.reduce((s,c)=>s+crN(c.credits),0),
- rows=cs.length?`<div class="cqw"><table class="cqt"><thead><tr><th>รหัสวิชา</th><th>ชื่อวิชา</th><th>หน่วยกิต</th><th>ประเภทวิชา</th><th>วิชาบังคับก่อน</th><th>จัดการ</th></tr></thead><tbody>${cs.map(c=>{const pr=(c.pre||[]).map(id=>byId.get(id)).filter(Boolean).map(x=>x.code||x.name);return `<tr><td data-l="รหัสวิชา"><b>${E(c.code)}</b></td><td data-l="ชื่อวิชา">${E(c.name)}<br><small>${E(c.nameEn)}</small>${c.show===false?' <span class="tag">ซ่อนอยู่</span>':''}</td><td data-l="หน่วยกิต">${E(c.credits)}</td><td data-l="ประเภท">${E((CS_TY.find(x=>x[0]===csTyK(c.type))||[,''])[1])}</td><td data-l="บังคับก่อน">${pr.length?E(pr.join(', ')):'-'}</td><td data-l="จัดการ"><button type="button" class="btn s" onclick="pmEdOpen('${E(c.id)}')" aria-label="แก้ไขรายวิชา ${E(c.code)}">แก้ไข</button> <button type="button" class="btn s c" onclick="pmDelAsk('${E(c.id)}')" aria-label="นำรายวิชา ${E(c.code)} ออกจากภาคนี้">นำออก</button></td></tr>`}).join('')}</tbody></table></div>`:'<p><small>ยังไม่มีรายวิชาในภาคการศึกษานี้</small></p>',
- q=PM.q.trim().toLowerCase(),pool=[...cqIndex().values()].filter(e=>!have.has(e.key)),lib=pool.filter(e=>!q||cqHay(e).includes(q)).sort((a,b)=>a.key.localeCompare(b.key)),
- pk=new Set(pool.map(e=>e.key)),tyOk=CS_TY.some(x=>x[0]===PM.at),tyL=(CS_TY.find(x=>x[0]===PM.at)||[,''])[1],sel=(PM.sel=new Set([...PM.sel].filter(k=>pk.has(k)))).size,shown=lib.slice(0,PM.n),
- add=`<h2>เพิ่มรายวิชาจากคลังรายวิชากลาง</h2><p><small>เลือกประเภทวิชาก่อน แล้วเลือกวิชาจากคลังกลางได้หลายรายการ ระบบคัดลอกข้อมูลวิชา (รหัส ชื่อ หน่วยกิต คำอธิบาย) เข้าภาคนี้ทันที ประเภทวิชาที่เลือกใช้กับหลักสูตรนี้เท่านั้น ไม่เปลี่ยนประเภทของวิชานี้ในหลักสูตรอื่น วิชาที่มีอยู่ในหลักสูตรนี้แล้ว (ภาคใดก็ตาม) จะไม่แสดง</small></p>
- <div><label for="pmty">1. เลือกประเภทวิชาที่จะเพิ่ม</label><select id="pmty" onchange="pmSet('at',this.value)"><option value="">— เลือกประเภทวิชา —</option>${CS_TY.map(([v,l])=>`<option value="${v}"${PM.at===v?' selected':''}>${l}</option>`).join('')}</select></div>
- ${!tyOk?'<p><small>เลือกประเภทวิชาก่อน ระบบจึงจะแสดงรายวิชาจากคลังกลาง</small></p>':`<div><label for="pmq">2. ค้นหาในรายการ (รหัสวิชา ชื่อไทย ชื่ออังกฤษ)</label><input id="pmq" type="search" value="${E(PM.q)}" oninput="pmSet('q',this.value)" autocomplete="off"></div>
- <p class="evm" role="status" aria-live="polite">${q?'พบ '+lib.length+' รายวิชาในคลังที่ยังไม่อยู่ในหลักสูตรนี้':'วิชาในคลังที่ยังไม่อยู่ในหลักสูตรนี้ '+lib.length+' รายวิชา'} · เลือกแล้ว ${sel} รายวิชา</p>
- <p><button type="button" class="btn s"${shown.length?'':' disabled'} onclick="pmSelVis()">เลือกทั้งหมดที่แสดง</button> <button type="button" class="btn s"${sel?'':' disabled'} onclick="pmSelClr()">ล้างที่เลือก</button> <button type="button" class="btn b"${sel?'':' disabled'} onclick="pmAddSel()">เพิ่มที่เลือก ${sel} รายวิชา เป็น${E(tyL)}</button></p>
- ${shown.map(e=>`<div class="row"><label><input type="checkbox" data-ck="${E(e.key)}"${PM.sel.has(e.key)?' checked':''} onchange="pmSelTog(this.dataset.ck,this.checked)" aria-label="เลือกวิชา ${E(e.code)}"> <b>${E(e.code)}</b> ${E(e.name)} <small>/ ${E(e.nameEn)} · ${E(e.credits)} หน่วยกิต · ใช้ใน ${e.uses.length} หลักสูตร</small></label> <button type="button" class="btn s b" data-k="${E(e.key)}" onclick="pmAdd(this.dataset.k)">เพิ่ม</button></div>`).join('')}${lib.length>shown.length?`<p><button type="button" class="btn s" onclick="pmSet('n',PM.n+20)">แสดงเพิ่ม (เหลืออีก ${lib.length-shown.length})</button></p>`:''}${!pool.length?'<p><small>ยังไม่มีรายวิชาอื่นในคลังกลางที่เพิ่มได้ (คลังคำนวณจากรายวิชาในแผนการศึกษาของทุกหลักสูตร) หากไม่พบวิชา ใช้ "สร้างรายวิชาใหม่" ด้านล่าง</small></p>':(!lib.length?'<p><small>ไม่พบรายวิชาที่ตรงกับคำค้น</small></p>':'')}`}`;
- return head+`<h2>${E(pmYn(y,yi))} › ${E(pmTn(t,ti))} <small>(${cs.length} วิชา${tot?' · '+(+tot.toFixed(2))+' หน่วยกิต':''})</small></h2>${rows}${pmEd()}${add}${pmNw()}`}
-const pmAdd=k=>pmAddMany([k]);
-const pmAddSel=()=>pmAddMany([...PM.sel]);
-function pmSelTog(k,on){on?PM.sel.add(k):PM.sel.delete(k);render();const n=document.querySelector('[data-ck="'+String(k).replace(/["\\]/g,'\\$&')+'"]');if(n)n.focus()}
-function pmSelClr(){PM.sel.clear();render()}
-function pmSelVis(){const p=fqP().find(x=>x.id===PM.prog),have=new Set(fqCsAll(p&&p.plan).map(x=>cqNorm(x.c.code)).filter(Boolean)),q=PM.q.trim().toLowerCase();
- [...cqIndex().values()].filter(e=>!have.has(e.key)&&(!q||cqHay(e).includes(q))).sort((a,b)=>a.key.localeCompare(b.key)).slice(0,PM.n).forEach(e=>PM.sel.add(e.key));render()}
-/* เพิ่มหลายวิชาครั้งเดียว: ตรวจทุกรายการกับข้อมูลล่าสุดก่อน ถ้ามีรายการใดเพิ่มไม่ได้จะไม่เขียนอะไรเลย แล้วบอกรหัสวิชาที่มีปัญหา */
-async function pmAddMany(keys){if(!DBH)return say(dbOff(),false);keys=[...new Set(keys)];if(!keys.length)return say('ยังไม่ได้เลือกรายวิชา',false);
- try{const P=await cqFresh(),p=P.find(x=>x.id===PM.prog),bad=m=>{SHR.programs=P;return say(m,false)};
-  if(!p)return bad('ไม่พบหลักสูตรนี้ (อาจถูกลบโดยผู้ดูแลคนอื่น) โหลดข้อมูลล่าสุดแล้ว');
-  if(!CS_TY.some(x=>x[0]===PM.at))return say('เลือกประเภทวิชาก่อนเพิ่มรายวิชา',false);
-  const y=(p.plan||[]).find(x=>x&&x.id===PM.yr),t=y&&(y.terms||[]).find(x=>x&&x.id===PM.tm);
-  if(!t)return bad('ไม่พบชั้นปี/ภาคการศึกษาที่เลือก (อาจถูกแก้ไขโดยผู้ดูแลคนอื่น) ไม่มีข้อมูลถูกเปลี่ยน โหลดข้อมูลล่าสุดแล้ว');
-  const idx=cqIndex(P),have=new Set(fqCsAll(p.plan).map(x=>cqNorm(x.c.code)).filter(Boolean)),er=[],out=[];
-  keys.forEach((k,i)=>{const e=idx.get(k);if(!e)return er.push('ไม่พบวิชา '+k+' ในคลังแล้ว (อาจถูกเปลี่ยนรหัสหรือนำออก)');
-   if(have.has(k))return er.push('หลักสูตรนี้มีรายวิชา '+e.code+' อยู่แล้ว');
-   const se=cqScopeErr(e.scope,[...e.uses.map(u=>u.p),p]);if(se)return er.push('เพิ่มวิชา '+e.code+' ไม่ได้: '+se);
-   out.push({id:mkId('cs')+i.toString(36),code:e.code,name:e.name,nameEn:e.nameEn,credits:e.credits,type:PM.at,desc:e.desc,descEn:e.descEn,scope:e.scope||'',pre:[],show:true})});
-  if(er.length)return bad('ยังไม่ได้เพิ่ม ไม่มีข้อมูลถูกเปลี่ยน: '+er.slice(0,5).join(' / ')+(er.length>5?' และอีก '+(er.length-5)+' รายการ':''));
-  if(!Array.isArray(t.courses))t.courses=[];out.forEach(c=>t.courses.push(c));
-  await putDoc('programs',P);keys.forEach(k=>PM.sel.delete(k));
-  say('เพิ่ม '+out.length+' รายวิชา ('+out.map(c=>c.code).join(', ')+') เป็น'+(CS_TY.find(x=>x[0]===PM.at)[1])+' ใน '+(y.name||'ชั้นปี')+' › '+(t.name||'ภาคการศึกษา')+' เรียบร้อย')}catch(er){dbErr('บันทึกไม่สำเร็จ ไม่มีข้อมูลถูกเปลี่ยน',er)}}
-
-/* ===== เฟส 2: สร้างรายวิชาใหม่ (หลายแถว) เมื่อไม่พบในคลังกลาง แล้วนำเข้าภาคการศึกษาที่เลือกไว้ทันที
-   ตรวจรหัสซ้ำ (ระหว่างแถว / ในหลักสูตร / ในคลังกลาง) ก่อนเขียน ถ้ามีในคลังแล้วเสนอ "ใช้วิชาเดิม" (คัดลอกข้อมูลกลางของวิชาเดิม ไม่สร้างซ้ำ ไม่เขียนทับ)
-   บันทึกครั้งเดียว (all-or-nothing) ผ่าน cqFresh + putDoc('programs') ข้อมูลกลางของวิชา (รหัส ชื่อ หน่วยกิต) แยกจาก type/pre ซึ่งเป็นของหลักสูตรที่เลือก */
-const pmNwRow=()=>({id:mkId('nw')+Math.random().toString(36).slice(2,5),code:'',name:'',nameEn:'',credits:'',ty:PM.at||'required',use:'',pre:[]});
-const pmNwGet=id=>(PM.nw||[]).find(r=>r.id===id);
-function pmNwOpen(){PM.nw=[pmNwRow()];PM.nwE={};PM.nwC={};PM.nwG='';render()}
-function pmNwAdd(){if(!PM.nw)return;PM.nw.push(pmNwRow());render()}
-function pmNwDel(id){if(!PM.nw)return;PM.nw=PM.nw.filter(r=>r.id!==id);PM.nw.forEach(r=>{r.pre=(r.pre||[]).filter(t=>t!==id)});delete PM.nwE[id];delete PM.nwC[id];if(!PM.nw.length)PM.nw=null;render()}
-function pmNwClose(){const d=(PM.nw||[]).some(r=>r.code||r.name||r.nameEn||r.credits);if(d&&!confirm('ปิดแบบฟอร์มและทิ้งข้อมูลที่กรอกไว้ใช่หรือไม่'))return;PM.nw=null;PM.nwE={};PM.nwC={};PM.nwG='';render()}
-function pmNwIn(id,f,v){const r=pmNwGet(id);if(!r)return;r[f]=v;if(f==='code'&&r.use)r.use='';delete PM.nwE[id];delete PM.nwC[id]}
-function pmNwPre(id,tok,on){const r=pmNwGet(id);if(!r)return;r.pre=(r.pre||[]).filter(t=>t!==tok);if(on)r.pre.push(tok);delete PM.nwE[id];const n=$(id+'_none');if(n)n.checked=!r.pre.length;pmNwCyc()}
-function pmNwPreNone(id){const r=pmNwGet(id);if(!r)return;r.pre=[];delete PM.nwE[id];document.querySelectorAll('#'+id+'_pl input').forEach(i=>{i.checked=false});const n=$(id+'_none');if(n)n.checked=true}
-function pmNwCyc(){const R=PM.nw||[];R.forEach(x=>{const ds=new Set(),q=[x.id];while(q.length){const k=q.pop();R.forEach(y=>{if((y.pre||[]).includes(k)&&!ds.has(y.id)){ds.add(y.id);q.push(y.id)}})}
- document.querySelectorAll('#'+x.id+'_pl input[data-tok]').forEach(i=>{const lb=i.closest('label');if(lb)lb.dataset.cyc=ds.has(i.dataset.tok)?'1':''});const q2=$(x.id+'_pq');pmNwPq(x.id,q2?q2.value:'')})}
-function pmNwPq(id,v){v=String(v||'').trim().toLowerCase();const box=$(id+'_pl'),o=$(id+'_pn');if(!box||!o)return;let n=0;box.querySelectorAll('[data-t]').forEach(x=>{const h=x.dataset.cyc==='1'||(!!v&&!x.dataset.t.includes(v));x.style.display=h?'none':'';if(!h)n++});
- if(!v){o.innerHTML='';return}
- const p=fqP().find(x=>x.id===PM.prog),have=new Set(fqCsAll(p&&p.plan).map(x=>cqNorm(x.c.code)).filter(Boolean)),lib=[...cqIndex().values()].filter(e=>!have.has(e.key)&&cqHay(e).includes(v)).slice(0,5);
- o.innerHTML=lib.length?`<div class="msg">พบในคลังกลางแต่ยังไม่อยู่ในหลักสูตรนี้: ${lib.map(e=>E(e.code+' '+e.name)).join(', ')} ต้องเพิ่มวิชานั้นเข้าหลักสูตรนี้ก่อน (ใช้ส่วน "เพิ่มรายวิชาจากคลังรายวิชากลาง") จึงจะเลือกเป็นวิชาบังคับก่อนได้</div>`:(!n?`<div class="msg er">ไม่พบวิชา "${E(v)}" ในระบบ กรุณาสร้างหรือเพิ่มวิชานั้นก่อน ระบบจะไม่สร้างข้อมูลอ้างอิงให้อัตโนมัติ</div>`:'')}
-function pmNwUse(id){const r=pmNwGet(id);if(!r||!PM.nwC[id])return;r.use=PM.nwC[id];delete PM.nwE[id];delete PM.nwC[id];render()}
-function pmNwUnuse(id){const r=pmNwGet(id);if(!r)return;r.use='';render()}
-function pmNw(){if(!PM.nw)return `<h2>ไม่พบวิชาในคลังกลาง?</h2><p><button type="button" class="btn" onclick="pmNwOpen()">+ สร้างรายวิชาใหม่</button></p>`;
- const idx=cqIndex(),R=PM.nw,pp=fqP().find(x=>x.id===PM.prog),pc=pp?fqCsAll(pp.plan):[];
- const preUi=(r)=>{const ds=new Set(),q=[r.id];while(q.length){const k=q.pop();R.forEach(x=>{if((x.pre||[]).includes(k)&&!ds.has(x.id)){ds.add(x.id);q.push(x.id)}})}
-  const it=[...pc.filter(a=>a.c.code||a.c.name).map(a=>({tok:a.c.id,code:a.c.code,name:a.c.name,en:a.c.nameEn,w:pmYn(a.y,a.yi)+' › '+pmTn(a.t,a.ti)})),...R.map((x,j)=>({x,j})).filter(o=>o.x.id!==r.id&&!ds.has(o.x.id)).map(o=>{const e=o.x.use&&idx.get(o.x.use);return{tok:o.x.id,code:e?e.code:o.x.code,name:e?e.name:o.x.name,en:e?e.nameEn:o.x.nameEn,w:'รายวิชาใหม่ แถวที่ '+(o.j+1)}})];
-  return `<div class="pmpre"><label for="${r.id}_pq">วิชาบังคับก่อน (เฉพาะหลักสูตรนี้)</label><label><input type="checkbox" id="${r.id}_none"${(r.pre||[]).length?'':' checked'} onchange="pmNwPreNone('${r.id}')"> ไม่มีวิชาบังคับก่อน</label><input id="${r.id}_pq" type="search" placeholder="ค้นหารหัสหรือชื่อวิชา แล้วติ๊กเลือกได้หลายวิชา" oninput="pmNwPq('${r.id}',this.value)" autocomplete="off"><div id="${r.id}_pl" class="cqw" style="max-height:180px;overflow:auto">${it.length?it.map(o=>`<label class="row" data-t="${E(((o.code||'')+' '+(o.name||'')+' '+(o.en||'')).toLowerCase())}"><input type="checkbox" data-tok="${E(o.tok)}"${(r.pre||[]).includes(o.tok)?' checked':''} onchange="pmNwPre('${r.id}',this.dataset.tok,this.checked)"> <b>${E(o.code||'-')}</b> ${E(o.name)} <small>(${E(o.w)})</small></label>`).join(''):'<p><small>ยังไม่มีรายวิชาอื่นให้เลือก</small></p>'}</div><div id="${r.id}_pn" role="status" aria-live="polite"></div></div>`};
- const rows=R.map((r,i)=>{const e=r.use&&idx.get(r.use),er=PM.nwE[r.id],ty=`<div><label for="${r.id}_ty">ประเภทวิชาในหลักสูตรนี้</label><select id="${r.id}_ty" onchange="pmNwIn('${r.id}','ty',this.value)">${CS_TY.map(([v,l])=>`<option value="${v}"${r.ty===v?' selected':''}>${l}</option>`).join('')}</select></div>`;
-  const body=e?`<div class="msg ok">ใช้วิชาเดิมจากคลังกลาง: <b>${E(e.code)}</b> ${E(e.name)} / ${E(e.nameEn)} · ${E(e.credits)} หน่วยกิต (จะไม่สร้างวิชาใหม่) <button type="button" class="btn s" onclick="pmNwUnuse('${r.id}')">ยกเลิก ใช้วิชาเดิม</button></div><div class="g2">${ty}</div>`
-   :`<div class="g2"><div><label for="${r.id}_c">รหัสวิชา *</label><input id="${r.id}_c" value="${E(r.code)}" oninput="pmNwIn('${r.id}','code',this.value)" autocomplete="off"></div><div><label for="${r.id}_cr">หน่วยกิต * (เช่น 3 หรือ 3(3-0-6))</label><input id="${r.id}_cr" value="${E(r.credits)}" oninput="pmNwIn('${r.id}','credits',this.value)" autocomplete="off"></div><div><label for="${r.id}_n">ชื่อวิชาภาษาไทย *</label><input id="${r.id}_n" value="${E(r.name)}" oninput="pmNwIn('${r.id}','name',this.value)" autocomplete="off"></div><div><label for="${r.id}_en">ชื่อวิชาภาษาอังกฤษ *</label><input id="${r.id}_en" value="${E(r.nameEn)}" oninput="pmNwIn('${r.id}','nameEn',this.value)" autocomplete="off"></div>${ty}</div>`;
-  return `<fieldset class="fqfs"><legend>รายวิชาใหม่ แถวที่ ${i+1}</legend>${er?`<div class="msg er" role="alert">${E(er)}${PM.nwC[r.id]?` <button type="button" class="btn s b" onclick="pmNwUse('${r.id}')">ใช้วิชาเดิม</button>`:''}</div>`:''}${body}${preUi(r)}<p><button type="button" class="btn s c" onclick="pmNwDel('${r.id}')">ลบแถวนี้</button></p></fieldset>`}).join('');
- return `<h2>สร้างรายวิชาใหม่</h2><p><small>ใช้เมื่อค้นหาในคลังกลางแล้วไม่พบ ระบบจะตรวจรหัสซ้ำก่อนบันทึก และเพิ่มวิชาเข้าภาคการศึกษาที่เลือกไว้ด้านบนทันที ข้อมูลทั้งหมดจะบันทึกพร้อมกัน หากมีแถวใดผิดพลาดจะยังไม่บันทึกเลย</small></p>${rows}
- ${PM.nwG?`<div class="msg er" role="alert">${E(PM.nwG)}</div>`:''}<p><button type="button" class="btn s" onclick="pmNwAdd()">+ เพิ่มแถว</button> <button type="button" class="btn b" onclick="pmNwSave()">บันทึกทั้งหมด (${R.length} รายการ)</button> <button type="button" class="btn" onclick="pmNwClose()">ยกเลิก</button></p>`}
-async function pmNwSave(){if(!DBH)return say(dbOff(),false);const R=PM.nw||[];if(!R.length)return;
- PM.nwE={};PM.nwC={};PM.nwG='';
- try{const P=await cqFresh(),p=P.find(x=>x.id===PM.prog),fail=g=>{SHR.programs=P;PM.nwG=g;return say('ยังไม่ได้บันทึก: '+g,false)};
-  if(!p)return fail('ไม่พบหลักสูตรนี้ (อาจถูกลบโดยผู้ดูแลคนอื่น) ไม่มีข้อมูลถูกเปลี่ยน');
-  const y=(p.plan||[]).find(x=>x&&x.id===PM.yr),t=y&&(y.terms||[]).find(x=>x&&x.id===PM.tm);
-  if(!t)return fail('ไม่พบชั้นปี/ภาคการศึกษาที่เลือก (อาจถูกแก้ไขโดยผู้ดูแลคนอื่น) ไม่มีข้อมูลถูกเปลี่ยน');
-  const idx=cqIndex(P),have=new Set(fqCsAll(p.plan).map(x=>cqNorm(x.c.code)).filter(Boolean)),seen=new Map(),E_={},C_={},out=[],nid=R.map((r,i)=>mkId('cs')+i.toString(36)),oMap={};
-  R.forEach((r,i)=>{const f={code:String(r.code||'').trim(),name:String(r.name||'').trim(),nameEn:String(r.nameEn||'').trim(),credits:String(r.credits||'').trim()};let key,ex=null,er='';
-   if(!CS_TY.some(x=>x[0]===r.ty))er='ประเภทวิชาไม่ถูกต้อง';
-   if(!er&&r.use){key=r.use;ex=idx.get(key);if(!ex)er='วิชาเดิมนี้ไม่อยู่ในคลังกลางแล้ว (อาจถูกเปลี่ยนรหัสหรือนำออก) ให้ยกเลิก "ใช้วิชาเดิม" แล้วตรวจสอบใหม่'}
-   else if(!er){if(!f.code)er='ต้องระบุรหัสวิชา';else if(!f.name)er='ต้องระบุชื่อวิชาภาษาไทย';else if(!f.nameEn)er='ต้องระบุชื่อวิชาภาษาอังกฤษ';else if(!f.credits)er='ต้องระบุจำนวนหน่วยกิต';else if(!cqRe.test(f.credits)||!(parseFloat(f.credits)>=0&&parseFloat(f.credits)<=30))er='หน่วยกิตไม่ถูกต้อง (ใช้ เช่น 3 หรือ 3(3-0-6) และไม่เกิน 30)';else key=cqNorm(f.code)}
-   if(!er){if(seen.has(key))er='รหัสวิชา '+(ex?ex.code:f.code)+' ซ้ำกับแถวที่ '+(seen.get(key)+1)+' ในหน้านี้';else if(have.has(key))er='หลักสูตรนี้มีรายวิชา '+(ex?ex.code:f.code)+' อยู่แล้ว';else if(!ex&&idx.has(key)){const o=idx.get(key);er='รหัสวิชา '+f.code+' มีอยู่ในคลังกลางแล้ว: '+o.name+' · '+o.credits+' หน่วยกิต เลือก "ใช้วิชาเดิม" เพื่อไม่ให้สร้างซ้ำ หรือแก้รหัสวิชา';C_[r.id]=key}}
-   if(!er&&ex){const se=cqScopeErr(ex.scope,[...ex.uses.map(u=>u.p),p]);if(se)er='เพิ่มวิชา '+ex.code+' ไม่ได้: '+se}
-   if(!er)seen.set(key,i);
-   if(er)E_[r.id]=er;else out.push(oMap[r.id]=ex?{id:nid[i],code:ex.code,name:ex.name,nameEn:ex.nameEn,credits:ex.credits,type:r.ty,desc:ex.desc,descEn:ex.descEn,scope:ex.scope||'',pre:[],show:true}
-    :{id:nid[i],code:f.code,name:f.name,nameEn:f.nameEn,credits:f.credits,type:r.ty,desc:'',descEn:'',scope:'',pre:[],show:true})});
-  /* วิชาบังคับก่อน (pre = id ของรายวิชาในหลักสูตรนี้ ตามโครงสร้างเดิม): ตรวจวิชาตัวเอง/ซ้ำ/ไม่มีอยู่จริง/วนซ้ำ ก่อนเขียน */
-  {const pids=new Set(fqCsAll(p.plan).map(a=>a.c.id)),pcode=new Map(fqCsAll(p.plan).map(a=>[a.c.id,cqNorm(a.c.code)])),rid=new Map(R.map((r,i)=>[r.id,i])),codeOf=r=>r.use||cqNorm(String(r.code||'').trim()),res={};
-   R.forEach((r,i)=>{if(E_[r.id])return;const toks=r.pre||[],seenT=new Set(),seenC=new Set(),ids=[];let er='';
-    for(const tk of toks){if(tk===r.id){er='เลือกรายวิชาตัวเองเป็นวิชาบังคับก่อนไม่ได้';break}
-     if(seenT.has(tk)){er='เลือกวิชาบังคับก่อนซ้ำ';break}seenT.add(tk);
-     let cd,nv;if(rid.has(tk)){const o=R[rid.get(tk)];if(E_[o.id]){er='วิชาบังคับก่อน (แถวที่ '+(rid.get(tk)+1)+') ยังมีข้อผิดพลาด กรุณาแก้ไขแถวนั้นก่อน';break}cd=codeOf(o);nv=nid[rid.get(tk)]}
-     else if(pids.has(tk)){cd=pcode.get(tk);nv=tk}else{er='วิชาบังคับก่อนที่เลือกไม่อยู่ในหลักสูตรนี้แล้ว (อาจถูกนำออกโดยผู้ดูแลคนอื่น) ให้สร้างหรือเพิ่มวิชานั้นก่อน แล้วเลือกใหม่';break}
-     if(cd){if(seenC.has(cd)){er='วิชาบังคับก่อนมีรหัสวิชาซ้ำกัน';break}seenC.add(cd)}ids.push(nv)}
-    if(er)E_[r.id]=er;else res[r.id]=ids});
-   const st={},cyc=id=>{if(st[id]===2)return false;if(st[id]===1)return true;st[id]=1;for(const tk of (R[rid.get(id)].pre||[])){if(rid.has(tk)&&cyc(tk))return true}st[id]=2;return false};
-   R.forEach((r,i)=>{if(!E_[r.id]&&cyc(r.id))E_[r.id]='วิชาบังคับก่อนวนซ้ำกับรายวิชาใหม่แถวอื่น (A ต้องเรียนก่อน B และ B ต้องเรียนก่อน A) กรุณาแก้ไข'});
-   R.forEach(r=>{if(!E_[r.id]&&oMap[r.id])oMap[r.id].pre=res[r.id]||[]})}
-  const n=Object.keys(E_).length;if(n){PM.nwE=E_;PM.nwC=C_;return fail('พบข้อผิดพลาด '+n+' แถว ไม่มีข้อมูลถูกเปลี่ยน กรุณาแก้ไขตามข้อความในแต่ละแถวแล้วกดบันทึกอีกครั้ง')}
-  if(!Array.isArray(t.courses))t.courses=[];out.forEach(c=>t.courses.push(c));
-  await putDoc('programs',P);PM.nw=null;PM.nwE={};PM.nwC={};PM.nwG='';say('บันทึกสำเร็จ: เพิ่ม '+out.length+' รายวิชา ('+out.map(c=>c.code).join(', ')+') เข้า '+(y.name||'ชั้นปี')+' › '+(t.name||'ภาคการศึกษา')+' แล้ว');scrollTo(0,0)}
- catch(er){PM.nwG='บันทึกไม่สำเร็จ ข้อมูลที่กรอกยังอยู่ในแบบฟอร์ม';dbErr('บันทึกไม่สำเร็จ',er)}}
-
-/* ===== เฟส 3: นำรายวิชาออกจากภาคการศึกษาที่เลือก (ลบเฉพาะรายการนี้ในแผนของหลักสูตรนี้) =====
-   ไม่ลบจากคลังกลาง/หลักสูตรอื่น: คลังคำนวณจากแผนของทุกหลักสูตร จึงไม่อนุญาตนำออกถ้านี่เป็นหลักสูตรสุดท้ายที่ใช้รหัสนี้ (ตรงกับหน้า "จัดรายวิชาตามหลักสูตร")
-   วิชาอื่นที่ใช้วิชานี้เป็นวิชาบังคับก่อน (ในหลักสูตรเดียวกัน) จะถูกเอาเฉพาะเงื่อนไขนี้ออกด้วย fqPurgePre เดิม ข้อมูลอื่นไม่เปลี่ยน */
-function pmDelAsk(cid){const p=fqP().find(x=>x.id===PM.prog),y=p&&(p.plan||[]).find(a=>a&&a.id===PM.yr),t=y&&(y.terms||[]).find(a=>a&&a.id===PM.tm),c=t&&(t.courses||[]).find(a=>a&&a.id===cid);if(!c)return say('ไม่พบรายวิชานี้ในภาคที่เลือกแล้ว (อาจถูกแก้ไขโดยผู้ดูแลคนอื่น)',false);
- const k=cqNorm(c.code),sole=!k||cqUses(fqP(),k)<2,dep=fqCsAll(p.plan).filter(x=>x.c.id!==cid&&(x.c.pre||[]).includes(cid)).map(x=>x.c.code||x.c.name);
- $('md').innerHTML=`<div class="modal" role="dialog" aria-modal="true" aria-labelledby="pmdt"><div><h3 id="pmdt">นำรายวิชาออกจากภาคการศึกษา</h3><p><b>${E(c.code)}</b> ${E(c.name)}</p><p><small>${E(p.nameTh)} › ${E(y.name||'ชั้นปี')} › ${E(t.name||'ภาคการศึกษา')}</small></p>
- ${sole?`<div class="msg er">ยังนำออกไม่ได้: ${k?'วิชานี้ไม่ได้ใช้ในหลักสูตรอื่น':'วิชานี้ยังไม่มีรหัสวิชา'} หากนำออก ข้อมูลวิชาจะหายไปจากคลังรายวิชากลาง (คลังคำนวณจากแผนการศึกษาของหลักสูตรต่าง ๆ) ${k?'':'หากต้องการลบ ให้ใช้หน้าแก้ไขหลักสูตร'}</div>`
- :`<p>จะนำวิชานี้ออกจากภาคการศึกษานี้ของหลักสูตรนี้เท่านั้น ข้อมูลวิชาในคลังกลางและหลักสูตรอื่นไม่เปลี่ยน</p>${dep.length?`<p><small>วิชาที่ใช้วิชานี้เป็นวิชาบังคับก่อนในหลักสูตรนี้: ${E(dep.join(', '))} ระบบจะเอาเฉพาะเงื่อนไขนี้ออก</small></p>`:''}`}
- <p>${sole?'':`<button type="button" class="btn c" onclick="pmDel('${E(cid)}')">ยืนยันนำออก</button> `}<button type="button" class="btn" onclick="$('md').innerHTML=''">${sole?'ปิด':'ยกเลิก'}</button></p></div></div>`}
-async function pmDel(cid){$('md').innerHTML='';if(!DBH)return say(dbOff(),false);
- try{const P=await cqFresh(),p=P.find(x=>x.id===PM.prog),bad=m=>{SHR.programs=P;return say(m,false)};
-  if(!p)return bad('ไม่พบหลักสูตรนี้ (อาจถูกลบโดยผู้ดูแลคนอื่น) ไม่มีข้อมูลถูกเปลี่ยน โหลดข้อมูลล่าสุดแล้ว');
-  const y=(p.plan||[]).find(a=>a&&a.id===PM.yr),t=y&&(y.terms||[]).find(a=>a&&a.id===PM.tm);
-  if(!t)return bad('ไม่พบชั้นปี/ภาคการศึกษาที่เลือก (อาจถูกแก้ไขโดยผู้ดูแลคนอื่น) ไม่มีข้อมูลถูกเปลี่ยน โหลดข้อมูลล่าสุดแล้ว');
-  const c=(t.courses||[]).find(a=>a&&a.id===cid);if(!c)return bad('ไม่พบรายวิชานี้ในภาคที่เลือกแล้ว (อาจถูกนำออกหรือย้ายโดยผู้ดูแลคนอื่น) ไม่มีข้อมูลถูกเปลี่ยน โหลดข้อมูลล่าสุดแล้ว');
-  const k=cqNorm(c.code);if(!k||cqUses(P,k)<2)return bad('ไม่สามารถนำออกได้: วิชานี้จะหายไปจากคลังรายวิชากลาง');
-  t.courses=t.courses.filter(a=>a&&a.id!==cid);fqPurgePre(p.plan,[cid]);
-  await putDoc('programs',P);say('นำรายวิชา '+c.code+' ออกจาก '+(y.name||'ชั้นปี')+' › '+(t.name||'ภาคการศึกษา')+' เรียบร้อย (ข้อมูลวิชาในคลังกลางและหลักสูตรอื่นไม่เปลี่ยน)')}
- catch(er){dbErr('นำรายวิชาออกไม่สำเร็จ ไม่มีข้อมูลถูกเปลี่ยน',er)}}
-
-/* ===== เฟส 5: แก้ไขรายวิชาจากตารางในภาคที่เลือก — แยก 2 ส่วนชัดเจน =====
-   (ก) ข้อมูลกลาง (CQ_F: code/name/nameEn/credits/desc/descEn/scope) เขียนทุกหลักสูตรที่ใช้รหัสเดียวกัน ตรรกะเดียวกับ cqSave ของหน้า "ค้นหารายวิชา" (ตรวจ snapshot ป้องกันทับ, ตรวจรหัสซ้ำ, ตรวจขอบเขตการใช้วิชา)
-       แยกเป็นฟังก์ชันของหน้านี้เพราะ cqSave อ่านฟอร์ม cqf/WC.cq และเปลี่ยน hash ไปหน้าเดิมเมื่อแก้รหัส จึงเรียกซ้ำตรง ๆ ไม่ได้
-   (ข) เฉพาะหลักสูตรนี้ (type, pre) เขียนเฉพาะรายวิชานี้ในหลักสูตรที่เลือก ไม่แตะหลักสูตรอื่น */
-const pmEdSnap=(P,k)=>{const o={};P.forEach(p=>fqCsAll(p.plan).forEach(({c})=>{if(cqNorm(c.code)===k)o[c.id]=JSON.stringify(CQ_F.map(x=>String(c[x]||'')))}));return o};
-const pmEdPs=c=>JSON.stringify({t:c.type||'',p:[...(c.pre||[])].sort()});
-function pmEdOpen(cid){const p=fqP().find(x=>x.id===PM.prog),y=p&&(p.plan||[]).find(a=>a&&a.id===PM.yr),t=y&&(y.terms||[]).find(a=>a&&a.id===PM.tm),c=t&&(t.courses||[]).find(a=>a&&a.id===cid);
- if(!c)return say('ไม่พบรายวิชานี้ในภาคที่เลือกแล้ว (อาจถูกแก้ไขโดยผู้ดูแลคนอื่น)',false);
- const k=cqNorm(c.code),e=k?cqIndex().get(k):null;
- PM.ed={cid,key:k,f:e?cqPick(e):null,snap:e?pmEdSnap(fqP(),k):null,ty:csTyK(c.type),pre:new Set(c.pre||[]),ps0:pmEdPs(c),mC:null,mP:null};
- render();const n=$('pmed');if(n){n.scrollIntoView({block:'start'});const i=n.querySelector('input,select');if(i)i.focus()}}
-function pmEdClose(){PM.ed=null;render()}
-function pmEdIn(f,v){if(PM.ed&&PM.ed.f)PM.ed.f[f]=v}
-function pmEdPre(id,on){if(!PM.ed)return;on?PM.ed.pre.add(id):PM.ed.pre.delete(id)}
-function pmEdPq(v){v=String(v||'').trim().toLowerCase();document.querySelectorAll('#pmed [data-t]').forEach(n=>{n.style.display=v&&!n.dataset.t.includes(v)?'none':''})}
-function pmEd(){const w=PM.ed;if(!w)return '';const p=fqP().find(x=>x.id===PM.prog),all=p?fqCsAll(p.plan):[],me=all.find(a=>a.c.id===w.cid);
- if(!me){PM.ed=null;return ''}
- const c=me.c,e=w.key?cqIndex().get(w.key):null,n=e?e.uses.length:0,f=w.f,msg=m=>m?`<div class="msg ${m.ok?'ok':'er'}" role="alert">${E(m.t)}</div>`:'',
- fi=(k,l,req,ph)=>`<div><label for="pme_${k}">${l}${req?' *':''}</label><input id="pme_${k}" value="${E(f[k])}" oninput="pmEdIn('${k}',this.value)"${ph?` placeholder="${ph}"`:''} autocomplete="off"></div>`,
- ta=(k,l)=>`<div><label for="pme_${k}">${l}</label><textarea id="pme_${k}" rows="3" oninput="pmEdIn('${k}',this.value)">${E(f[k])}</textarea></div>`;
- const central=f&&e?`<fieldset class="fqfs"><legend>ข้อมูลกลางของรายวิชา (มีผลกับทุกหลักสูตรที่ใช้รหัสเดียวกัน)</legend>
-  <div class="msg">การบันทึกส่วนนี้จะเปลี่ยนข้อมูลของรหัสวิชา <b>${E(e.code)}</b> ในทุกหลักสูตรที่ใช้รหัสนี้ ปัจจุบัน <b>${n}</b> หลักสูตร${n>1?': '+E(e.uses.slice(0,5).map(u=>u.p.nameTh).join(', '))+(n>5?' และอีก '+(n-5)+' หลักสูตร':''):' (หลักสูตรนี้เท่านั้น)'} ไม่เปลี่ยนประเภทวิชา วิชาบังคับก่อน หรือการซ่อน/แสดงของแต่ละหลักสูตร</div>${e.mixed?'<div class="msg">ข้อมูลของวิชานี้ในแต่ละหลักสูตรยังไม่ตรงกัน เมื่อบันทึกจะทำให้ทุกหลักสูตรใช้ค่าตามที่แสดงด้านล่าง</div>':''}
-  <div class="g2">${fi('code','รหัสวิชา',1)}${fi('credits','หน่วยกิต',1,'3 หรือ 3(3-0-6)')}${fi('name','ชื่อวิชาภาษาไทย',1)}${fi('nameEn','ชื่อวิชาภาษาอังกฤษ',1)}${ta('desc','คำอธิบายรายวิชา (ไทย)')}${ta('descEn','คำอธิบายรายวิชา (English)')}
-  <div><label for="pme_scope">ขอบเขตการใช้วิชา</label><select id="pme_scope" onchange="pmEdIn('scope',this.value)"><option value=""${f.scope?'':' selected'}>ยังไม่กำหนด</option>${CQ_SC.map(([v,l])=>`<option value="${v}"${f.scope===v?' selected':''}>${l}</option>`).join('')}</select></div></div>
-  ${msg(w.mC)}<p><button type="button" class="btn b" onclick="pmEdSaveC()">บันทึกข้อมูลกลาง (กระทบ ${n} หลักสูตร)</button></p></fieldset>`
-  :`<div class="msg er">รายวิชานี้ยังไม่มีรหัสวิชา จึงยังไม่อยู่ในคลังกลางและแก้ข้อมูลกลางจากหน้านี้ไม่ได้ กรุณากำหนดรหัสที่ <a href="#/admin/programs/edit/${E(p.id)}">หน้าแก้ไขหลักสูตร</a></div>`;
- const dep=fqDepsAll(p.plan,w.cid),cand=all.filter(a=>a.c.id!==w.cid&&!dep.has(a.c.id)&&(a.c.code||a.c.name||a.c.nameEn));
- const prog=`<fieldset class="fqfs"><legend>เฉพาะหลักสูตรนี้: ${E(p.nameTh)}</legend><div class="msg">ส่วนนี้บันทึกเฉพาะรายวิชานี้ในหลักสูตรที่กำลังจัดการ ไม่กระทบหลักสูตรอื่นที่ใช้รหัสเดียวกัน</div>
-  <label for="pme_ty">ประเภทวิชา</label><select id="pme_ty" onchange="PM.ed.ty=this.value">${CS_TY.map(([v,l])=>`<option value="${v}"${w.ty===v?' selected':''}>${l}</option>`).join('')}</select>
-  <label for="pme_pq">วิชาบังคับก่อน (ติ๊กได้หลายวิชา เลือกจากรายวิชาอื่นในหลักสูตรนี้)</label><input id="pme_pq" type="search" placeholder="ค้นหารหัสหรือชื่อวิชา" oninput="pmEdPq(this.value)" autocomplete="off">
-  <div class="cqw" style="max-height:220px;overflow:auto">${cand.length?cand.map(a=>`<label class="row" data-t="${E((a.c.code+' '+a.c.name+' '+a.c.nameEn).toLowerCase())}"><input type="checkbox"${w.pre.has(a.c.id)?' checked':''} onchange="pmEdPre('${E(a.c.id)}',this.checked)"> <b>${E(a.c.code)}</b> ${E(a.c.name)} <small>(${E(pmYn(a.y,a.yi))} › ${E(pmTn(a.t,a.ti))})</small></label>`).join(''):'<p><small>ไม่มีรายวิชาอื่นให้เลือก</small></p>'}</div>
-  ${msg(w.mP)}<p><button type="button" class="btn b" onclick="pmEdSaveP()">บันทึกเฉพาะหลักสูตรนี้</button></p></fieldset>`;
- return `<section id="pmed"><h2>แก้ไขรายวิชา: ${E(c.code)} ${E(c.name)}</h2>${central}${prog}<p><button type="button" class="btn" onclick="pmEdClose()">ปิดแบบฟอร์ม</button></p></section>`}
-async function pmEdSaveC(){const w=PM.ed;if(!w||!w.f)return;if(!DBH)return say(dbOff(),false);
- const fail=m=>{w.mC={ok:false,t:m};say(m,false);return false},f={};CQ_F.forEach(x=>f[x]=String(w.f[x]||'').trim());
- if(!f.code)return fail('ต้องระบุรหัสวิชา');if(!f.name)return fail('ต้องระบุชื่อวิชาภาษาไทย');if(!f.nameEn)return fail('ต้องระบุชื่อวิชาภาษาอังกฤษ');if(!f.credits)return fail('ต้องระบุจำนวนหน่วยกิต');
- if(!cqRe.test(f.credits)||!(parseFloat(f.credits)>=0&&parseFloat(f.credits)<=30))return fail('หน่วยกิตไม่ถูกต้อง (ใช้ เช่น 3 หรือ 3(3-0-6) และไม่เกิน 30)');
- try{const P=await cqFresh(),hit=[],hp=[],nk=cqNorm(f.code);
-  P.forEach(p=>fqCsAll(p.plan).forEach(({c})=>{if(cqNorm(c.code)===w.key){hit.push(c);hp.push(p)}}));
-  const cur=pmEdSnap(P,w.key),ids=Object.keys(w.snap),stale=ids.length!==hit.length||ids.some(i=>cur[i]!==w.snap[i]);
-  if(stale){SHR.programs=P;PM.ed=null;return say('รายวิชานี้ถูกผู้ดูแลคนอื่นแก้ไขหรือเปลี่ยนแปลงไปก่อนหน้า จึงยังไม่บันทึกทับ ระบบโหลดข้อมูลล่าสุดแล้ว กรุณากด "แก้ไข" เพื่อตรวจสอบและแก้ไขอีกครั้ง',false)}
-  {const se=cqScopeErr(f.scope,hp);if(se)return fail(se)}
-  if(nk!==w.key&&cqIndex(P).has(nk))return fail('รหัสวิชา "'+f.code+'" มีอยู่แล้วในคลังกลาง หากเป็นวิชาเดียวกัน ให้เพิ่มวิชานั้นจากคลังกลางแทน หรือใช้ "รวมรายวิชา" ที่หน้าค้นหารายวิชา ไม่สร้างรหัสซ้ำ');
-  const np=new Set(hp).size;if(np>1&&!confirm('การบันทึกจะเปลี่ยนข้อมูลกลางของรหัสวิชา '+w.key+' ในทุกหลักสูตรที่ใช้รหัสนี้ ('+np+' หลักสูตร) ดำเนินการต่อหรือไม่'))return;
-  hit.forEach(c=>CQ_F.forEach(x=>{c[x]=f[x]}));
-  await putDoc('programs',P);w.key=nk;w.snap=pmEdSnap(P,nk);CQ_F.forEach(x=>w.f[x]=f[x]);w.mC={ok:true,t:'บันทึกข้อมูลกลางเรียบร้อย อัปเดต '+np+' หลักสูตร'};
-  say('บันทึกข้อมูลกลางของ '+f.code+' เรียบร้อย อัปเดต '+np+' หลักสูตร')
- }catch(er){w.mC={ok:false,t:'บันทึกไม่สำเร็จ ไม่มีข้อมูลถูกเปลี่ยน'};dbErr('บันทึกไม่สำเร็จ',er)}}
-async function pmEdSaveP(){const w=PM.ed;if(!w)return;if(!DBH)return say(dbOff(),false);
- const fail=m=>{w.mP={ok:false,t:m};say(m,false);return false};
- if(!CS_TY.some(x=>x[0]===w.ty))return fail('ประเภทวิชาไม่ถูกต้อง');
- try{const P=await cqFresh(),p=P.find(x=>x.id===PM.prog);if(!p){SHR.programs=P;PM.ed=null;return say('ไม่พบหลักสูตรนี้ (อาจถูกลบโดยผู้ดูแลคนอื่น) ไม่มีข้อมูลถูกเปลี่ยน',false)}
-  const x=fqCsAll(p.plan).find(a=>a.c.id===w.cid);if(!x){SHR.programs=P;PM.ed=null;return say('ไม่พบรายวิชานี้ในหลักสูตรแล้ว (อาจถูกนำออกโดยผู้ดูแลคนอื่น) ไม่มีข้อมูลถูกเปลี่ยน โหลดข้อมูลล่าสุดแล้ว',false)}
-  if(pmEdPs(x.c)!==w.ps0){SHR.programs=P;PM.ed=null;return say('ประเภทวิชาหรือวิชาบังคับก่อนของรายวิชานี้ถูกผู้ดูแลคนอื่นแก้ไขไปก่อนหน้า จึงยังไม่บันทึกทับ ระบบโหลดข้อมูลล่าสุดแล้ว กรุณากด "แก้ไข" อีกครั้ง',false)}
-  const ids=new Set(fqCsAll(p.plan).map(a=>a.c.id)),dep=fqDepsAll(p.plan,w.cid),pre=[...w.pre];
-  if(pre.some(i=>i===w.cid||!ids.has(i)))return fail('วิชาบังคับก่อนที่เลือกไม่อยู่ในหลักสูตรนี้แล้ว กรุณาปิดแบบฟอร์มและเปิดใหม่');
-  if(pre.some(i=>dep.has(i)))return fail('เลือกไม่ได้: วิชาที่เลือกใช้วิชานี้เป็นวิชาบังคับก่อนอยู่แล้ว (จะวนซ้ำ)');
-  x.c.type=w.ty;x.c.pre=pre;
-  await putDoc('programs',P);w.ps0=pmEdPs(x.c);w.mP={ok:true,t:'บันทึกประเภทวิชาและวิชาบังคับก่อนของหลักสูตรนี้เรียบร้อย'};
-  say('บันทึกประเภทวิชาและวิชาบังคับก่อนของ '+x.c.code+' ในหลักสูตรนี้เรียบร้อย')
- }catch(er){w.mP={ok:false,t:'บันทึกไม่สำเร็จ ไม่มีข้อมูลถูกเปลี่ยน'};dbErr('บันทึกไม่สำเร็จ',er)}}
 
 /* ===== Router ===== */
 
@@ -1090,7 +694,7 @@ function fqListHtml(D){let n=0;const body=D.G.map(g=>{const cs=D.F.filter(f=>f.g
   return `<a class="fcd" href="#/faculty/${E(f.id)}"><div class="fcm${im?(cv?'':' lg'):' fcp'}"${im?'':' aria-hidden="true"'}>${im?`<img src="${E(im)}" alt="" loading="lazy">`:kitMark(30)}</div><div class="fcb"><h3>${E(f.nameTh)}</h3>${f.nameEn?`<p class="fcen">${E(f.nameEn)}</p>`:''}${f.brief?`<p class="pl fqbr">${E(f.brief)}</p>`:''}${cnt?`<p class="fcn">${cnt}</p>`:''}${m.hits.length?`<p class="fcn">ตรงกับ: ${m.hits.slice(0,3).map(E).join(', ')}${m.hits.length>3?' …':''}</p>`:''}<span class="fcgo">ดูรายละเอียด</span></div></a>`}).join('')}</div></section>`}).join('');
  return `<p class="evm" id="fqn" aria-live="polite">${n?'พบ '+n+' คณะ/วิทยาลัย':''}</p>${n?body:'<div class="empty-ev"><b>ไม่พบข้อมูลที่ตรงกับการค้นหา</b><br>ลองเปลี่ยนคำค้นหาหรือตัวกรอง</div>'}`}
 function facView(){if(FS.key!==location.hash){FS.key=location.hash;FS.q='';FS.g='';FS.lv=''}
- const D=fqPub();if(!D.F.length)return `<div class="fq"><div class="empty-ev"><b>ยังไม่มีข้อมูลคณะและวิทยาลัย</b><br>${Auth.canAccessAdmin()?'<a href="#/admin/faculties">เพิ่มข้อมูลที่หลังบ้าน</a>':'กรุณากลับมาใหม่ภายหลัง'}</div></div>`;
+ const D=fqPub();if(!D.F.length)return `<div class="fq"><div class="empty-ev"><b>ยังไม่มีข้อมูลคณะและวิทยาลัย</b><br>กรุณากลับมาใหม่ภายหลัง</div></div>`;
  const gs=D.G.filter(g=>D.F.some(f=>f.groupId===g.id)),lvs=FQ_LV.filter(l=>D.M.some(m=>(m.levels||[]).includes(l[0]))||D.P.some(p=>p.level===l[0])),chip=(k,v,t)=>`<button type="button" class="cmc fqc${FS[k]===v?' on':''}" data-k="${k}" data-v="${E(v)}" onclick="fqSet('${k}','${E(v)}')">${E(t)}</button>`;
  return `<div class="fq ty" style="${tyStyle(tyGet(null))}"><div class="cmt"><input id="fqq" type="search" placeholder="ค้นหาชื่อคณะ สาขาวิชา หรือหลักสูตร" value="${E(FS.q)}" oninput="fqFilter()" aria-label="ค้นหาชื่อคณะ สาขาวิชา หรือหลักสูตร"></div>
 <div class="cmcs" role="group" aria-label="กรองตามกลุ่มคณะ">${chip('g','','ทุกกลุ่มคณะ')}${gs.map(g=>chip('g',g.id,g.name)).join('')}</div>${lvs.length?`<div class="cmcs" role="group" aria-label="กรองตามระดับการศึกษา" style="margin-top:8px">${chip('lv','','ทุกระดับการศึกษา')}${lvs.map(l=>chip('lv',l[0],l[1])).join('')}</div>`:''}<div id="fql">${fqListHtml(D)}</div></div>`}
@@ -1134,8 +738,6 @@ function tyPrev(pre){const f=$('af');if(!f)return;const el=$(('pv_')+pre);if(el)
 function tyReset(pre){Object.keys(TY_DEF).forEach(k=>{const el=$(pre+k);if(el)el.value=TY_DEF[k]});tyPrev(pre)}
 function typoSite(){const t=tyGet(null);return `<p>ค่ามาตรฐานของทั้งเว็บไซต์สำหรับหน้าคณะ วิทยาลัย และหลักสูตร (ขนาด/น้ำหนัก/ฟอนต์/การจัดแนวข้อความ และการจัดวางการ์ด) ดูตัวอย่างด้านล่างก่อนบันทึก ผู้เข้าชมเห็นผลทันทีหลังบันทึก หากต้องการปรับเฉพาะคณะ ให้ไปที่หน้าแก้ไขคณะนั้น</p>${dbBanner()}<form id="af" onsubmit="return false">${tyInputs('ty_',t)}<p><button type="button" class="btn b" onclick="tySave()">บันทึก</button> <button type="button" class="btn" onclick="tyReset('ty_')">คืนค่าเริ่มต้น</button></p><p><small>กดคืนค่าเริ่มต้นแล้วต้องกดบันทึกอีกครั้งจึงจะมีผลกับเว็บไซต์</small></p></form>`}
 async function tySave(){const f=$('af');if(!f)return;if(!DBH)return say(dbOff(),false);const t=tyRead('ty_',new FormData(f));try{await putDoc('settings',Object.assign({},getSH('settings')||{},{typo:t}));say('บันทึกการตั้งค่าตัวอักษรเรียบร้อย ผู้เข้าชมเห็นทันที')}catch(e){dbErr('บันทึกไม่สำเร็จ',e)}}
-function fqTypoEd(it){const on=!!(it.typo&&it.typo.on);return `<fieldset class="fqfs"><legend>ตัวอักษรเฉพาะคณะนี้ (ไม่บังคับ)</legend><input type="hidden" name="tf_mark" value="1"><label style="display:block"><input type="checkbox" id="tf_on" name="tf_on" value="1"${on?' checked':''} onchange="tyTog()" style="width:auto"> ใช้การตั้งค่าตัวอักษรเฉพาะคณะนี้ (ไม่เลือก = ใช้ค่ามาตรฐานของเว็บไซต์)</label>${on?tyInputs('tf_',tyGet(it.typo))+'<p><button type="button" class="btn s" onclick="tyReset(\'tf_\')">คืนค่าเริ่มต้น</button></p>':''}</fieldset>`}
-function tyTog(){const it=fqSync(WC.fqEnt);if(!it)return;const c=$('tf_on');it.typo=c&&c.checked?Object.assign({on:true},tyGet(null)):null;render()}
 
 
 /* ===== ตั้งค่ารูปแบบรายหน้า (หน้าแรก + หน้าที่สร้างจากระบบเพจ): เก็บใน settings.pagestyle[คีย์หน้า] ในเอกสาร settings เดิม =====
@@ -1210,101 +812,20 @@ async function psSave(){const f=$('af'),key=WC.psScope;if(!f||!key||key==='site'
  PS_K.forEach(k=>{if(nw[k]===''||nw[k]==null)delete nw[k]});all[key]=nw;const ids=new Set(getPages().map(p=>p.id));Object.keys(all).forEach(k=>{if(k!=='home'&&!ids.has(k))delete all[k]});
  try{await putDoc('settings',Object.assign({},getSH('settings')||{},{pagestyle:all}));say('บันทึกรูปแบบเฉพาะหน้าเรียบร้อย ผู้เข้าชมเห็นทันที')}catch(e){dbErr('บันทึกไม่สำเร็จ',e)}}
 function typoAdmin(){const sc=WC.psScope||'site';return `<h1>ตั้งค่าตัวอักษร</h1>${psScopeBar()}${sc==='site'?typoSite():psAdmin(sc)}`}
-/* ===== ตัวช่วยตัวแก้ไข: ลำดับ รายการ บล็อกเนื้อหา แผนการศึกษา ===== */
-const arrMv=(a,i,d)=>{const j=i+d;if(i<0||j<0||j>=a.length)return false;const x=a[i];a[i]=a[j];a[j]=x;return true};
 function fqMig(it){if(isPpl(WC.fqEnt))pplMig(it);const sp=s=>String(s||'').split(/\n+/).map(x=>x.replace(/^\s*(?:[-•·]|\d+[.)])\s*/,'').trim()).filter(Boolean);
  if(!Array.isArray(it.blocks))it.blocks=[];
- if(WC.fqEnt==='majors'&&!Array.isArray(it.suitableFor))it.suitableFor=[];
- if(WC.fqEnt==='programs'){if(!Array.isArray(it.plan))it.plan=[];if(!Array.isArray(it.reqList))it.reqList=[];if(!Array.isArray(it.careerList))it.careerList=[];
-  if(!it.reqList.length&&it.requirements){it.reqList=sp(it.requirements);it.requirements=''}
-  if(!it.careerList.length&&it.careers){it.careerList=sp(it.careers);it.careers=''}
-  fqCsAll(it.plan).forEach(({c})=>{if(!Array.isArray(c.pre))c.pre=[];if(c.show===undefined)c.show=true;if(c.descEn===undefined)c.descEn=''})}}
-const fqRe=()=>{fqSync(WC.fqEnt);return WC.fq};
-/* รายการแบบเพิ่ม/ลบ/เรียง (คุณสมบัติผู้สมัคร, แนวทางประกอบอาชีพ) */
-function fqLst(k,l,it){const a=it[k]||[];return `<fieldset class="fqfs"><legend>${l}</legend>${a.length?a.map((v,i)=>`<div class="fqlr"><input name="ls_${k}_${i}" value="${E(v)}" aria-label="${l} ข้อที่ ${i+1}"><button type="button" class="btn s"${i?'':' disabled'} onclick="fqLMv('${k}',${i},-1)" aria-label="เลื่อนขึ้น">ขึ้น</button><button type="button" class="btn s"${i<a.length-1?'':' disabled'} onclick="fqLMv('${k}',${i},1)" aria-label="เลื่อนลง">ลง</button><button type="button" class="btn s c" onclick="fqLDel('${k}',${i})" aria-label="ลบข้อนี้">ลบ</button></div>`).join(''):'<p><small>ยังไม่มีรายการ</small></p>'}<p><button type="button" class="btn s" onclick="fqLAdd('${k}')">+ เพิ่มรายการ</button></p></fieldset>`}
-function fqLAdd(k){const it=fqRe();if(!it)return;(it[k]=it[k]||[]).push('');render()}
-function fqLDel(k,i){const it=fqRe();if(!it)return;it[k].splice(i,1);render()}
-function fqLMv(k,i,d){const it=fqRe();if(!it)return;arrMv(it[k],i,d);render()}
-/* บล็อกเนื้อหา */
-const BK=[['heading','หัวข้อ'],['text','ข้อความ'],['image','รูปภาพพร้อมคำบรรยาย'],['list','รายการ'],['divider','เส้นแบ่ง'],['group','กลุ่มหัวข้อและรายละเอียด']];
-const bkL=t=>(BK.find(x=>x[0]===t)||['',''])[1];
-function fqBlockEd(b,i,n,it){const nm=s=>'bk_'+b.id+'_'+s;let body='';
- if(b.type==='heading')body=`<label for="${nm('lv')}">ระดับหัวข้อ</label><select id="${nm('lv')}" name="${nm('lv')}">${[['2','หัวข้อหลัก'],['3','หัวข้อรอง'],['4','หัวข้อย่อย']].map(([v,x])=>`<option value="${v}"${String(b.level||'2')===v?' selected':''}>${x}</option>`).join('')}</select><label for="${nm('tx')}">ข้อความหัวข้อ</label><input id="${nm('tx')}" name="${nm('tx')}" value="${E(b.text)}">`;
- else if(b.type==='text')body=`<label for="${nm('tx')}">ข้อความ</label><textarea id="${nm('tx')}" name="${nm('tx')}" rows="5">${E(b.text)}</textarea>`;
- else if(b.type==='image')body=fqImg('b:'+b.id,'รูปภาพ',it,nm('url'))+`<label for="${nm('cp')}">คำบรรยายภาพ</label><input id="${nm('cp')}" name="${nm('cp')}" value="${E(b.caption)}">`;
- else if(b.type==='list')body=`<label for="${nm('st')}">รูปแบบรายการ</label><select id="${nm('st')}" name="${nm('st')}"><option value="bullet"${b.style==='number'?'':' selected'}>สัญลักษณ์หัวข้อ (Bullet)</option><option value="number"${b.style==='number'?' selected':''}>ลำดับเลข</option></select><label for="${nm('it')}">รายการ (หนึ่งบรรทัดต่อหนึ่งข้อ)</label><textarea id="${nm('it')}" name="${nm('it')}" rows="5">${E((b.items||[]).join('\n'))}</textarea>`;
- else if(b.type==='group')body=`<label for="${nm('ti')}">หัวข้อ</label><input id="${nm('ti')}" name="${nm('ti')}" value="${E(b.title)}"><label for="${nm('tx')}">รายละเอียด</label><textarea id="${nm('tx')}" name="${nm('tx')}" rows="4">${E(b.text)}</textarea>`;
- else body='<p><small>เส้นแบ่งส่วนเนื้อหา ไม่มีช่องกรอกเพิ่มเติม</small></p>';
- return `<div class="fqcr"><p><b>${i+1}. ${bkL(b.type)}</b> <button type="button" class="btn s"${i?'':' disabled'} onclick="fqBMv('${b.id}',-1)">ขึ้น</button> <button type="button" class="btn s"${i<n-1?'':' disabled'} onclick="fqBMv('${b.id}',1)">ลง</button> <button type="button" class="btn s c" onclick="fqBDel('${b.id}')">ลบ</button></p>${body}</div>`}
-function fqBlocks(it){const bs=it.blocks||[];return `<fieldset class="fqfs"><legend>เนื้อหาเพิ่มเติม (จัดเป็นส่วน ๆ เพิ่ม ลบ และเรียงลำดับได้)</legend>${bs.length?bs.map((b,i)=>fqBlockEd(b,i,bs.length,it)).join(''):'<p><small>ยังไม่มีส่วนเนื้อหาเพิ่มเติม</small></p>'}<p>${BK.map(([k,l])=>`<button type="button" class="btn s" onclick="fqBAdd('${k}')">+ ${l}</button>`).join(' ')}</p></fieldset>`}
-function fqBAdd(t){const it=fqRe();if(!it)return;(it.blocks=it.blocks||[]).push({id:mkId('bk'),type:t,level:'2',text:'',url:'',caption:'',style:'bullet',items:[],title:''});render()}
-function fqBDel(id){const it=fqRe();if(!it)return;const P=fqPend();delete P.files['b:'+id];it.blocks=(it.blocks||[]).filter(b=>b.id!==id);render()}
-function fqBMv(id,d){const it=fqRe();if(!it)return;arrMv(it.blocks,it.blocks.findIndex(b=>b.id===id),d);render()}
+ 
+ }
 /* แผนการศึกษา: ชั้นปี → ภาคการศึกษา → รายวิชา */
 const fqIsOpen=(id,i)=>WC.fqo&&id in WC.fqo?WC.fqo[id]:i===0;
-function fqTg(id,o){(WC.fqo=WC.fqo||{})[id]=o}
-const fqNewCourse=()=>({id:mkId('cs'),code:'',name:'',nameEn:'',credits:'',type:'required',desc:'',descEn:'',pre:[],show:true});
 /* ตัวช่วยรายวิชา/วิชาบังคับก่อน (วิชาอ้างอิงด้วย id ของรายวิชาในแผนการศึกษาของหลักสูตรเดียวกัน) */
 const fqCsAll=pl=>{const a=[];(pl||[]).forEach((y,yi)=>(y.terms||[]).forEach((t,ti)=>(t.courses||[]).forEach(c=>{if(c)a.push({c,y,t,yi,ti})})));return a};
-const fqCsLbl=c=>(c.code?c.code+' — ':'')+(c.name||c.nameEn||'(ยังไม่ตั้งชื่อ)')+(c.nameEn&&c.name?' / '+c.nameEn:'');
-function fqDepsAll(pl,id){const seen=new Set(),q=[id],all=fqCsAll(pl);while(q.length){const k=q.pop();all.forEach(({c})=>{if((c.pre||[]).includes(k)&&!seen.has(c.id)){seen.add(c.id);q.push(c.id)}})}return seen}
-function fqPurgePre(pl,ids){const s=new Set(ids);fqCsAll(pl).forEach(({c})=>{if(Array.isArray(c.pre))c.pre=c.pre.filter(x=>!s.has(x))})}
-function fqDelMsg(base,ids){const s=new Set(ids),d=fqCsAll(WC.fq.plan).filter(x=>!s.has(x.c.id)&&(x.c.pre||[]).some(p=>s.has(p))).map(x=>x.c.code||x.c.name||'ไม่มีชื่อ');return d.length?base+'\n\nรายวิชาที่ใช้วิชาเหล่านี้เป็นวิชาบังคับก่อน: '+d.join(', ')+'\nระบบจะเอาเงื่อนไขนี้ออกจากรายวิชาดังกล่าว':base}
-function fqPreOpts(cid,q){const pl=WC.fq.plan||[],me=fqCsAll(pl).find(x=>x.c.id===cid);if(!me)return '';const bad=fqDepsAll(pl,cid);q=(q||'').trim().toLowerCase();let h='<option value="">+ เลือกวิชาบังคับก่อน…</option>',n=0;
- pl.forEach((y,yi)=>(y.terms||[]).forEach(t=>{const o=(t.courses||[]).filter(c=>c.id!==cid&&!bad.has(c.id)&&!(me.c.pre||[]).includes(c.id)&&(c.code||c.name||c.nameEn)&&(!q||(c.code+' '+c.name+' '+c.nameEn).toLowerCase().includes(q)));
-  if(o.length){n+=o.length;h+='<optgroup label="'+E((y.name||'ชั้นปีที่ '+(yi+1))+' › '+(t.name||'ไม่แบ่งภาค'))+'">'+o.map(c=>'<option value="'+E(c.id)+'">'+E(fqCsLbl(c))+'</option>').join('')+'</optgroup>'}}));
- return n?h:'<option value="">'+(q?'ไม่พบรายวิชาที่ตรงกับคำค้น':'ไม่มีรายวิชาอื่นให้เลือก')+'</option>'}
-function fqPreEd(c){const map={};fqCsAll(WC.fq.plan).forEach(x=>map[x.c.id]=x.c);
- const chips=(c.pre||[]).map(id=>map[id]).filter(Boolean).map(x=>`<span class="fqch">${E(fqCsLbl(x))}<button type="button" onclick="fqPreDel('${c.id}','${x.id}')" aria-label="เอา ${E(x.code||x.name)} ออกจากวิชาบังคับก่อน">×</button></span>`).join('');
- return `<div class="fqpre"><label for="pq_${c.id}">วิชาบังคับก่อน (เลือกได้หลายวิชา)</label><div class="fqchs">${chips||'<small>ไม่มี</small>'}</div><div class="fqprs"><input type="search" id="pq_${c.id}" placeholder="ค้นหารหัสหรือชื่อวิชา" aria-label="ค้นหาวิชาบังคับก่อน" autocomplete="off" oninput="fqPreFind('${c.id}')"><select id="pp_${c.id}" aria-label="เลือกวิชาบังคับก่อน" onfocus="fqPreFind('${c.id}')" onchange="fqPreAdd('${c.id}',this.value)">${fqPreOpts(c.id,'')}</select></div></div>`}
-const fqCsFind=(it,id)=>{const x=fqCsAll(it.plan).find(x=>x.c.id===id);return x&&x.c};
-function fqPreFind(cid){fqSync(WC.fqEnt);const s=$('pp_'+cid),q=$('pq_'+cid);if(s)s.innerHTML=fqPreOpts(cid,q?q.value:'')}
-function fqPreAdd(cid,v){if(!v)return;const it=fqRe();if(!it)return;const c=fqCsFind(it,v&&cid);if(!c||v===cid||!fqCsFind(it,v))return;if(fqDepsAll(it.plan,cid).has(v))return say('เลือกไม่ได้: วิชานั้นใช้วิชานี้เป็นวิชาบังคับก่อนอยู่แล้ว (จะวนซ้ำ)',false);(c.pre=c.pre||[]);if(!c.pre.includes(v))c.pre.push(v);(WC.fqo=WC.fqo||{})['d_'+cid]=true;render()}
-function fqPreDel(cid,pid){const it=fqRe();if(!it)return;const c=fqCsFind(it,cid);if(!c)return;c.pre=(c.pre||[]).filter(x=>x!==pid);(WC.fqo=WC.fqo||{})['d_'+cid]=true;render()}
-function fqShow(cid){const it=fqRe();if(!it)return;const c=fqCsFind(it,cid);if(!c)return;const d=fqCsAll(it.plan).filter(x=>(x.c.pre||[]).includes(cid)).map(x=>x.c.code||x.c.name);
- if(c.show===false&&d.length&&!confirm('ซ่อนวิชา '+(c.code||c.name)+' ออกจากเว็บไซต์\nวิชานี้ยังเป็นวิชาบังคับก่อนของ: '+d.join(', ')+'\nเว็บไซต์จะยังแสดงรหัสวิชานี้เป็นเงื่อนไขของวิชาเหล่านั้น ดำเนินการต่อหรือไม่'))c.show=true;(WC.fqo=WC.fqo||{})['d_'+cid]=true;render()}
-const fqNewTerm=n=>({id:mkId('tm'),name:n||'',courses:[]});
-/* แผนการศึกษา (หลังบ้าน): ชั้นปี → ภาคการศึกษา → รายวิชา ทุกระดับพับเก็บได้ ค่าเริ่มต้นพับไว้ก่อน (สถานะเปิด/ปิดเก็บใน WC.fqo) */
-const fqOpen=id=>!!(WC.fqo&&WC.fqo[id]);
-function fqPlan(it){const pl=it.plan||[],mv=(fn,a,b,i,n)=>`<button type="button" class="btn s"${i?'':' disabled'} onclick="${fn}(${a}${b?','+b:''},-1)">ขึ้น</button> <button type="button" class="btn s"${i<n-1?'':' disabled'} onclick="${fn}(${a}${b?','+b:''},1)">ลง</button>`;
- const tn=(y,yi,t,ti)=>(y.name||'ชั้นปีที่ '+(yi+1))+' › '+(t.name||'ไม่แบ่งภาค');
- const dest=[];pl.forEach((y,yi)=>(y.terms||[]).forEach((t,ti)=>dest.push([y.id+'|'+t.id,tn(y,yi,t,ti),t.id])));
- const all=pl.reduce((s,y)=>s+(y.terms||[]).reduce((a,t)=>a+(t.courses||[]).length,0),0),tnames=[...new Set(pl.flatMap(y=>(y.terms||[]).map(t=>t.name||'ไม่แบ่งภาค')))];
- const tool=pl.length?`<div class="fqtl"><input id="fqq" type="search" placeholder="ค้นหารหัสวิชา ชื่อไทย หรือชื่ออังกฤษ" aria-label="ค้นหารายวิชา" value="${E(WC.fqq||'')}" oninput="fqFind()"><select id="fqk" aria-label="กรองประเภทวิชา" onchange="fqFind()"><option value="">ทุกประเภท</option>${CS_TY.map(([v,l])=>`<option value="${v}"${WC.fqk===v?' selected':''}>${l}</option>`).join('')}</select><select id="fqyf" aria-label="กรองตามชั้นปี" onchange="fqFind()"><option value="">ทุกชั้นปี</option>${pl.map((y,yi)=>`<option value="${E(y.id)}"${WC.fqyf===y.id?' selected':''}>${E(y.name||'ชั้นปีที่ '+(yi+1))}</option>`).join('')}</select><select id="fqtf" aria-label="กรองตามภาคการศึกษา" onchange="fqFind()"><option value="">ทุกภาคการศึกษา</option>${tnames.map(n=>`<option value="${E(n)}"${WC.fqtf===n?' selected':''}>${E(n)}</option>`).join('')}</select><button type="button" class="btn s" onclick="fqAll(true)">ขยายทั้งหมด</button><button type="button" class="btn s" onclick="fqAll(false)">พับเก็บทั้งหมด</button><span id="fqqn" class="evm" role="status"></span><span class="evm">ทั้งหมด ${all} รายวิชา</span></div>`:'';
- return `<fieldset class="fqfs"><legend>แผนการศึกษาและรายวิชา</legend><p><small>เพิ่มชั้นปี (สูงสุด 6 ชั้นปี) แล้วเพิ่มภาคการศึกษาและรายวิชาในแต่ละภาค ช่องที่มีเครื่องหมาย * จำเป็นต้องกรอก รายวิชาที่ซ่อนจะไม่แสดงบนเว็บไซต์ วิชาบังคับก่อนเลือกได้จากรายวิชาอื่นในหลักสูตรนี้ การแก้ไขจะบันทึกลงฐานข้อมูลเมื่อกดบันทึกหลักสูตร</small></p>${tool}<div id="fqpl">${pl.length?pl.map((y,yi)=>{const nc=(y.terms||[]).reduce((s,t)=>s+(t.courses||[]).length,0);
-  return `<details class="fqy" data-y="${E(y.id)}"${fqOpen(y.id)?' open':''} ontoggle="fqTg('${y.id}',this.open)"><summary><b>${E(y.name||'ชั้นปีที่ '+(yi+1))}</b> <small>${(y.terms||[]).length} ภาคการศึกษา · ${nc} รายวิชา</small></summary>
-<div class="fqtb"><div><label for="y_${y.id}_name">ชื่อชั้นปี</label><input id="y_${y.id}_name" name="y_${y.id}_name" value="${E(y.name)}" placeholder="เช่น ชั้นปีที่ ${yi+1}"></div><div class="fqac">${mv('fqYMv',`'${y.id}'`,'',yi,pl.length)} <button type="button" class="btn s c" onclick="fqYDel('${y.id}')">ลบชั้นปีนี้</button></div></div>
-<label for="y_${y.id}_note">หมายเหตุของชั้นปี</label><textarea id="y_${y.id}_note" name="y_${y.id}_note" rows="2">${E(y.note)}</textarea>
-${(y.terms||[]).map((t,ti)=>{const cs=t.courses||[],tot=cs.reduce((s,c)=>s+crN(c.credits),0);
-  return `<details class="fqt" data-tn="${E(t.name||'ไม่แบ่งภาค')}"${fqOpen(t.id)?' open':''} ontoggle="fqTg('${t.id}',this.open)"><summary><b>${E(t.name||'ไม่แบ่งภาค')}</b> <small>(${cs.length} รายวิชา${tot?' · '+(+tot.toFixed(2))+' หน่วยกิต':''})</small></summary>
-<div class="fqtb"><div><label for="t_${t.id}_name">ชื่อภาคการศึกษา (ว่าง = ไม่แบ่งภาค)</label><input id="t_${t.id}_name" name="t_${t.id}_name" value="${E(t.name)}" placeholder="เช่น ภาคการศึกษาที่ ${ti+1} หรือ ภาคฤดูร้อน"></div><div class="fqac">${mv('fqTMv',`'${y.id}'`,`'${t.id}'`,ti,y.terms.length)} <button type="button" class="btn s c" onclick="fqTDel('${y.id}','${t.id}')">ลบภาคการศึกษานี้</button></div></div>
-${cs.length?`<div class="fqrw fqhd" aria-hidden="true"><span>รหัสวิชา *</span><span>ชื่อวิชา (ไทย) *</span><span>หน่วยกิต *</span><span>ประเภทวิชา</span><span>จัดการ</span></div>`:'<p class="evm">ยังไม่มีรายวิชาในภาคนี้</p>'}
-${cs.map((c,ci)=>`<div class="fqcr"><div class="fqrw"><input data-f="code" id="c_${c.id}_code" name="c_${c.id}_code" value="${E(c.code)}" placeholder="รหัสวิชา *" aria-label="รหัสวิชา" aria-required="true"><input data-f="name" id="c_${c.id}_name" name="c_${c.id}_name" value="${E(c.name)}" placeholder="ชื่อวิชาภาษาไทย *" aria-label="ชื่อวิชาภาษาไทย" aria-required="true"><input data-f="cr" id="c_${c.id}_cr" name="c_${c.id}_cr" value="${E(c.credits)}" placeholder="3 หรือ 3(3-0-6) *" aria-label="หน่วยกิต" aria-required="true"><select data-f="ty" id="c_${c.id}_ty" name="c_${c.id}_ty" aria-label="ประเภทวิชา">${CS_TY.map(([v,l])=>`<option value="${v}"${csTyK(c.type)===v?' selected':''}>${l}</option>`).join('')}</select>
-<div class="fqac"><button type="button" class="btn s"${ci?'':' disabled'} onclick="fqCMv('${y.id}','${t.id}','${c.id}',-1)" aria-label="เลื่อนรายวิชาขึ้น">ขึ้น</button><button type="button" class="btn s"${ci<cs.length-1?'':' disabled'} onclick="fqCMv('${y.id}','${t.id}','${c.id}',1)" aria-label="เลื่อนรายวิชาลง">ลง</button><select class="fqmv" aria-label="ย้ายรายวิชาไปภาคอื่น" onchange="fqCMvTo('${y.id}','${t.id}','${c.id}',this.value)"><option value="">ย้ายไป…</option>${dest.filter(d=>d[2]!==t.id).map(d=>`<option value="${E(d[0])}">${E(d[1])}</option>`).join('')}</select><button type="button" class="btn s c" onclick="fqCDel('${y.id}','${t.id}','${c.id}')" aria-label="ลบรายวิชา">ลบ</button></div></div>
-<label for="c_${c.id}_en">ชื่อวิชาภาษาอังกฤษ *</label><input data-f="en" id="c_${c.id}_en" name="c_${c.id}_en" value="${E(c.nameEn)}" placeholder="Course title" aria-required="true">
-<details class="fqcd"${fqOpen('d_'+c.id)?' open':''} ontoggle="fqTg('d_${c.id}',this.open)"><summary>วิชาบังคับก่อน คำอธิบาย และการแสดงผล${(c.pre||[]).length?' <small>(บังคับก่อน '+c.pre.length+' วิชา)</small>':''}${c.show===false?' <small>(ซ่อนจากเว็บไซต์)</small>':''}</summary>${fqPreEd(c)}<label for="c_${c.id}_desc">คำอธิบายรายวิชา (ไทย)</label><textarea id="c_${c.id}_desc" name="c_${c.id}_desc" rows="3">${E(c.desc)}</textarea><label for="c_${c.id}_den">คำอธิบายรายวิชา (English)</label><textarea id="c_${c.id}_den" name="c_${c.id}_den" rows="3">${E(c.descEn)}</textarea><label for="c_${c.id}_sh">การแสดงบนเว็บไซต์</label><select id="c_${c.id}_sh" name="c_${c.id}_sh" onchange="fqShow('${c.id}')"><option value="1"${c.show===false?'':' selected'}>แสดงบนเว็บไซต์</option><option value="0"${c.show===false?' selected':''}>ซ่อน (ปิดใช้งาน)</option></select></details></div>`).join('')}
-<p><button type="button" class="btn s" onclick="fqCAdd('${y.id}','${t.id}')">+ เพิ่มรายวิชา</button></p></details>`}).join('')}
-<p><button type="button" class="btn s" onclick="fqTAdd('${y.id}')">+ เพิ่มภาคการศึกษา</button></p></details>`}).join(''):'<p><small>ยังไม่มีชั้นปี</small></p>'}</div><p><button type="button" class="btn s" onclick="fqYAdd()"${pl.length>=6?' disabled':''}>+ เพิ่มชั้นปี</button>${pl.length>=6?' <small>ครบ 6 ชั้นปีแล้ว</small>':''}</p></fieldset>`}
-/* ค้นหา/กรองรายวิชาในหน้าแก้ไข (กรองจากค่าที่พิมพ์อยู่ ไม่ re-render จึงไม่เสียโฟกัส) */
-function fqFind(){WC.fqq=($('fqq')||{}).value||'';WC.fqk=($('fqk')||{}).value||'';WC.fqyf=($('fqyf')||{}).value||'';WC.fqtf=($('fqtf')||{}).value||'';fqPlFilter()}
 function fqPlFilter(){const bx=$('fqpl');if(!bx)return;const q=(WC.fqq||'').trim().toLowerCase(),k=WC.fqk||'',yf=WC.fqyf||'',tf=WC.fqtf||'',on=!!(q||k||yf||tf);let hit=0;
  bx.querySelectorAll('.fqcr').forEach(r=>{const v=f=>{const x=r.querySelector('[data-f="'+f+'"]');return x?x.value:''};const yy=r.closest('details.fqy'),tt=r.closest('details.fqt');const ok=(!q||(v('code')+' '+v('name')+' '+v('en')).toLowerCase().includes(q))&&(!k||v('ty')===k)&&(!yf||(yy&&yy.dataset.y===yf))&&(!tf||(tt&&tt.dataset.tn===tf));r.hidden=!ok;if(ok)hit++});
  const cnt=d=>[...d.querySelectorAll('.fqcr')].filter(r=>!r.hidden).length;
  bx.querySelectorAll('details.fqt').forEach(t=>{const n=cnt(t);t.hidden=on&&!n;if(on&&n)t.open=true});
  bx.querySelectorAll('details.fqy').forEach(y=>{const n=cnt(y);y.hidden=on&&!n;if(on&&n)y.open=true});
  const m=$('fqqn');if(m)m.textContent=on?(hit?'พบ '+hit+' รายวิชา':'ไม่พบรายวิชาที่ตรงกัน'):''}
-function fqAll(o){document.querySelectorAll('#fqpl details.fqy,#fqpl details.fqt').forEach(d=>{if(!d.hidden)d.open=o})}
-const fqY=id=>(WC.fq.plan||[]).find(y=>y.id===id),fqT=(y,id)=>y&&(y.terms||[]).find(t=>t.id===id);
-function fqYAdd(){const it=fqRe();if(!it)return;it.plan=it.plan||[];if(it.plan.length>=6)return say('แผนการศึกษารองรับสูงสุด 6 ชั้นปี',false);const y={id:mkId('yr'),name:'ชั้นปีที่ '+(it.plan.length+1),note:'',terms:[fqNewTerm('ภาคการศึกษาที่ 1'),fqNewTerm('ภาคการศึกษาที่ 2')]};it.plan.push(y);(WC.fqo=WC.fqo||{})[y.id]=true;y.terms.forEach(t=>WC.fqo[t.id]=true);render()}
-function fqYDel(id){const it=fqRe();if(!it)return;const y=fqY(id);if(!y)return;const ids=(y.terms||[]).flatMap(t=>(t.courses||[]).map(c=>c.id));if(ids.length&&!confirm(fqDelMsg('ลบชั้นปีนี้พร้อมรายวิชา '+ids.length+' รายการ ใช่หรือไม่',ids)))return;fqPurgePre(it.plan,ids);it.plan=it.plan.filter(x=>x.id!==id);render()}
-function fqYMv(id,d){const it=fqRe();if(!it)return;arrMv(it.plan,it.plan.findIndex(y=>y.id===id),d);render()}
-function fqTAdd(yid){const it=fqRe();if(!it)return;const y=fqY(yid);if(!y)return;y.terms=y.terms||[];const n=y.terms.length,nt=fqNewTerm(n===2?'ภาคฤดูร้อน':'ภาคการศึกษาที่ '+(n+1));y.terms.push(nt);(WC.fqo=WC.fqo||{})[y.id]=true;WC.fqo[nt.id]=true;render()}
-function fqTDel(yid,tid){const it=fqRe();if(!it)return;const y=fqY(yid),t=fqT(y,tid);if(!t)return;const ids=(t.courses||[]).map(c=>c.id);if(ids.length&&!confirm(fqDelMsg('ลบภาคการศึกษานี้พร้อมรายวิชา '+ids.length+' รายการ ใช่หรือไม่',ids)))return;fqPurgePre(it.plan,ids);y.terms=y.terms.filter(x=>x.id!==tid);render()}
-function fqTMv(yid,tid,d){const it=fqRe();if(!it)return;const y=fqY(yid);if(!y)return;arrMv(y.terms,y.terms.findIndex(t=>t.id===tid),d);render()}
-function fqCAdd(yid,tid){const it=fqRe();if(!it)return;const t=fqT(fqY(yid),tid);if(!t)return;(t.courses=t.courses||[]).push(fqNewCourse());WC.fqq='';WC.fqk='';(WC.fqo=WC.fqo||{})[yid]=true;WC.fqo[tid]=true;render()}
-function fqCDel(yid,tid,cid){const it=fqRe();if(!it)return;const t=fqT(fqY(yid),tid);if(!t)return;const c=t.courses.find(x=>x.id===cid);if(!c)return;const msg=fqDelMsg('ลบรายวิชา "'+(c.name||c.code||'ไม่มีชื่อ')+'" ใช่หรือไม่',[cid]);if((c.code||c.name||c.nameEn||c.credits||c.desc||c.descEn||msg.includes('วิชาบังคับก่อน'))&&!confirm(msg))return;fqPurgePre(it.plan,[cid]);t.courses=t.courses.filter(x=>x.id!==cid);render()}
-function fqCMvTo(yid,tid,cid,to){if(!to)return;const it=fqRe();if(!it)return;const [dy,dt]=to.split('|'),sy=fqY(yid),st=fqT(sy,tid),tt=fqT(fqY(dy),dt);if(!st||!tt)return;const i=st.courses.findIndex(c=>c.id===cid);if(i<0)return;const c=st.courses.splice(i,1)[0];(tt.courses=tt.courses||[]).push(c);(WC.fqo=WC.fqo||{})[dy]=true;WC.fqo[dt]=true;render()}
-function fqCMv(yid,tid,cid,d){const it=fqRe();if(!it)return;const t=fqT(fqY(yid),tid);if(!t)return;arrMv(t.courses,t.courses.findIndex(c=>c.id===cid),d);render()}
 /* อ่านค่าจากฟอร์มกลับเข้า state (เรียกจาก fqSync) */
 function fqSyncX(ent,it,d,g){const has=n=>d.has(n);
  {const lk=ent==='programs'?['reqList','careerList']:ent==='majors'?['suitableFor']:[];lk.forEach(k=>{if(Array.isArray(it[k]))it[k]=it[k].map((v,i)=>has('ls_'+k+'_'+i)?g('ls_'+k+'_'+i):v)})}
@@ -1313,31 +834,13 @@ function fqSyncX(ent,it,d,g){const has=n=>d.has(n);
   if(has(n('tx')))b.text=g(n('tx'));if(has(n('url')))b.url=g(n('url'));if(has(n('cp')))b.caption=g(n('cp'));if(has(n('ti')))b.title=g(n('ti'));
   if(has(n('st')))b.style=d.get(n('st'))==='number'?'number':'bullet';
   if(has(n('it')))b.items=String(d.get(n('it'))||'').split(/\n/).map(x=>STRIP(x).trim()).filter(Boolean)});
- if(ent==='programs')(it.plan||[]).forEach(y=>{if(has('y_'+y.id+'_name'))y.name=g('y_'+y.id+'_name');if(has('y_'+y.id+'_note'))y.note=g('y_'+y.id+'_note');
-  (y.terms||[]).forEach(t=>{if(has('t_'+t.id+'_name'))t.name=g('t_'+t.id+'_name');
-   (t.courses||[]).forEach(c=>{const n=s=>'c_'+c.id+'_'+s;if(has(n('code')))c.code=g(n('code'));if(has(n('name')))c.name=g(n('name'));if(has(n('en')))c.nameEn=g(n('en'));if(has(n('cr')))c.credits=g(n('cr'));if(has(n('desc')))c.desc=g(n('desc'));if(has(n('ty')))c.type=csTyK(d.get(n('ty')));if(has(n('den')))c.descEn=g(n('den'));if(has(n('sh')))c.show=d.get(n('sh'))!=='0'})})});
- if(ent==='faculties'&&has('tf_mark'))it.typo=d.get('tf_on')&&has('tf_h1')?Object.assign({on:true},tyRead('tf_',d)):(d.get('tf_on')?it.typo:null)}
+ 
+ }
 /* ตรวจและทำความสะอาดก่อนบันทึก: คืนข้อความผิดพลาดหรือ '' */
 function fqClean(ent,it){if(isPpl(ent)){if(Array.isArray(it.pages)){const ok=new Set(getPages().map(x=>x.id));it.pages=[...new Set(it.pages.filter(id=>typeof id==='string'&&ok.has(id)))]}if(!fqPT().some(t=>t.id===it.typeId))return 'ประเภทบุคลากรไม่ถูกต้อง';if(it.typeId==='pt_exec'){it.groupId='';it.departmentId=''}else{if(it.groupId&&!fqPG().some(g=>g.id===it.groupId))return 'กลุ่มสาระไม่ถูกต้อง';if(it.departmentId&&!fqPD().some(d=>d.id===it.departmentId))return 'ฝ่ายงานไม่ถูกต้อง'}}
  if(ent==='ptypes'||ent==='pgroups'||ent==='pdepartments'){it.name=String(it.name||'').trim();if(!it.name)return 'กรุณากรอกชื่อ';if(it.name.length>80)return 'ชื่อต้องไม่เกิน 80 ตัวอักษร'}if(ent==='cposts')return cpClean(it);if(ent==='news')return nwClean(it);
- if(ent==='majors'){it.scope=it.scope==='lower'?'lower':'upper';const lw=fqM().find(m=>m.id!==it.id&&spScope(m)==='lower');if(it.scope==='lower'&&lw)return 'ม.1–ม.3 ใช้แผนการเรียนทั่วไปได้เพียงแผนเดียว (มีอยู่แล้ว: '+(lw.nameTh||'ไม่มีชื่อ')+') กรุณาแก้ไขแผนเดิมแทน';const old0=fqM().find(m=>m.id===it.id);if(old0&&spScope(old0)!==it.scope&&ttRefs(it.id).length)return 'เปลี่ยนกลุ่มระดับชั้นไม่ได้ เพราะมีตารางเรียนอ้างอิงแผนนี้อยู่ ('+ttRefs(it.id).map(ttRefTxt).join(', ')+')';it.suitableFor=(Array.isArray(it.suitableFor)?it.suitableFor:[]).map(x=>String(x).trim()).filter(Boolean);if(it.suitableFor.length>30)return 'สาขาที่เหมาะกับผู้เรียนใส่ได้ไม่เกิน 30 ข้อ';if(it.suitableFor.some(x=>x.length>120))return 'สาขาที่เหมาะกับผู้เรียนแต่ละข้อต้องไม่เกิน 120 ตัวอักษร'}
- if(ent==='programs'){if(it.credits&&!/^\d{1,3}(\.\d+)?$/.test(it.credits))return 'จำนวนหน่วยกิตรวมต้องเป็นตัวเลข เช่น 132';
-  {const n=fqTuiParse(it.tuition);if(Number.isNaN(n))return 'ค่าเล่าเรียนต้องเป็นตัวเลขตั้งแต่ 0 ขึ้นไป (ทศนิยมไม่เกิน 2 ตำแหน่ง) หรือเว้นว่างหากยังไม่มีข้อมูล';it.tuition=n==null?'':n}
-  it.reqList=(it.reqList||[]).map(x=>String(x).trim()).filter(Boolean);it.careerList=(it.careerList||[]).map(x=>String(x).trim()).filter(Boolean);
-  const re=/^\d+(\.\d+)?(\s*\(\d+-\d+-\d+\))?$/,codes=new Map(),lb=c=>c.code||c.name||c.nameEn||'ไม่มีชื่อ';
-  if((it.plan||[]).length>6)return 'แผนการศึกษารองรับสูงสุด 6 ชั้นปี';
-  for(const y of it.plan||[]){for(const t of y.terms||[]){const pos=(y.name||'ชั้นปี')+(t.name?' › '+t.name:'');t.courses=(t.courses||[]).filter(c=>c.code||c.name||c.nameEn||c.credits||c.desc||c.descEn);
-   for(const c of t.courses){const w='รายวิชา "'+lb(c)+'" ('+pos+') ';
-    if(!c.code)return w+'ยังไม่ได้ใส่รหัสวิชา';if(!c.name)return w+'ยังไม่ได้ใส่ชื่อวิชาภาษาไทย';if(!c.nameEn)return w+'ยังไม่ได้ใส่ชื่อวิชาภาษาอังกฤษ';if(!c.credits)return w+'ยังไม่ได้ใส่หน่วยกิต';
-    if(!re.test(c.credits))return 'หน่วยกิตของวิชา "'+c.name+'" ไม่ถูกต้อง (ใช้ เช่น 3 หรือ 3(3-0-6))';
-    const n=parseFloat(c.credits);if(!(n>=0&&n<=30))return 'หน่วยกิตของวิชา "'+c.name+'" ต้องอยู่ระหว่าง 0 ถึง 30';
-    if(!CS_TY.some(x=>x[0]===c.type))return w+'ยังไม่ได้เลือกประเภทวิชา';
-    const ck=c.code.toLowerCase();if(codes.has(ck))return 'รหัสวิชา '+c.code+' ซ้ำกัน (อยู่ใน '+codes.get(ck)+' และ '+pos+') ภายในหลักสูตรเดียวกันใช้รหัสซ้ำไม่ได้';codes.set(ck,pos)}}}
-  {const cs=fqCsAll(it.plan).map(x=>x.c),by=new Map(cs.map(c=>[c.id,c]));
-   for(const c of cs){c.pre=[...new Set((c.pre||[]).filter(x=>by.has(x)))];if(c.pre.includes(c.id))return 'วิชา '+lb(c)+' เลือกตัวเองเป็นวิชาบังคับก่อนไม่ได้'}
-   const st=new Map();let cyc='';const dfs=(c,path)=>{st.set(c.id,1);const seq=[...path,c];for(const p of c.pre){const q=by.get(p);if(st.get(p)===1){cyc=[...seq.slice(seq.findIndex(x=>x.id===p)),q].map(x=>x.code).join(' → ');return true}if(!st.has(p)&&dfs(q,seq))return true}st.set(c.id,2);return false};
-   for(const c of cs)if(!st.has(c.id)&&dfs(c,[]))return 'วิชาบังคับก่อนวนซ้ำกัน: '+cyc}
-  (it.plan||[]).forEach((y,i)=>{if(!y.name)y.name='ชั้นปีที่ '+(i+1)})}
+ 
+ 
  return ''}
 const fqBlkOk=b=>b&&(b.type==='divider'||(b.type==='heading'&&b.text)||(b.type==='text'&&b.text)||(b.type==='image'&&b.url)||(b.type==='list'&&(b.items||[]).length)||(b.type==='group'&&(b.title||b.text)));
 
@@ -1424,7 +927,7 @@ function crsList(){const L=crsFilter(),vis=L.slice(0,CR.n),on=CR.q.trim()||CR.fa
  return `<p class="evm" role="status" aria-live="polite">${on?'พบ '+L.length+' รายวิชา':'ทั้งหมด '+L.length+' รายวิชา'}</p><div class="pvtw"><table class="pvt crt"><thead><tr><th scope="col">รหัสวิชา</th><th scope="col">ชื่อวิชา (ไทย)</th><th scope="col">ชื่อวิชา (English)</th><th scope="col" class="pvn">หน่วยกิต</th><th scope="col">หลักสูตรที่ใช้วิชานี้</th></tr></thead><tbody>${vis.map(crsRow).join('')}</tbody></table></div>${L.length>vis.length?`<p style="text-align:center"><button type="button" class="btn" onclick="crsMore()">แสดงเพิ่ม (เหลืออีก ${L.length-vis.length} รายวิชา)</button></p>`:''}`}
 function crsFields(){const o=crsOpts();
  return `<div class="crf"><div><label for="crfa">คณะ/วิทยาลัย</label><select id="crfa" onchange="crsSet('fac',this.value)">${crsOp(CR.fac,'','ทุกคณะ')}${o.F.map(f=>crsOp(CR.fac,f.id,f.nameTh)).join('')}</select></div><div><label for="crmj">สาขาวิชา</label><select id="crmj" onchange="crsSet('maj',this.value)">${crsOp(CR.maj,'','ทุกสาขาวิชา')}${o.M.map(m=>crsOp(CR.maj,m.id,m.nameTh)).join('')}</select></div><div><label for="crpg">หลักสูตร</label><select id="crpg" onchange="crsSet('prg',this.value)">${crsOp(CR.prg,'','ทุกหลักสูตร')}${o.P.map(p=>crsOp(CR.prg,p.id,p.nameTh+' ('+fqLv(p.level)+')')).join('')}</select></div></div>`}
-function crsView(){if(!crsIndex().size)return `<div class="fq"><div class="empty-ev"><b>ยังไม่มีข้อมูลรายวิชา</b><br>${Auth.canAccessAdmin()?'<a href="#/admin/courses">เพิ่มรายวิชาที่หลังบ้าน</a>':'กรุณากลับมาใหม่ภายหลัง'}</div></div>`;
+function crsView(){if(!crsIndex().size)return `<div class="fq"><div class="empty-ev"><b>ยังไม่มีข้อมูลรายวิชา</b><br>กรุณากลับมาใหม่ภายหลัง</div></div>`;
  crsOpts();
  return `<div class="fq ty" style="${tyStyle(tyGet(null))}"><div class="cmt" role="search"><input id="crq" type="search" placeholder="ค้นหารหัสวิชาหรือชื่อวิชา เช่น ENG101 หรือ แคลคูลัส" value="${E(CR.q)}" oninput="crsQ(this.value)" aria-label="ค้นหารหัสวิชาหรือชื่อวิชา" autocomplete="off"></div><div id="crfs">${crsFields()}</div><div id="crl">${crsList()}</div></div>`}
 function crsDraw(f){const a=$('crl');if(a)a.innerHTML=crsList();if(f){const b=$('crfs');if(b)b.innerHTML=crsFields()}}
@@ -1443,7 +946,6 @@ function crsDetail(raw){let k='';try{k=cqNorm(decodeURIComponent(raw||''))}catch
  return `<div class="w sec fqd ty" style="${tyStyle(tyGet(null))}">${bk}<div class="fqph"><p class="evm">${E(e.code)}</p><h1>${E(e.name||e.nameEn||e.code)}</h1>${e.name&&e.nameEn?`<p class="evm" lang="en">${E(e.nameEn)}</p>`:''}${e.credits?`<p><span class="tag">${E(e.credits)} หน่วยกิต</span></p>`:''}</div>${fqSecH('ข้อมูลรายวิชา',`<dl class="cmdl">${info.map(([l,v])=>`<dt>${l}</dt><dd>${E(v)}</dd>`).join('')}</dl>`)}${fqSecH('คำอธิบายรายวิชา',fqTx(e.desc)+(e.descEn?`<p class="pl" lang="en">${E(e.descEn)}</p>`:''))}${fqSecH('รายวิชาบังคับก่อน',pre.length?`<p>${pre.map(lk).join(' ')}</p>`:'')}${fqSecH('หลักสูตรและสาขาที่เกี่ยวข้อง',`<div class="fqpl">${e.uses.map(use).join('')}</div>`)}</div>`}
 PUB.courses=()=>`<div class="w sec"><h1>รายวิชาทั้งหมด</h1>${crsView()}</div>`;
 PUB.course=crsDetail;
-const crsMakePage=()=>secPageMake('courses','รายวิชาทั้งหมด','courses');
 
 /* ===== ชมรมนักศึกษา: site_docs 'clubcats' (หมวดหมู่) และ 'clubs' (ชมรม) เชื่อมกันด้วย clubs[].catId — ไม่มีตารางใหม่ แก้หมวดหมู่ได้จากหลังบ้านโดยไม่แก้โค้ด
    ค้นหา/กรองทำในเบราว์เซอร์จากข้อมูลที่โหลดมาแล้ว (ไม่เรียกฐานข้อมูลเพิ่ม) ชมรมที่หมวดถูกซ่อนจะอยู่ในกลุ่ม "ไม่ระบุหมวดหมู่"
@@ -1507,27 +1009,6 @@ const FQE={
   blank:()=>({name:'',nameEn:'',desc:'',status:'draft'}),
   fields:[['name','ชื่อกลุ่มคณะ','text',1],['nameEn','ชื่อภาษาอังกฤษ','text'],['desc','คำอธิบายกลุ่ม','area']],
   label:g=>g.name,sub:g=>fqF().filter(f=>f.groupId===g.id).length+' คณะ/วิทยาลัย',kids:g=>fqF().filter(f=>f.groupId===g.id),kidName:'คณะ/วิทยาลัย'},
- faculties:{one:'ระดับชั้น',title:'จัดการระดับชั้น',pre:'fa',get:fqF,
-  blank:()=>({groupId:AFV.group||'',nameTh:'',nameEn:'',abbr:'',brief:'',about:'',cover:'',logo:'',admission:'',contact:'',flower:null,blocks:[],typo:null,status:'draft'}),
-  fields:[['groupId','กลุ่มคณะ','sel',1,()=>fqG().map(g=>[g.id,g.name])],['nameTh','ชื่อภาษาไทย','text',1],['nameEn','ชื่อภาษาอังกฤษ','text'],['abbr','ชื่อย่อ (ถ้ามี)','text'],['brief','คำอธิบายแบบย่อ (แสดงบนการ์ด)','area'],['about','คำอธิบายเกี่ยวกับระดับชั้น','area8'],['cover','ภาพประกอบ (ภาพปกหรือแบนเนอร์)','img'],['logo','ตราสัญลักษณ์หรือรูปประจำระดับชั้น','img'],['admission','ข้อมูลการรับสมัคร','area'],['contact','ช่องทางติดต่อ','area'],['blocks','','blocks'],['typo','','typo'],['flower','','flower']],
-  filter:f=>!AFV.group||f.groupId===AFV.group,
-  label:f=>f.nameTh,sub:f=>(fqName(fqG(),f.groupId,'name')||'ไม่มีกลุ่มต้นสังกัด')+' · '+fqM().filter(m=>m.facultyId===f.id).length+' แผนการเรียน',kids:f=>fqM().filter(m=>m.facultyId===f.id),kidName:'แผนการเรียน',
-  parent:()=>fqG(),pk:'groupId',pn:'กลุ่มคณะ',pl:'#/admin/fgroups'},
- majors:{one:'แผนการเรียน',title:'จัดการแผนการเรียน',pre:'mj',get:fqM,
-  blank:()=>({facultyId:AFV.faculty||'',nameTh:'',nameEn:'',desc:'',suitableFor:[],levels:[],scope:'upper',status:'draft'}),
-  fields:[['facultyId','ระดับชั้น','sel',1,()=>fqF().map(f=>[f.id,f.nameTh])],['scope','ใช้กับระดับชั้น (ไม่เลือก = ม.4–ม.6)','sel',0,()=>[['upper','ม.4–ม.6 (แผนการเรียนที่จัดการเองได้ มีได้หลายแผน)'],['lower','ม.1–ม.3 (แผนการเรียนทั่วไป มีได้แผนเดียว)']]],['nameTh','ชื่อแผนการเรียน (ภาษาไทย)','text',1],['nameEn','ชื่อภาษาอังกฤษ','text'],['desc','คำอธิบาย','area'],['suitableFor','สาขาที่เหมาะกับผู้เรียน (เพิ่มทีละข้อ)','list'],['levels','ระดับการศึกษา','chk']],
-  filter:m=>!AFV.faculty||m.facultyId===AFV.faculty,
-  label:m=>m.nameTh,sub:m=>(fqName(fqF(),m.facultyId)||'ไม่มีระดับชั้น')+' · '+(spScope(m)==='lower'?'ม.1–ม.3 (ทั่วไป)':'ม.4–ม.6')+' · '+(fqIsPub(m)?'เปิดใช้งาน':'ปิดใช้งาน')+' · '+fqP().filter(p=>p.majorId===m.id).length+' หลักสูตร · ตารางเรียน '+ttRefs(m.id).length,kids:m=>fqP().filter(p=>p.majorId===m.id),kidName:'หลักสูตร (และรายวิชาในหลักสูตรนั้น)',refs:m=>ttRefs(m.id).map(ttRefTxt),hideLbl:'ปิดใช้งาน',
-  parent:()=>fqF(),pk:'facultyId',pn:'ระดับชั้น',pl:'#/admin/faculties'},
- programs:{one:'หลักสูตร',title:'จัดการหลักสูตร',pre:'pg',get:fqP,
-  blank:()=>({majorId:AFV.major||'',nameTh:'',nameEn:'',degree:'',degreeEn:'',level:'bachelor',duration:'',credits:'',tuition:'',desc:'',objectives:'',outcomes:'',reqList:[],plan:[],internship:'',graduation:'',careerList:[],notes:'',blocks:[],open:'closed',status:'draft'}),
-  fields:[['','ข้อมูลหลักสูตรทั่วไป','hdr'],['majorId','แผนการเรียน','sel',1,()=>fqM().map(m=>[m.id,m.nameTh,fqName(fqF(),m.facultyId)||'(ไม่มีระดับชั้น)'])],['nameTh','ชื่อหลักสูตรภาษาไทย','text',1],['nameEn','ชื่อหลักสูตรภาษาอังกฤษ','text'],['degree','ชื่อปริญญาภาษาไทย (ถ้ามี)','text'],['degreeEn','ชื่อปริญญาภาษาอังกฤษ (ถ้ามี)','text'],['level','ระดับการศึกษา','sel',1,()=>FQ_LV],['duration','ระยะเวลาศึกษา','text'],['credits','จำนวนหน่วยกิตรวม (ถ้ามี ใส่เป็นตัวเลข)','text'],['tuition','ค่าเล่าเรียน (บาท/ภาคการศึกษา)','num'],['desc','คำอธิบายหลักสูตร','area8'],['objectives','วัตถุประสงค์ของหลักสูตร','area'],['outcomes','ผลลัพธ์การเรียนรู้ที่คาดหวัง','area'],['open','สถานะเปิดรับสมัคร','sel',0,()=>[['closed','ปิดรับสมัคร'],['open','เปิดรับสมัคร']]],
-  ['','คุณสมบัติผู้สมัคร','hdr'],['reqList','รายการคุณสมบัติผู้สมัคร (เพิ่มทีละข้อ)','list'],
-  ['','แผนการศึกษาและรายวิชา','hdr'],['plan','','plan'],
-  ['','ข้อมูลเพิ่มเติม','hdr'],['internship','การฝึกงานหรือสหกิจศึกษา (ถ้ามี)','area'],['graduation','เงื่อนไขการสำเร็จการศึกษา (ถ้ามี)','area'],['careerList','แนวทางประกอบอาชีพ (เพิ่มทีละข้อ)','list'],['notes','หมายเหตุเพิ่มเติม (ถ้ามี)','area'],['blocks','','blocks']],
-  filter:p=>{const m=fqM().find(x=>x.id===p.majorId);return (!AFV.faculty||(m&&m.facultyId===AFV.faculty))&&(!AFV.major||p.majorId===AFV.major)},
-  label:p=>p.nameTh,sub:p=>{const m=fqM().find(x=>x.id===p.majorId);return (m?m.nameTh+' › '+(fqName(fqF(),m.facultyId)||'-'):'ไม่มีแผนการเรียน')+' · '+fqLv(p.level)+' · '+(p.open==='open'?'เปิดรับสมัคร':'ปิดรับสมัคร')+' · '+(fqTui(p)!=null?fqTuiTxt(fqTui(p)):'ยังไม่ระบุค่าเล่าเรียน')},kids:()=>[],kidName:'',
-  parent:()=>fqM(),pk:'majorId',pn:'แผนการเรียน',pl:'#/admin/majors'},
  pexec:{one:'ผู้บริหาร',title:'จัดการคณะผู้บริหาร',pre:'pp',get:fqPeople,store:'people',
   blank:()=>({first:'',last:'',position:'',photo:'',typeId:'pt_exec',groupId:'',pages:pplDefPg(),status:'draft'}),
   fields:[['first','ชื่อ','text',1],['last','นามสกุล','text',1],['position','ตำแหน่ง','text'],['typeId','ประเภทบุคลากร (เปลี่ยนเพื่อย้ายไปหมวดอื่น)','sel',1,()=>pplOpt(fqPT())],['photo','รูปถ่าย','img'],['pages','หน้าที่แสดงรายชื่อนี้','cpg',0,()=>pplPgList(),()=>pplDefPg()]],
@@ -1610,11 +1091,10 @@ async function secPageMake(type,title,slugDef){if(!DBH)return say(dbOff(),false)
  if(!pg){const id=mkId('pg');let slug=slugDef;if(P.some(x=>x.slug===slug))slug=id;pg={id,title,slug,status:'published',sections:[{id:mkId('s'),type,text:'',url:'',alt:'',label:'',items:[]}],updated:Date.now()};P.push(pg)}
  if(!M.some(m=>m.kind==='cms'&&m.pageId===pg.id)){const mx=Math.max(-10,...M.filter(y=>!y.parent).map(y=>+y.order||0));M.push({id:mkId('m'),label:title,m:'',kind:'cms',pageId:pg.id,href:'',tab:'same',show:true,order:mx+10,parent:''})}
  try{await putDoc('pages',P);await putDoc('menu',M);say('เพิ่มหน้าและเมนู "'+title+'" แล้ว (ย้ายตำแหน่งเมนูได้ที่ แก้ไขเมนูแบบละเอียด)')}catch(e){dbErr('บันทึกไม่สำเร็จ',e)}}
-const facMakePage=()=>secPageMake('faculties','คณะและวิทยาลัย','faculties');
 function fqAdmin(ent){const C=FQE[ent],all=C.get(),L=C.filter?all.filter(C.filter):all,D=fqPub(),vis=new Set([].concat(D.G,D.F,D.M,D.P).map(x=>x.id));
  const sel=(k,l,opts)=>`<label style="display:inline-block;margin-right:12px">${l} <select onchange="fqAf('${k}',this.value)"><option value="">ทั้งหมด</option>${opts.map(([v,t])=>`<option value="${E(v)}"${AFV[k]===v?' selected':''}>${E(t)}</option>`).join('')}</select></label>`;
- const fl=ent==='faculties'?sel('group','กลุ่มคณะ',fqG().map(g=>[g.id,g.name])):ent==='majors'?sel('faculty','ระดับชั้น',fqF().map(f=>[f.id,f.nameTh])):ent==='programs'?sel('faculty','ระดับชั้น',fqF().map(f=>[f.id,f.nameTh]))+sel('major','แผนการเรียน',fqM().filter(m=>!AFV.faculty||m.facultyId===AFV.faculty).map(m=>[m.id,m.nameTh])):ent==='clubs'?sel('club','หมวดหมู่',fqCC().map(c=>[c.id,c.name]).concat([['-','ไม่ระบุหมวดหมู่']])):'';
- return `<h1>${C.title}</h1><p>เพิ่ม แก้ไข ซ่อน/เผยแพร่ ลบ และจัดเรียงลำดับ ข้อมูลบันทึกใน Supabase${ent==='news'?' ข่าวที่เผยแพร่จะแสดงบนเว็บไซต์เรียงตามวันที่ล่าสุดก่อน (ไม่ใช้ลำดับในรายการนี้)':isPpl(ent)||ent==='ptypes'||ent==='pgroups'||ent==='pdepartments'||ent==='clubs'||ent==='clubcats'||ent==='cposts'?' ลำดับในรายการนี้คือลำดับการแสดงบนหน้าเว็บไซต์ (แสดงเฉพาะรายการที่เผยแพร่)':' ถ้าซ่อนรายการต้นสังกัด รายการลูกจะไม่แสดงบนเว็บไซต์ด้วย'}</p>${dbBanner()}${ent==='faculties'?secPageBox('faculties','คณะและวิทยาลัย','faculties','facMakePage'):isPpl(ent)?secPageBox('people','บุคลากรและทีมผู้บริหาร','people','pplMakePage'):ent==='clubs'?secPageBox('clubs','ชมรมนักศึกษา','clubs','clubMakePage'):ent==='clubcats'&&!all.length?clubSeedBox():ent==='cposts'?cpAdminBox():ent==='news'?nwAdminBox():ent==='majors'?spPanel():PH_E[ent]?pplHeadBox(ent):''}
+ const fl=ent==='clubs'?sel('club','หมวดหมู่',fqCC().map(c=>[c.id,c.name]).concat([['-','ไม่ระบุหมวดหมู่']])):'';
+ return `<h1>${C.title}</h1><p>เพิ่ม แก้ไข ซ่อน/เผยแพร่ ลบ และจัดเรียงลำดับ ข้อมูลบันทึกใน Supabase${ent==='news'?' ข่าวที่เผยแพร่จะแสดงบนเว็บไซต์เรียงตามวันที่ล่าสุดก่อน (ไม่ใช้ลำดับในรายการนี้)':isPpl(ent)||ent==='ptypes'||ent==='pgroups'||ent==='pdepartments'||ent==='clubs'||ent==='clubcats'||ent==='cposts'?' ลำดับในรายการนี้คือลำดับการแสดงบนหน้าเว็บไซต์ (แสดงเฉพาะรายการที่เผยแพร่)':' ถ้าซ่อนรายการต้นสังกัด รายการลูกจะไม่แสดงบนเว็บไซต์ด้วย'}</p>${dbBanner()}${isPpl(ent)?secPageBox('people','บุคลากรและทีมผู้บริหาร','people','pplMakePage'):ent==='clubs'?secPageBox('clubs','ชมรมนักศึกษา','clubs','clubMakePage'):ent==='clubcats'&&!all.length?clubSeedBox():ent==='cposts'?cpAdminBox():ent==='news'?nwAdminBox():PH_E[ent]?pplHeadBox(ent):''}
 ${C.parent&&!C.parent().length?`<div class="msg er">ต้องมี${C.pn}ก่อนจึงจะเพิ่ม${C.one}ได้ <a href="${C.pl}">ไปจัดการ${C.pn}</a></div>`:''}<p><a class="btn b" href="#/admin/${ent}/edit/new">+ เพิ่ม${C.one}</a></p>${fl?`<p>${fl}</p>`:''}<p><small>ทั้งหมด ${all.length} รายการ${L.length!==all.length?' · แสดง '+L.length+' รายการตามตัวกรอง':''}</small></p>
 ${L.length?L.map((it,i)=>`<div class="row"><b>${E(C.label(it))}</b> ${stTag(it)} ${fqIsPub(it)&&!['pexec','pstaff','ptypes','pgroups','pdepartments','clubs','clubcats','cposts','news'].includes(ent)&&!vis.has(it.id)?'<span class="tag">ไม่แสดงบนเว็บไซต์ (ต้นสังกัดถูกซ่อนหรือไม่มี)</span>':''}<br><small>${E(C.sub(it))}</small><br><a class="btn s" href="#/admin/${ent}/edit/${E(it.id)}">แก้ไข</a> ${ent==='news'?'':`<button type="button" class="btn s"${i?'':' disabled'} onclick="fqMv('${ent}','${E(it.id)}',-1)">ขึ้น</button> <button type="button" class="btn s"${i<L.length-1?'':' disabled'} onclick="fqMv('${ent}','${E(it.id)}',1)">ลง</button>`} <button type="button" class="btn s" onclick="fqTog('${ent}','${E(it.id)}')">${fqIsPub(it)?'ซ่อน':'เผยแพร่'}</button> <button type="button" class="btn s c" onclick="fqDelAsk('${ent}','${E(it.id)}')">ลบ</button></div>`).join(''):'<div class="empty-ev">ยังไม่มีข้อมูล กดเพิ่มเพื่อเริ่มต้น</div>'}`}
 function fqAf(k,v){AFV[k]=v;if(k==='faculty')AFV.major='';render()}
@@ -1635,31 +1115,22 @@ function fqEditor(ent,id){const C=FQE[ent],isNew=id==='new';
  if(!WC.fq||WC.fqEnt!==ent||WC.fq.id!==(isNew?WC.fq.id:id)){const ex=isNew?null:C.get().find(x=>x.id===id);if(!isNew&&!ex)return `<p><a class="bk" href="#/admin/${ent}">← ${C.title}</a></p><h1>ไม่พบรายการ</h1>`;WC.fq=isNew?Object.assign({id:mkId(C.pre)},C.blank()):clone(ex);WC.fqNew=isNew;WC.fqEnt=ent;fqMig(WC.fq)}
  const it=WC.fq,fi=fd=>{const [k,l,t,req,opt,dflt]=fd,nm='f_'+k,v=it[k],lb=`<label for="${nm}">${l}${req?' *':''}</label>`;
   if(t==='text')return `${lb}<input id="${nm}" name="${nm}" value="${E(v)}">`;
-  if(t==='num')return `${lb}<input id="${nm}" name="${nm}" type="text" inputmode="decimal" autocomplete="off" placeholder="เช่น 25000 (เว้นว่างได้ถ้ายังไม่มีข้อมูล)" value="${E(v)}">`;
   if(t==='area'||t==='area8')return `${lb}<textarea id="${nm}" name="${nm}" rows="${t==='area8'?8:4}">${E(v)}</textarea>`;
   if(t==='sel'){const o=opt();let g=null,h='';o.forEach(([a,b,gr])=>{if(gr!==undefined&&gr!==g){if(g!==null)h+='</optgroup>';h+=`<optgroup label="${E(gr)}">`;g=gr}h+=`<option value="${E(a)}"${v===a?' selected':''}>${E(b)}</option>`});if(g!==null)h+='</optgroup>';return `${lb}<select id="${nm}" name="${nm}"><option value="">— เลือก —</option>${h}</select>`}
-  if(t==='chk')return `<fieldset><legend>${l}</legend>${FQ_LV.map(([a,b])=>`<label style="display:inline-block;margin-right:14px"><input type="checkbox" name="${nm}" value="${a}"${(v||[]).includes(a)?' checked':''} style="width:auto"> ${b}</label>`).join('')}</fieldset>`;
   if(t==='cpg'){const cur=Array.isArray(v)?v:(dflt?dflt():['home','community']),L=opt?opt():cpPgList(),ex=cur.filter(id=>!L.some(x=>x[0]===id));return `<fieldset><legend>${l}</legend><input type="hidden" name="${nm}_x" value="1">${L.concat(ex.map(id=>[id,'(หน้านี้ถูกลบแล้ว — ติ๊กออกเพื่อนำออก)'])).map(([a,b])=>`<label class="ck"><input type="checkbox" name="${nm}" value="${E(a)}"${cur.includes(a)?' checked':''}> ${E(b)}</label>`).join('')}<small>เลือกได้หลายหน้า โพสต์เดียวแสดงได้หลายหน้าโดยไม่ต้องสร้างซ้ำ ติ๊กออก = นำโพสต์ออกจากหน้านั้น (ไม่ลบโพสต์) โพสต์ที่ซ่อนหรือยังเป็นฉบับร่างจะไม่แสดงบนหน้าเว็บ</small></fieldset>`}
-  if(t==='hdr')return `<h3 class="fqhd">${l}</h3>`;
-  if(t==='list')return fqLst(k,l,it);
-  if(t==='plan')return fqPlan(it);
-  if(t==='blocks')return fqBlocks(it);
-  if(t==='typo')return fqTypoEd(it);
   if(t==='img')return fqImg(k,l,it,nm);
   if(t==='date')return `${lb}<input id="${nm}" name="${nm}" type="date" value="${E(v)}">`;
-  if(t==='flower'){const w=it.flower||{};return `<fieldset class="fqfs"><legend>ดอกไม้ประจำคณะ (ไม่บังคับ)</legend>${fqImg('flower','รูปดอกไม้ประจำคณะ',it,'fl_img')}<div class="g2"><div><label for="fl_nameTh">ชื่อดอกไม้ (ภาษาไทย)</label><input id="fl_nameTh" name="fl_nameTh" value="${E(w.nameTh)}"></div><div><label for="fl_nameEn">ชื่อดอกไม้ (ภาษาอังกฤษ)</label><input id="fl_nameEn" name="fl_nameEn" value="${E(w.nameEn)}"></div></div><label for="fl_meaning">ความหมายของดอกไม้</label><textarea id="fl_meaning" name="fl_meaning" rows="4">${E(w.meaning)}</textarea><p><button type="button" class="btn s c" onclick="fqFlowerClear()">ล้างข้อมูลดอกไม้</button></p></fieldset>`}
   return ''};
  const noPar=C.parent&&!C.parent().length;
  return `<p><a class="bk" href="#/admin/${ent}">← ${C.title}</a></p><h1>${isNew?'เพิ่ม':'แก้ไข'}${C.one}</h1>${dbBanner()}${noPar?`<div class="msg er">ต้องมี${C.pn}ก่อน <a href="${C.pl}">ไปจัดการ${C.pn}</a></div>`:''}<form id="af" onsubmit="return false">${C.fields.map(fi).join('')}<label for="f_status">สถานะ</label><select id="f_status" name="f_status"><option value="draft"${it.status==='published'?'':' selected'}>ซ่อน / ฉบับร่าง</option><option value="published"${it.status==='published'?' selected':''}>เผยแพร่</option></select><p><button type="button" class="btn b" onclick="fqSave('${ent}')">บันทึก</button> <a class="btn" href="#/admin/${ent}">กลับรายการ</a></p></form>`}
 function fqSync(ent){const C=FQE[ent],it=WC.fq;if(!it)return null;const d=new FormData($('af')),g=n=>STRIP(String(d.get(n)==null?'':d.get(n))).trim();
  C.fields.forEach(([k,,t])=>{const nm='f_'+k;if(t==='chk')it[k]=d.getAll(nm);else if(t==='cpg'){if(d.has(nm+'_x'))it[k]=d.getAll(nm)}else if(t!=='flower'&&d.has(nm))it[k]=g(nm)});
  if(d.has('f_status'))it.status=d.get('f_status')==='published'?'published':'draft';
- if(ent==='faculties'&&d.has('fl_nameTh')){const w=it.flower=it.flower||{};w.nameTh=g('fl_nameTh');w.nameEn=g('fl_nameEn');w.meaning=g('fl_meaning');w.img=g('fl_img')}fqSyncX(ent,it,d,g);return it}
+ fqSyncX(ent,it,d,g);return it}
 async function mdUpload(file,dir){if(!SB||!DBH)throw {message:dbOff()};const ext=CM_MIME[file&&file.type];if(!ext)throw {message:'รองรับเฉพาะไฟล์ PNG, JPG, WebP, GIF'};if(file.size>5*1024*1024)throw {message:'ไฟล์ใหญ่เกิน 5 MB'};
  const path=dir+'/'+mkId('f')+'.'+ext,{error}=await SB.storage.from('media').upload(path,file,{contentType:file.type,cacheControl:'31536000',upsert:false});if(error)throw error;return SB.storage.from('media').getPublicUrl(path).data.publicUrl}
 function fqPick(k,inp){const f=inp.files&&inp.files[0];inp.value='';if(!f)return;const ent=WC.fqEnt;if(!CM_MIME[f.type])return say('รองรับเฉพาะไฟล์ PNG, JPG, WebP, GIF',false);if(f.size>5*1024*1024)return say('ไฟล์ใหญ่เกิน 5 MB',false);fqSync(ent);const P=fqPend();if(P.files[k]){try{URL.revokeObjectURL(P.files[k].url)}catch(e){}}P.files[k]={file:f,url:URL.createObjectURL(f)};render()}
 function fqImgClear(k){fqSync(WC.fqEnt);const P=fqPend();delete P.files[k];fqImgSet(WC.fq,k,'');render()}
-function fqFlowerClear(){fqSync(WC.fqEnt);fqPend();delete PEND.files.flower;WC.fq.flower=null;render()}
 let FQLIB=[];
 async function fqLib(k){if(!SB||!DBH)return say(dbOff(),false);fqSync(WC.fqEnt);$('md').innerHTML='<div class="modal"><div><h3>คลังสื่อ</h3><p>กำลังโหลด...</p></div></div>';FQLIB=[];
  try{for(const [b,fo] of [['media','faculties'],['media','people'],['media','clubs'],['media','posts'],['media','news'],['media','events'],['campus','places'],['campus','maps']]){const {data,error}=await SB.storage.from(b).list(fo,{limit:100,sortBy:{column:'created_at',order:'desc'}});if(error)throw error;(data||[]).filter(x=>x&&x.id&&/\.(png|jpe?g|webp|gif)$/i.test(x.name||'')).forEach(x=>FQLIB.push(SB.storage.from(b).getPublicUrl(fo+'/'+x.name).data.publicUrl))}}
@@ -1669,18 +1140,18 @@ function fqUse(k,i){const u=FQLIB[i];$('md').innerHTML='';if(!u||!WC.fq)return;f
 async function fqSave(ent){const C=FQE[ent],it=fqSync(ent);if(!it)return;
  for(const [k,l,t,req] of C.fields){if(req&&!it[k])return say('กรุณากรอก/เลือก: '+l,false)}
  if(C.parent&&!C.parent().some(x=>x.id===it[C.pk]))return say('ต้นสังกัดที่เลือกไม่มีอยู่ในระบบ',false);
- if(ent==='majors'&&(it.levels||[]).some(l=>!FQ_LV.some(x=>x[0]===l)))return say('ระดับการศึกษาไม่ถูกต้อง',false);
- if(ent==='programs'&&!FQ_LV.some(x=>x[0]===it.level))return say('ระดับการศึกษาไม่ถูกต้อง',false);
+ 
+ 
  {const er=fqClean(ent,it);if(er)return say(er,false)}
  if(!DBH)return say(dbOff(),false);
  const P=fqPend();
  try{for(const k of Object.keys(P.files))fqImgSet(it,k,await mdUpload(P.files[k].file,isPpl(ent)?'people':ent==='clubs'?'clubs':ent==='cposts'?'posts':ent==='news'?'news':'faculties'));
-  for(const k of ['cover','logo'])if(ent==='faculties'&&it[k]&&!okU(it[k]))return say('ลิงก์รูปต้องขึ้นต้นด้วย https://',false);
+  
    if(isPpl(ent)&&it.photo&&!okU(it.photo))return say('ลิงก์รูปต้องขึ้นต้นด้วย https://',false);
   if(ent==='clubs'&&it.logo&&!okU(it.logo))return say('ลิงก์โลโก้ต้องขึ้นต้นด้วย https://',false);
   for(const b of it.blocks||[])if(b.type==='image'&&b.url&&!okU(b.url))return say('ลิงก์รูปในเนื้อหาเพิ่มเติมต้องขึ้นต้นด้วย https://',false);
   it.blocks=(it.blocks||[]).filter(fqBlkOk);
-  if(ent==='faculties'){const w=it.flower;if(w){if(w.img&&!okU(w.img))return say('ลิงก์รูปดอกไม้ต้องขึ้นต้นด้วย https://',false);if(!w.img&&!w.nameTh&&!w.nameEn&&!w.meaning)it.flower=null}}
+  
   const arr=C.get().slice(),i=arr.findIndex(x=>x.id===it.id);if(i>=0)arr[i]=it;else if(ent==='cposts'||ent==='news')arr.unshift(it);else arr.push(it);await putDoc(FQE[ent].store||ent,arr);
   const wasNew=WC.fqNew,nid=it.id;WC={};P.files={};
   if(wasNew){const h='#/admin/'+ent+'/edit/'+nid;if(window.history&&history.replaceState)history.replaceState(null,'',h);else location.hash=h;last=h}
