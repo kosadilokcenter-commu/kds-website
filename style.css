@@ -816,3 +816,29 @@ html.kld-on{overflow:hidden}
 .cu[data-cu~="nm"] .cut td.cun{font-size:var(--cu-nm)}
 .cu[data-cu~="tt"] .cut tbody tr.cus td,.cu[data-cu~="tt"] .cut tfoot tr.cut2 td{font-size:var(--cu-tt)}
 .cu[data-cu~="sr"] .cuqi,.cu[data-cu~="sr"] .cusr{font-size:var(--cu-sr)}
+
+/* ===== ตารางค่าธรรมเนียมการศึกษา (ส่วนเนื้อหาประเภท fees) ===== */
+.fee{margin:8px 0 28px}.fees{margin:0 0 30px}.fees>h2{margin:0 0 .4em}
+.feew{overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+.feew:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.feet{width:100%;min-width:720px;border-collapse:collapse}.feet tbody td:nth-child(2){min-width:230px}
+.feet th,.feet td{padding:10px 14px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+.feet thead th{background:var(--hover);font-size:.9rem}
+.feet tbody tr:last-child>*{border-bottom:0}
+.feet tbody th{font-weight:700;white-space:nowrap}
+.feet .fen{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
+.feet tbody td.fen{font-weight:600}
+.fee-hint{display:none;margin:6px 2px 0;font-size:.85rem;color:var(--muted)}
+.feeg{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,200px),1fr));gap:12px;margin:0 0 12px}
+.feec{border:1px solid var(--line);border-radius:14px;background:var(--surface);padding:14px 16px;display:flex;flex-direction:column;gap:2px;min-width:0}
+.feec b{font-size:.95rem;color:var(--muted);font-weight:600}
+.fev{font-size:1.6rem;font-weight:700;color:var(--gold-text);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.fev small{font-size:.9rem;font-weight:600;color:var(--fg);margin-left:6px}
+.fent{margin:0 0 8px}
+.fecv b{display:block;font-size:.88rem;color:var(--muted)}.fecv p{margin:2px 0 0}
+.fesl{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,270px),1fr));gap:14px}
+.fesv{border:1px solid var(--line);border-radius:14px;background:var(--surface);padding:14px 16px;min-width:0;overflow-wrap:anywhere}
+.fesv h3{font-size:1.1rem;line-height:1.4;margin:0 0 2px}.fesv p{margin:6px 0}
+.fesen{color:var(--muted);font-size:.9rem}.fesp{font-weight:700;color:var(--gold-text)}
+.fenote{margin:0;padding-left:1.4em}.fenote li{margin:4px 0;overflow-wrap:anywhere}
+@media(max-width:700px){.fee-hint{display:block}.feet th,.feet td{padding:8px 10px;font-size:.92rem}.feet tbody th{position:sticky;left:0;z-index:1;background:var(--surface);box-shadow:1px 0 0 var(--line)}.feet thead th:first-child{position:sticky;left:0;z-index:2;background:linear-gradient(var(--hover),var(--hover)),var(--surface);box-shadow:1px 0 0 var(--line)}}
