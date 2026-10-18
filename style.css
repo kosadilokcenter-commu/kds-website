@@ -863,3 +863,8 @@ html.kld-on{overflow:hidden}
 .cpf{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 16px}.cpcat{font-weight:600;color:var(--fg)}
 /* หลังบ้าน: แถบแท็บโครงสร้างหลักสูตรและตารางเรียน */
 .cuh{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px}
+/* ตารางเรียน */
+.ttw{overflow-x:auto;margin:10px 0;border:1px solid var(--line);border-radius:12px}.ttt{border-collapse:collapse;width:100%;min-width:640px}
+.ttt th,.ttt td{border:1px solid var(--line);padding:8px 10px;text-align:center;vertical-align:middle;overflow-wrap:anywhere}.ttt thead th{background:var(--hover)}.ttt tbody th{background:var(--hover);white-space:nowrap;position:sticky;left:0}
+.ttt td small,.ttt th small{color:var(--muted)}.ttt td input{width:100%;min-width:110px;margin:2px 0}.ttx{background:transparent}.tth{margin:14px 0 4px}
+
