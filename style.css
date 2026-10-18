@@ -45,7 +45,6 @@ table{width:100%;border-collapse:collapse}td,th{padding:8px;border-bottom:1px so
 .lci{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;background:color-mix(in srgb,var(--gold) 16%,transparent);color:var(--gold-text)}.unset{font-style:italic}.btn:disabled{opacity:.55;cursor:not-allowed}.btn:disabled:hover{box-shadow:none;border-color:var(--fg)}.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .g2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 14px}@media(max-width:560px){.g2{grid-template-columns:1fr}}
 
-
 /* ===== KIT identity: Navy / Antique Gold / Silver (ทับกฎเดิมทั้งหมด ใช้ตัวแปรสีเท่านั้น) ===== */
 html.tt,html.tt *,html.tt *::before,html.tt *::after{transition:background-color .35s ease,color .35s ease,border-color .35s ease,fill .35s ease,stroke .35s ease,box-shadow .35s ease!important}
 @media(prefers-reduced-motion:reduce){html.tt,html.tt *{transition:none!important}.tgl .ti{transition:none!important}}
@@ -159,17 +158,12 @@ a.bk:hover,a.bk:focus-visible{opacity:.65}
 @media(prefers-reduced-motion:reduce){.cms.an{transition:none}}
 /* คณะ สาขาวิชา หลักสูตร */
 .fq{margin:12px 0}
-.fqg{margin:26px 0}
-.fqg>h2{margin-bottom:4px}
+
 .fqbr{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
-.fqg .grid .card img{width:100%;max-height:150px;object-fit:cover;display:block}
-.fqb img{display:block;width:100%;max-height:320px;object-fit:cover;border-radius:16px}
+
 .fqh{display:flex;gap:16px;align-items:center;margin:16px 0;flex-wrap:wrap}
 .fql{width:84px;height:84px;object-fit:contain;border-radius:14px;background:var(--card);border:1px solid var(--line);padding:6px}
-.fqfl{display:flex;gap:18px;align-items:flex-start;flex-wrap:wrap;border:1px solid var(--line);border-radius:16px;background:var(--card);padding:16px}
-.fqfl img{width:200px;max-width:100%;max-height:240px;object-fit:cover;border-radius:12px}
-.fqfl>div{flex:1 1 240px;min-width:0}
-.fqm{border-top:1px solid var(--line);padding:14px 0}
+
 .fqp{border:1px solid var(--line);border-radius:12px;background:var(--card);padding:8px 14px;margin:8px 0}
 .fqp summary{cursor:pointer}
 .fqp[open] summary{margin-bottom:8px}
@@ -198,22 +192,17 @@ a.bk:hover,a.bk:focus-visible{opacity:.65}
 .typv{border:1px solid var(--line);border-radius:12px;padding:16px;background:var(--surface);overflow:hidden}
 
 /* ===== คณะและวิทยาลัย: ดีไซน์ใหม่ (Minimal Academic) ===== */
-.fqg{margin:34px 0}
-.fqg>h2{padding-bottom:.4em;margin-bottom:.8em;border-bottom:1px solid var(--line);position:relative}
-.fqg>h2::after{content:"";position:absolute;left:0;bottom:-1px;width:48px;height:2px;background:var(--gold)}
+
 .fcg{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,270px),1fr));gap:20px;margin-top:16px}
 .fcd{display:flex;flex-direction:column;background:var(--surface);color:var(--fg);border:1px solid var(--line);border-radius:12px;overflow:hidden;text-decoration:none;min-width:0;transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease}
 .fcd:hover{transform:translateY(-3px);border-color:var(--gold);box-shadow:var(--shadow)}
 .fcd:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
-.fcm{aspect-ratio:16/9;background:var(--hover);overflow:hidden;flex:none}
-.fcm img{width:100%;height:100%;object-fit:cover;display:block}
-.fcm.lg img{object-fit:contain;padding:14px;box-sizing:border-box}
-.fcm.fcp{display:flex;align-items:center;justify-content:center;background:var(--nav-bg)}
+
 .fcb{display:flex;flex-direction:column;flex:1;padding:18px 20px 20px;min-width:0}
 .ty .fcb h3{font-size:calc(var(--ty-h3,21px)*.85);line-height:1.3;margin:0 0 4px}
 .fcen{margin:0 0 10px;color:var(--muted);font-size:.875em;overflow-wrap:anywhere}
 .fcb .fqbr{margin:0 0 12px;color:var(--fg);opacity:.85;font-size:.94em}
-.fcn{margin:0 0 12px;color:var(--muted);font-size:.84em}
+
 .fcgo{margin-top:auto;padding-top:12px;border-top:1px solid var(--line);color:var(--gold-text);font-size:.9em;font-weight:600}
 .fcd:hover .fcgo{text-decoration:underline;text-underline-offset:3px}
 @media(prefers-reduced-motion:reduce){.fcd{transition:none}.fcd:hover{transform:none}}
@@ -231,15 +220,7 @@ a.bk:hover,a.bk:focus-visible{opacity:.65}
 @media(max-width:560px){.fqpr{grid-template-columns:1fr}.fqpt{justify-content:flex-start}}
 
 /* หน้ารายละเอียดหลักสูตร และบล็อกเนื้อหา */
-.fqph{margin:6px 0 10px}
-.fqdg{color:var(--gold-text);font-weight:600}
-.fqli{padding-left:1.4em}
-.fqfg{margin:16px 0}
-.fqfg img{display:block;max-width:100%;height:auto;border-radius:12px;border:1px solid var(--line)}
-.fqfg figcaption{margin-top:6px;color:var(--muted);font-size:.88em}
-.fqhr{border:0;border-top:1px solid var(--line);margin:26px 0}
-.fqgp{border-left:3px solid var(--gold);padding:2px 0 2px 14px;margin:16px 0}
-.fqgp h3{margin-top:0}
+
 .fqy2{margin:20px 0}
 .fqt2{margin:12px 0}
 .fqcs{list-style:none;padding:0;margin:0 0 8px;border:1px solid var(--line);border-radius:10px;background:var(--surface);overflow:hidden}
@@ -277,31 +258,9 @@ a.bk:hover,a.bk:focus-visible{opacity:.65}
 .sec a.fcd .fcgo,.sec a.fqpr .fqpm{color:var(--gold-text)}
 
 /* แผนการศึกษา (สาธารณะ): เลือกชั้นปี/ภาคเรียน + ค้นหา — selector ขึ้นต้นด้วย .plv เพื่อชนะ .ty ul/.ty li/.ty p */
-.plv{margin:6px 0 12px;min-width:0;max-width:100%}
-.pvbar{display:flex;flex-direction:column;gap:10px;margin-bottom:12px}
-.pvbar>*{min-width:0}
-.pvtb{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;-webkit-overflow-scrolling:touch}
-.pvb{flex:0 0 auto;font:inherit;font-size:.9rem;line-height:1.3;padding:6px 14px;border:1px solid var(--line);border-radius:99px;background:var(--surface);color:var(--fg);cursor:pointer;white-space:nowrap}
-.pvb:hover{background:var(--hover)}
-.pvb.on{background:var(--act);border-color:var(--act);color:#fff}
-.pvb:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
-.pvsr{display:flex;gap:6px;align-items:center}
-.pvsr input{flex:1 1 auto;min-width:0}
-.pvck{display:flex;align-items:center;gap:8px;margin:0;font-weight:400;font-size:.88rem;line-height:1.4;color:var(--muted)}
-.pvck input{width:auto;flex:none}
-.plv h3.pvh{margin:8px 0 2px;line-height:1.35}
-.plv h4{margin:18px 0 8px;line-height:1.35}
-.plv p.evm{margin:2px 0 10px;line-height:1.5;flex-wrap:wrap}
-.plv p.pl{margin:0 0 10px}
-.plv ul.pvl{list-style:none;margin:0 0 12px;padding:0;border:1px solid var(--line);border-radius:10px;background:var(--surface);overflow:hidden}
-.plv ul.pvl>li{margin:0;padding:0;border-top:1px solid var(--line)}
-.plv ul.pvl>li:first-child{border-top:0}
+
 .pvrw{display:grid;grid-template-columns:7em minmax(0,1fr) 9em 6.5em 6.5em;gap:4px 12px;align-items:center;padding:12px 14px;line-height:1.45;min-width:0}
-details.pvd>summary.pvrw{cursor:pointer;list-style:none}
-details.pvd>summary.pvrw::-webkit-details-marker{display:none}
-details.pvd>summary.pvrw:hover{background:var(--hover)}
-details.pvd>summary.pvrw:focus-visible{outline:2px solid var(--gold);outline-offset:-2px}
-.pvcd{font-weight:600;color:var(--gold-text);overflow-wrap:anywhere;min-width:0}
+
 .pvnm{min-width:0;overflow-wrap:anywhere;word-break:break-word}
 .pvth{display:block}
 .pven{display:block;color:var(--muted);font-size:.85em;line-height:1.4}
@@ -310,47 +269,18 @@ details.pvd>summary.pvrw:focus-visible{outline:2px solid var(--gold);outline-off
 .pvty .tag{display:inline-block;margin:0;white-space:nowrap}
 .pvbt{justify-self:end;font-size:.85rem;font-weight:600;color:var(--gold-text);border:1px solid var(--gold);border-radius:99px;padding:2px 12px;white-space:nowrap}
 .pvbt::before{content:"รายละเอียด"}
-details.pvd[open] .pvbt::before{content:"ซ่อน"}
+
 .pvbt0{display:block}
-.pvds{padding:2px 14px 14px;color:var(--muted);line-height:1.6;overflow-wrap:anywhere}
-.plv .pve{margin:8px 0;padding:16px;border:1px dashed var(--line);border-radius:10px;color:var(--muted);text-align:center;line-height:1.6}
-.plv .pve .btn{margin-left:6px}
-@media(min-width:760px){.pvbar{display:grid;grid-template-columns:minmax(0,1fr) minmax(260px,340px);gap:10px 16px;align-items:center}.pvbar #pvys{grid-column:1;grid-row:1}.pvbar #pvts{grid-column:1;grid-row:2}.pvsr{grid-column:2;grid-row:1}.pvck{grid-column:2;grid-row:2}}
-@media(max-width:640px){.pvrw{grid-template-columns:minmax(0,1fr) auto auto;grid-template-areas:"cd ty bt" "nm nm nm" "cr cr cr";padding:12px}.pvcd{grid-area:cd}.pvty{grid-area:ty}.pvnm{grid-area:nm}.pvcr{grid-area:cr}.pvbt,.pvbt0{grid-area:bt}}
+
+@media(max-width:640px){.pvrw{grid-template-columns:minmax(0,1fr) auto auto;grid-template-areas:"cd ty bt" "nm nm nm" "cr cr cr";padding:12px}.pvty{grid-area:ty}.pvnm{grid-area:nm}.pvcr{grid-area:cr}.pvbt,.pvbt0{grid-area:bt}}
 /* ให้ footer และคอนเทนเนอร์เนื้อหาอยู่ใน flow ปกติเสมอ ไม่ลอยทับรายการ */
 #app{display:flow-root}
 footer{position:relative;clear:both}
 
 /* ค่าเล่าเรียน (หน้าคณะ/หลักสูตร) */
-.fqtu{margin:14px 0 0;padding:12px 16px;border:1px solid var(--line);border-left:3px solid var(--gold);border-radius:10px;background:var(--surface);max-width:100%}
-.fqtu p{margin:0}
-.fqtv{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 8px;overflow-wrap:anywhere}
-.fqtul{color:var(--muted);font-size:.9em}
-.fqtv b{font-size:1.45em;font-weight:700;color:var(--fg);letter-spacing:.01em}
-.fqtn{color:var(--gold-text);font-weight:600}
-.fqtu .evm{margin-top:6px}
-.fqtu0{border-left-color:var(--silver)}
-.fqtu0 .fqtv{color:var(--muted);font-size:.95em}
-.fqpu{grid-column:1/-1;color:var(--fg);font-size:.92em;font-weight:600}
-@media(max-width:560px){.fqtv b{font-size:1.25em}}
 
 /* แผนการศึกษา (หน้าเว็บ): ตารางรายวิชา */
-.plv .pvtw{overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--line);border-radius:10px;background:var(--surface);margin:0 0 12px}
-.plv table.pvt{width:100%;border-collapse:collapse;font-size:.95em;line-height:1.5}
-.pvt th{text-align:left;font-size:.8rem;color:var(--muted);font-weight:600;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:bottom}
-.pvt td{padding:10px 12px;border-top:1px solid var(--line);vertical-align:top;overflow-wrap:anywhere}
-.pvt tbody tr:first-child td{border-top:0}
-.pvt .pvcd{font-weight:600;white-space:nowrap}
-.pvt .pvn{text-align:right;white-space:nowrap}
-.pvt .tag{display:inline-block;margin:0;white-space:nowrap}
-.pvt .tag.pvk-required{background:var(--fg);color:var(--bg);border-color:var(--fg)}
-.pvt .tag.pvk-free{border-color:var(--silver);color:var(--muted)}
-.pvpc{display:inline-block;border:1px solid var(--line);border-radius:6px;padding:0 6px;margin:0 4px 2px 0;font-weight:600;white-space:nowrap}
-.pvt .pvd{margin-top:6px}
-.pvt .pvd>summary{cursor:pointer;color:var(--gold-text);font-size:.85rem}
-.pvt .pvds{padding:6px 0 0;color:var(--muted)}
-.pvt .pvds p{margin:0 0 6px}
-@media(max-width:640px){.plv table.pvt,.pvt tbody,.pvt tr,.pvt td{display:block}.pvt thead{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}.pvt tr{padding:10px 12px;border-top:1px solid var(--line)}.pvt tbody tr:first-child{border-top:0}.pvt td{display:grid;grid-template-columns:7.5em minmax(0,1fr);gap:8px;border:0;padding:3px 0}.pvt td::before{content:attr(data-l);color:var(--muted);font-size:.8rem}.pvt .pvn{text-align:left}}
+
 /* แผนการศึกษา (หลังบ้าน): วิชาบังคับก่อน */
 .fqpre{margin:6px 0}
 .fqchs{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 8px}
@@ -359,8 +289,6 @@ footer{position:relative;clear:both}
 .fqprs{display:flex;gap:8px;flex-wrap:wrap}
 .fqprs input{flex:1 1 200px;min-width:0}
 .fqprs select{flex:2 1 260px;min-width:0}
-.pvt td .tag{justify-self:start}
-.pvt td::before{font-weight:400}
 
 /* ค้นหารายวิชา (หลังบ้าน) */
 .cqw{overflow-x:auto}.cqt th,.cqt td{padding:8px 10px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line)}.cqt th{font-size:.85rem;white-space:nowrap}
@@ -456,14 +384,7 @@ header .sndp{top:calc(100% + 8px)}
 @media(min-width:901px) and (max-width:990px){.links>a,.ddb{padding:10px 8px;font-size:.86rem}.links>a::after,.ddb::before{left:8px;right:8px}.hw nav{gap:8px}}
 
 /* ===== หน้ารายวิชาทั้งหมด (ผู้เข้าชม): ตัวกรอง ใช้ตาราง .pvt และการ์ด .fqpr เดิม ===== */
-.fq .crf{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px 12px;margin:4px 0 12px}
-.fq .crf select{width:100%;min-width:0}
-.fq .crf label{margin-top:6px}
-.crt a{color:var(--fg);text-decoration-color:var(--gold);text-underline-offset:3px}.crt a:hover{color:var(--gold-text)}
-.crt a:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
-.pvpc[href]{text-decoration:none;color:var(--fg)}.pvpc[href]:hover{border-color:var(--gold)}
-@media(max-width:760px){.fq .crf{grid-template-columns:1fr}}
-@media(min-width:641px){.crt th:nth-child(5),.crt td:nth-child(5){min-width:15em}.crt th:nth-child(3),.crt td:nth-child(3){min-width:11em}}
+
 /* ===== ตั้งค่าตัวอักษร: ฟอนต์ การจัดแนว และการจัดวางการ์ด (ค่าจาก --ty-*; ค่าเริ่มต้น = หน้าตาเดิม) ===== */
 .ty{--cc:var(--ty-cc,4);--pc:var(--ty-pc,1);font-family:var(--ty-ff,inherit);text-align:var(--ty-ta,inherit)}
 .ty h1,.ty h2,.ty h3,.ty h4{font-family:inherit}
@@ -785,7 +706,6 @@ html.kld-on{overflow:hidden}
 @media(prefers-reduced-motion:reduce){.hst{transition:none}}
 .himg{display:flex;gap:6px;align-items:center;margin-bottom:6px}.himg input{flex:1;min-width:0}
 
-
 /* ===== KDS: ส่วนข้อความ/สารจากผู้บริหาร (ข้อความซ้าย ภาพขวา) · ข่าวและโพสต์เป็นการ์ดแนวนอน ===== */
 .hn .hin{position:relative;overflow:hidden;background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:clamp(20px,4vw,40px);box-shadow:var(--shadow)}
 .hn .hin>div:first-child{position:relative;min-width:0}
@@ -846,11 +766,8 @@ html.kld-on{overflow:hidden}
 .evi{max-height:min(70vh,640px)}
 .nwi{max-height:min(80vh,900px)}
 .cmdi{max-height:min(60vh,420px)}
-.fqb img,.fqfl img{height:auto;object-fit:contain}
-.fqb img{width:auto;max-width:100%;max-height:min(80vh,900px);margin:0 auto}
-.fqfl img{width:auto;max-width:min(100%,320px);max-height:none}
+
 .modal.kdz>div{text-align:center}.modal.kdz .evi{margin-top:30px;max-height:78vh}
-@media(max-width:560px){.fqfl img{max-width:100%}}
 
 /* ===== หน้าหลักสูตร (ม.ต้น/ม.ปลาย → แผนการเรียน → สาขาที่เหมาะกับผู้เรียน): ต่อยอดการ์ด .fcd เดิม ===== */
 .fcb .fqbr{-webkit-line-clamp:5}
