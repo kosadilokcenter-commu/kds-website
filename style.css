@@ -790,3 +790,14 @@ html.kld-on{overflow:hidden}
 .card .p .chd h3{margin:0;flex:1 1 auto;min-width:0;overflow-wrap:anywhere}
 .card .p img.cic{width:42px;height:42px;flex:none;object-fit:contain;border-radius:12px;display:block}
 .fqpv.cipv{width:42px;height:42px;max-width:42px;max-height:42px;object-fit:contain}
+
+/* โครงสร้างหลักสูตร (หน้าบ้าน): 2 ภาคเรียนข้างกันบนจอใหญ่ เรียงลงบนมือถือ */
+.cuhd{margin:6px 0 16px}.cuti{margin:0 0 6px;font-size:clamp(1.5rem,4vw,2.3rem)}.cuse{margin:2px 0;color:var(--muted)}.cuse b{color:var(--fg)}
+.cug{display:grid;grid-template-columns:minmax(0,1fr);gap:20px;align-items:start}@media(min-width:900px){.cug{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.cutt{margin:0 0 8px;font-size:1.2rem}.cuw{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+.cut{width:100%;border-collapse:collapse}.cut th,.cut td{padding:7px 10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top;overflow-wrap:anywhere}
+.cut thead th{background:var(--hover);font-size:.85rem}.cut .cun{text-align:right;white-space:nowrap}.cut .cuc{white-space:nowrap}
+.cut .cuth th{background:var(--hover);font-size:.95rem}.cut .cuth small{font-weight:400;color:var(--muted)}.cut .cue{color:var(--muted);text-align:center}
+.cut .cus td{font-weight:700}.cut tfoot td{font-weight:700;border-top:2px solid var(--fg);border-bottom:0;background:var(--hover)}
+.cut .cuq .cuth th{outline:2px dashed var(--silver);outline-offset:-2px}
+@media(max-width:600px){.cut th,.cut td{padding:6px 7px;font-size:.88rem}}
