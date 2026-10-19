@@ -845,3 +845,10 @@ html.kld-on{overflow:hidden}
 
 /* ===== กลุ่มสาระ: กำหนดวิชา/ตารางสอน (หลังบ้าน) ===== */
 .sgxn{margin:6px 0 10px;color:var(--muted);font-size:.92rem}.sgxbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:12px 0}.sgxbar select{max-width:100%;min-width:0}
+
+/* ===== หน้าบ้าน: ตารางสอนกลุ่มสาระการเรียนรู้ ===== */
+.sgv{margin:8px 0 28px}.sgv select{max-width:100%;min-width:0}.sgvh{margin:14px 0 4px}.sgvs{margin:0 0 8px;color:var(--muted)}
+/* ตารางสอนกลุ่มสาระ (รายสัปดาห์): ต่อยอด .ttw/.ttt เดิม — เลื่อนแนวนอนบนมือถือ คอลัมน์ "คาบ/เวลา" ติดซ้ายด้วยพื้นทึบ */
+.ttt.ttg{min-width:880px}.ttg td{vertical-align:top;min-width:150px}
+.ttg tbody th,.ttg thead th:first-child{background:linear-gradient(var(--hover),var(--hover)),var(--surface);z-index:1}.ttg thead th:first-child{position:sticky;left:0;white-space:nowrap}
+.ttk small{display:block}.ttk+.ttk{margin-top:8px;padding-top:8px;border-top:1px dashed var(--line)}
