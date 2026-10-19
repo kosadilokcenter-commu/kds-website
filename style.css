@@ -852,3 +852,23 @@ html.kld-on{overflow:hidden}
 .ttt.ttg{min-width:880px}.ttg td{vertical-align:top;min-width:150px}
 .ttg tbody th,.ttg thead th:first-child{background:linear-gradient(var(--hover),var(--hover)),var(--surface);z-index:1}.ttg thead th:first-child{position:sticky;left:0;white-space:nowrap}
 .ttk small{display:block}.ttk+.ttk{margin-top:8px;padding-top:8px;border-top:1px dashed var(--line)}
+
+/* ===== หน้ากฎระเบียบ (.rules-pg): เลย์เอาต์ตามภาพอ้างอิง · ใช้เฉพาะหน้าที่ isRulesPg() ใน app.js ระบุ ไม่กระทบหน้าอื่น ===== */
+.w.sec.rules-pg{--rp-bg:#fff;--rp-band:#EBEBEB;--rp-title:var(--kds-primary,#7A1A22);--rp-ink:#222;--rp-sub:#555;--rp-col:900px;padding:0 18px 48px;background:var(--rp-bg);color:var(--rp-ink);box-shadow:0 0 0 100vmax var(--rp-bg);clip-path:inset(0 -100vmax)}
+:root[data-theme="dark"] .w.sec.rules-pg,:root:not([data-theme]) .w.sec.rules-pg{--rp-bg:var(--surface);--rp-band:#2C323F;--rp-title:var(--kds-primary-text);--rp-ink:var(--fg);--rp-sub:var(--muted)}
+/* แถบหัวข้อสีเทาอ่อนเต็มความกว้างจอ (ขยายด้วย box-shadow + clip-path จึงไม่เกิดแถบเลื่อนแนวนอน) */
+.rules-pg>h1,.rules-pg h2{max-width:var(--rp-col);margin:0 auto;padding:16px 0;background:var(--rp-band);box-shadow:0 0 0 100vmax var(--rp-band);clip-path:inset(0 -100vmax);color:var(--rp-title);font-weight:700;letter-spacing:0;line-height:1.35;text-align:left}
+.rules-pg>h1{font-size:clamp(1.4rem,4.2vw,2rem);margin-bottom:28px}
+.rules-pg>h1::after{display:none}
+.rules-pg h2{font-size:clamp(1.15rem,3.4vw,1.5rem);margin:36px auto 22px}
+.rules-pg small.en{display:block;margin-top:2px;font-size:.78rem;font-weight:400;color:var(--rp-sub);line-height:1.4}
+/* รายการกฎ: ลำดับเลข รองรับข้อความหลายบรรทัด */
+.rules-pg p.pl,.rules-pg ol.rl{max-width:var(--rp-col);margin-left:auto;margin-right:auto;color:var(--rp-ink)}
+.rules-pg p.pl{margin-top:0;margin-bottom:1em;line-height:1.75}
+.rules-pg ol.rl{margin-top:0;margin-bottom:1.2em;padding-left:1.7em;line-height:1.75}
+.rules-pg ol.rl>li{margin:0 0 .55em;padding-left:.35em;overflow-wrap:break-word}
+.rules-pg ol.rl>li::marker{color:var(--rp-title);font-weight:600}
+@media(min-width:1000px){.rules-pg p.pl,.rules-pg ol.rl{font-size:1.02rem}}
+@media(max-width:600px){.w.sec.rules-pg{padding:0 14px 36px}.rules-pg>h1,.rules-pg h2{padding:13px 0}.rules-pg h2{margin:28px auto 16px}.rules-pg ol.rl{padding-left:1.45em}.rules-pg p.pl,.rules-pg ol.rl{font-size:.95rem;line-height:1.7}}
+/* ปิดช่องว่างสีพื้นเว็บระหว่างเนื้อหากับ footer เดิม เฉพาะหน้าที่มี .rules-pg (footer ยังเป็นตัวเดิม ไม่สร้างซ้ำ) */
+body:has(.rules-pg) footer{margin-top:0}
