@@ -190,7 +190,7 @@ function feeEd(s,id){s.fee=feeNorm(s.fee);const f=s.fee,n=s.id+'_fee_',num='inpu
  +`<fieldset class="fqfs"><legend>3. บริการและทรัพยากรนักเรียน</legend>${fi('หัวข้อส่วน','h3',f.h3)}${f.svc.map((r,j)=>`<div class="row">${bt('svc',j,f.svc.length,'บริการที่')}${fi('ชื่อรายการ (ไทย)','v'+j+'_t',r.t)}${fi('ชื่อภาษาอังกฤษ (เว้นว่างได้)','v'+j+'_en',r.en)}${fi('ราคา/อัตรา (ข้อความ เช่น 10,000 บาท/ปีการศึกษา)','v'+j+'_price',r.price)}${fi('คำอธิบาย (เว้นว่างได้)','v'+j+'_d',r.d,1)}${fi('สิ่งที่ครอบคลุม (เว้นว่างได้)','v'+j+'_cv',r.cv,1)}</div>`).join('')}${add('svc','+ เพิ่มรายการบริการ')}</fieldset>`
  +`<fieldset class="fqfs"><legend>4. หมายเหตุ (3 ข้อ)</legend>${fi('หัวข้อส่วน','h4',f.h4)}${f.notes.map((x,j)=>fi('หมายเหตุข้อ '+(j+1)+' (เว้นว่าง = ไม่แสดง)','n'+j,x,1)).join('')}</fieldset>`}
 /* ===== หน้ากฎระเบียบ (แก้เฉพาะการแสดงผล ไม่แก้ข้อมูลใน site_docs): ทำงานเฉพาะหน้าที่ slug อยู่ใน RULES_SLUGS หรือชื่อหน้าตรงกับ RULES_TITLES · หน้าอื่นเรนเดอร์เหมือนเดิมทุกประการ ===== */
-const RULES_SLUGS=['rules'],RULES_TITLES=['ระเบียบและข้อบังคับของโรงเรียน'];
+const RULES_SLUGS=['rules-kds'],RULES_TITLES=['ระเบียบและข้อบังคับของโรงเรียน'];
 const isRulesPg=p=>!!p&&(RULES_SLUGS.includes(p.slug)||RULES_TITLES.includes(String(p.title||'').trim()));
 let RPG=false;
 /* หัวข้อ: บรรทัดแรก = ชื่อไทย, บรรทัดถัดไป (หรือส่วนท้ายที่เป็นอังกฤษล้วน ≥2 คำ) = คำแปลอังกฤษขนาดเล็ก */
