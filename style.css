@@ -842,3 +842,6 @@ html.kld-on{overflow:hidden}
 .fesen{color:var(--muted);font-size:.9rem}.fesp{font-weight:700;color:var(--gold-text)}
 .fenote{margin:0;padding-left:1.4em}.fenote li{margin:4px 0;overflow-wrap:anywhere}
 @media(max-width:700px){.fee-hint{display:block}.feet th,.feet td{padding:8px 10px;font-size:.92rem}.feet tbody th{position:sticky;left:0;z-index:1;background:var(--surface);box-shadow:1px 0 0 var(--line)}.feet thead th:first-child{position:sticky;left:0;z-index:2;background:linear-gradient(var(--hover),var(--hover)),var(--surface);box-shadow:1px 0 0 var(--line)}}
+
+/* ===== กลุ่มสาระ: กำหนดวิชา/ตารางสอน (หลังบ้าน) ===== */
+.sgxn{margin:6px 0 10px;color:var(--muted);font-size:.92rem}.sgxbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:12px 0}.sgxbar select{max-width:100%;min-width:0}
