@@ -872,21 +872,3 @@ html.kld-on{overflow:hidden}
 @media(max-width:600px){.w.sec.rules-pg{padding:0 14px 36px}.rules-pg>h1,.rules-pg h2{padding:13px 0}.rules-pg h2{margin:28px auto 16px}.rules-pg ol.rl{padding-left:1.45em}.rules-pg p.pl,.rules-pg ol.rl{font-size:.95rem;line-height:1.7}}
 /* ปิดช่องว่างสีพื้นเว็บระหว่างเนื้อหากับ footer เดิม เฉพาะหน้าที่มี .rules-pg (footer ยังเป็นตัวเดิม ไม่สร้างซ้ำ) */
 body:has(.rules-pg) footer{margin-top:0}
-
-/* ===== HERO ปรับความสูงตามสัดส่วนภาพจริง (แสดงภาพครบ ไม่ตัด ไม่ยืด) =====
-   ทำงานเมื่อ JS (heroFit ใน app.js) ใส่คลาส .hra และค่า --hr (กว้าง / สูง ของภาพ) ให้ .hero แล้วเท่านั้น
-   ไม่มีภาพ / โหลดภาพไม่ได้ → ไม่มี .hra → ใช้ค่าเดิมทุกอย่าง · ผูกกับ .hero.hra เท่านั้น ไม่กระทบส่วนอื่น
-   เดสก์ท็อป: ภาพกว้างเต็มจอ สูงตามสัดส่วนภาพ · ข้อความและปุ่มซ้อนบนภาพชิดซ้ายเหมือนเดิม
-   มือถือ/แท็บเล็ต (<=900px): ภาพอยู่บน ข้อความและปุ่มอยู่ใต้ภาพ เพื่อไม่ให้ข้อความบังภาพ · ย้อนกลับ: ลบบล็อกนี้ + บรรทัด heroFit ใน app.js */
-.hero.hra{display:grid;grid-template-columns:minmax(0,1fr);align-items:stretch;min-height:0}
-.hero.hra .hgrid{display:contents}
-.hero.hra .hmedia{grid-area:1/1;position:relative;inset:auto;width:100%;aspect-ratio:var(--hr);max-height:92vh;max-height:92svh}
-.hero.hra .hi{object-fit:contain;object-position:center}
-.hero.hra .hc{grid-area:1/1;align-self:center;box-sizing:border-box;width:100%;max-width:min(656px,100%);margin-left:max(0px,calc((100% - 1100px)/2));padding:clamp(20px,4vw,56px) 18px}
-.hero.hra.hsx .hc{padding-bottom:68px}
-@media(max-width:900px){
- .hero.hra .hmedia{max-height:85vh;max-height:85svh}
- .hero.hra .hmedia::after{display:none}
- .hero.hra .hc{grid-area:2/1;align-self:start;max-width:100%;margin-left:0;padding:24px 18px 32px}
- .hero.hra.hsx .hc{padding-bottom:32px}
-}
