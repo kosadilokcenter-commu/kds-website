@@ -115,14 +115,15 @@ a.bk{transition:opacity .2s}
 a.bk:hover,a.bk:focus-visible{opacity:.65}
 /* แผนผังสถาบัน */
 .cm{margin:12px 0}
-.cmt{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:12px 0}
+.cm>.pl{margin:0 0 16px;max-width:68ch;color:var(--muted);font-size:.95rem;line-height:1.6}
+.cmt{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center;margin:0 0 16px;padding:10px 12px;border:1px solid var(--line);border-radius:14px;background:var(--card)}
 .cmt input[type=search]{flex:1 1 240px;max-width:380px;margin:0}
 .cmcs{display:flex;flex-wrap:wrap;gap:6px}
 .cmc{border:1.5px solid var(--line);background:var(--card);color:var(--fg);border-radius:99px;padding:5px 14px;font:600 .88rem Anuphan,system-ui,sans-serif;cursor:pointer;transition:.2s}
 .cmc:hover{border-color:var(--gold)}
 .cmc.on{background:var(--act);color:#fff;border-color:var(--act)}
-.cmw{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:16px;align-items:start}
-.cmv{position:relative;overflow:hidden;height:min(68vh,640px);border:1px solid var(--line);border-radius:16px;background:var(--surface,var(--card));touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none}
+.cmw{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:20px;align-items:start}
+.cmv{position:relative;overflow:hidden;height:min(70vh,660px);border:1px solid var(--line);border-radius:16px;background:var(--surface,var(--card));touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none}
 .cmv.dr{cursor:grabbing}
 .cmv:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 .cms{position:absolute;left:0;top:0;transform-origin:0 0;will-change:transform}
@@ -137,24 +138,28 @@ a.bk:hover,a.bk:focus-visible{opacity:.65}
 .cmz{position:absolute;right:10px;bottom:10px;display:flex;flex-direction:column;gap:6px;z-index:5}
 .cmz button{width:40px;height:40px;border-radius:50%;border:1px solid var(--nav-line);background:var(--nav-bg);color:var(--nav-fg);font:700 1.2rem/1 Anuphan,system-ui,sans-serif;cursor:pointer;box-shadow:var(--shadow);transition:.2s}
 .cmz button:hover{background:var(--gold);color:#fff}
-.cmd{margin-top:12px}
-.cmdc{position:relative;border:1px solid var(--line);border-radius:16px;background:var(--card);padding:14px 16px}
-.cmdc h2{margin:6px 40px 6px 0}
-.cmdi{display:block;max-width:100%;max-height:220px;border-radius:12px;margin-bottom:8px}
-.cmdl{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;margin:8px 0}
-.cmdl dt{opacity:.7}.cmdl dd{margin:0}
+.cmd{margin-top:16px}
+.cmdc{position:relative;border:1px solid var(--line);border-radius:16px;background:var(--card);padding:16px 18px}
+.cmdc h2{font-size:clamp(1.25rem,2.4vw,1.5rem);margin:6px 40px 8px 0}
+.cmdi{display:block;width:100%;max-height:240px;object-fit:cover;border-radius:12px;margin-bottom:10px}
+.cmdl{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;margin:10px 0}
+.cmdl dt{color:var(--muted)}.cmdl dd{margin:0}
 .cmx{position:absolute;top:8px;right:8px;width:34px;height:34px;border-radius:50%;border:1px solid var(--line);background:var(--card);color:var(--fg);cursor:pointer;display:grid;place-items:center;padding:0}
-.cml ul{list-style:none;margin:0;padding:0;max-height:min(68vh,640px);overflow:auto;display:flex;flex-direction:column;gap:6px}
-.cmi{width:100%;text-align:left;display:flex;flex-wrap:wrap;gap:4px 8px;align-items:center;border:1px solid var(--line);border-radius:12px;background:var(--card);color:var(--fg);padding:9px 12px;font:inherit;cursor:pointer;transition:.2s}
-.cmi:hover{border-color:var(--gold)}
-.cmi.on{border-color:var(--act);box-shadow:0 0 0 2px var(--act) inset}
-.cmi small{flex-basis:100%;opacity:.7}
+.cml{border:1px solid var(--line);border-radius:16px;background:var(--card);padding:12px}
+.cml>.evm{margin:0 0 10px;padding:0 2px}
+.cml ul{list-style:none;margin:0;padding:0;max-height:calc(min(70vh,660px) - 40px);overflow:auto;display:flex;flex-direction:column;gap:4px}
+.cmi{width:100%;text-align:left;display:flex;flex-wrap:wrap;gap:4px 8px;align-items:center;border:1px solid transparent;border-radius:12px;background:transparent;color:var(--fg);padding:10px 12px;font:inherit;cursor:pointer;transition:.2s}
+.cmi:hover{background:var(--hover);border-color:var(--line)}
+.cmi.on{background:var(--hover);border-color:var(--act);box-shadow:inset 3px 0 0 var(--act)}
+.cmi .tag{margin:0}
+.cmi small{flex-basis:100%;color:var(--muted);font-size:.85rem}
 .cmpk{position:relative;display:inline-block;max-width:100%;border:1px solid var(--line);border-radius:12px;overflow:hidden;cursor:crosshair;touch-action:pan-y pinch-zoom;line-height:0}
 .cmpk img{display:block;max-width:100%;height:auto;user-select:none;-webkit-user-drag:none}
 .cmpkp{position:absolute;width:0;height:0;pointer-events:none}
 .cmpkp[hidden]{display:none}
 .cmpkp svg{position:absolute;left:0;top:0;transform:translate(-50%,-100%);fill:var(--red)}
-@media(max-width:900px){.cmw{grid-template-columns:1fr}.cmv{height:min(60vh,480px)}.cml ul{max-height:none}.cmt input[type=search]{max-width:none}}
+@media(max-width:900px){.cmw{grid-template-columns:1fr}.cmv{height:min(58vh,460px)}.cml ul{max-height:none}.cmt input[type=search]{max-width:none}}
+@media(max-width:640px){.cmt{padding:10px}.cmt input[type=search]{flex-basis:100%}.cmcs{flex-wrap:nowrap;overflow-x:auto;width:100%;padding-bottom:2px}.cmc{flex:none}.cmdc{padding:14px}}
 @media(prefers-reduced-motion:reduce){.cms.an{transition:none}}
 /* คณะ สาขาวิชา หลักสูตร */
 .fq{margin:12px 0}
@@ -867,27 +872,44 @@ body:has(.rules-pg) footer{margin-top:0}
 .sta-tw th,.sta-tw td{border:1px solid var(--line);padding:4px 8px;text-align:left;white-space:nowrap}
 .stu-bad{margin:8px 0;padding-left:1.2em;font-size:.88rem}
 @media(max-width:480px){.stu-flt select{flex:1 1 130px}.sta-a{width:100%}}
-/* ===== อาคาร: การ์ด + รายละเอียด + ผังรายชั้น (ส่วนเสริมของแผนผังสถาบันเดิม ไม่แก้กฎเดิม) ===== */
-.bdg{margin:12px 0 28px}
-.bdc{display:flex;flex-direction:column}
-.bdi{display:block;width:100%;aspect-ratio:4/3;object-fit:cover;background:var(--hover)}
-.bdn{display:grid;place-items:center;color:var(--muted);font-size:2rem}
-.bdb{padding:12px 14px}
-.bdb h3{margin:0 0 6px;font-size:1.1rem}
-.bdb p{margin:0 0 4px}
-.bdb small{color:var(--muted)}
-.bdd h3{margin:24px 0 8px}
+/* ===== แผนผังสถาบัน: แท็บ แผนผัง/อาคาร · การ์ดอาคาร · รายละเอียด · ผังรายชั้น (ธีม KDS: #7A1A22 / ขาว / เทาอ่อน) ===== */
+.w.sec:has(.cm)>h1{font-size:clamp(1.8rem,4vw,2.5rem);margin-bottom:.6em}
+.bdt{display:flex;gap:4px;margin:4px 0 18px;border-bottom:1px solid var(--line)}
+.w.sec .bdt a.bdta{display:inline-block;padding:10px 18px;margin-bottom:-1px;border-bottom:3px solid transparent;color:var(--muted);font-weight:600;font-size:1rem;text-decoration:none;transition:color .2s,border-color .2s}
+.w.sec .bdt a.bdta:hover{color:var(--fg)}
+.w.sec .bdt a.bdta.on{color:var(--kds-primary-text);border-bottom-color:var(--act)}
+.bdt a.bdta:focus-visible{outline:3px solid var(--gold);outline-offset:-3px;border-radius:8px 8px 0 0}
+.bdg{grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:20px;margin:0 0 28px}
+.bdc{display:flex;flex-direction:column;height:100%}
+.bdm{position:relative;aspect-ratio:16/10;overflow:hidden;background:linear-gradient(135deg,color-mix(in srgb,var(--gold) 12%,var(--surface)),color-mix(in srgb,var(--kds-secondary) 22%,var(--surface)))}
+.bdn{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:var(--kds-primary-text);opacity:.75;font-size:.85rem;font-weight:600}
+.bdn svg{width:52px;height:52px}
+.bdi{position:absolute;inset:0;display:block;width:100%;height:100%;object-fit:cover;transition:transform .3s}
+.bdc:hover .bdi{transform:scale(1.03)}
+.bdb{display:flex;flex-direction:column;gap:6px;flex:1;padding:14px 16px 16px}
+.bdb h3{margin:0;font-size:1.08rem;line-height:1.35}
+.bdb p{display:flex;flex-wrap:wrap;gap:6px;margin:0}
+.bdb .tag{margin:0}
+.bdb small{color:var(--muted);font-size:.85rem}
+.bdd .bk{display:inline-flex;align-items:center;gap:6px;font-weight:600}
+.bdtop{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:24px;align-items:start;margin:12px 0 28px}
+.bdtop.one{grid-template-columns:1fr}
+.bdinfo h2{font-size:clamp(1.5rem,3vw,2rem);margin:0 0 10px}
+.bdinfo p{margin:0 0 10px}
+.bdinfo .pl{line-height:1.65}
+.bdd h3{font-size:1.25rem;margin:0 0 14px}
 .bdp{display:block;width:100%;padding:0;border:1px solid var(--line);border-radius:14px;background:var(--surface);cursor:zoom-in;overflow:hidden}
 .bdp:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 .bdp img{display:block;width:100%;height:auto}
-.bdh{max-width:720px;margin:10px 0}
-.bdf{margin:0 0 20px}
-.bdf figcaption{font-weight:700;margin:0 0 6px}
+.bdtop .bdh img{max-height:420px;object-fit:cover}
+.bdf{margin:0 0 20px;padding:14px;border:1px solid var(--line);border-radius:16px;background:var(--card)}
+.bdf figcaption{margin:0 0 10px;font-weight:700;font-size:1.05rem;color:var(--kds-primary-text)}
+.bdf .bdp{border:0;border-radius:10px;background:#fff}
+@media(max-width:800px){.bdtop{grid-template-columns:1fr}.bdf{padding:10px}}
+@media(max-width:480px){.w.sec .bdt a.bdta{padding:10px 14px}}
+@media(prefers-reduced-motion:reduce){.bdi,.bdc:hover .bdi{transition:none;transform:none}}
 .modal.bdlb>div{max-width:96vw;max-height:94vh;width:auto;overflow:auto;padding:12px;position:relative}
 .bdlb .mx{z-index:2}
 .bdlb img{display:block;max-width:100%;max-height:80vh;margin:0 auto;cursor:zoom-in}
 .bdlb img.full{max-width:none;max-height:none;cursor:zoom-out}
 .bdlb p{margin:8px 0 0;text-align:center}
-.bdt{margin:12px 0}
-.sec .bdt a.cmc{display:inline-block;color:var(--fg);text-decoration:none}
-.sec .bdt a.cmc.on{color:#fff}
