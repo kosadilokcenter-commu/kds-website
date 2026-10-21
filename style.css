@@ -593,44 +593,6 @@ html.kld-on{overflow:hidden}
 @media(prefers-reduced-motion:reduce){.kld-spin,.kld-mark{animation:none}#kit-loader,.kld-more{transition-duration:.01s,0s}}
 @media print{#kit-loader{display:none}}
 
-/* ===== ตัวแก้ไขผัง Isometric (หลังบ้าน #/admin/campus/layout) — คลาส .ce-* แยกจากโหมดแผนผังเดิม (.cm*) ===== */
-.adm:has(.cedt){max-width:none}
-.ce-bar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:10px 0}
-.ce-bar .btn:disabled{opacity:.45;cursor:not-allowed}
-.ce-sep{width:1px;height:22px;background:var(--line);margin:0 4px}
-.ce-grow{flex:1 1 auto}
-.ce-ck{display:inline-flex;align-items:center;gap:5px;font-size:.88rem;margin:0}
-.ce-ck input{width:auto;margin:0}
-.ce-st{font-size:.85rem;opacity:.8}
-.ce-st.d{opacity:1;font-weight:700;color:var(--gold,#b45309)}
-.ce-mt{display:none;gap:6px;margin:6px 0}
-.ce-wrap{display:grid;grid-template-columns:230px minmax(0,1fr) 250px;gap:10px;align-items:start}
-.ce-lib,.ce-prop{border:1px solid var(--line);border-radius:14px;background:var(--surface,var(--card));padding:10px;max-height:calc(100vh - 210px);overflow:auto}
-.ce-prop h3,.ce-prop h4{margin:.2em 0}
-.ce-prop label{display:block;margin-top:8px;font-size:.85rem}
-.ce-prop input[type=number],.ce-prop input[type=color]{width:100%;box-sizing:border-box}
-.ce-prop input[type=range]{width:100%}
-.ce-two{display:grid;grid-template-columns:1fr 1fr;gap:6px}
-.ce-view{position:relative;overflow:hidden;height:calc(100vh - 230px);min-height:420px;border:1px solid var(--line);border-radius:14px;background:repeating-conic-gradient(#0000000a 0 25%,#0000 0 50%) 0 0/24px 24px,var(--surface,var(--card));touch-action:none;user-select:none;-webkit-user-select:none;cursor:default}
-.ce-view.hand{cursor:grab}.ce-view.dr{cursor:grabbing}
-.ce-view:focus-visible{outline:3px solid var(--gold,#c9a54e);outline-offset:2px}
-.ce-stage{position:absolute;left:0;top:0;transform-origin:0 0;will-change:transform}
-.ce-bg{position:absolute;left:0;top:0;box-shadow:0 0 0 1px #0003}
-.ce-it{position:absolute;max-width:none;pointer-events:none;user-select:none}
-.ce-miss{display:grid;place-items:center;background:#fee2e2;border:1px dashed #b91c1c;color:#b91c1c;font-weight:700}
-.ce-grid{position:absolute;left:0;top:0;pointer-events:none;z-index:99990}
-#ce-sels{position:absolute;left:0;top:0;z-index:99995}
-.ce-sel{position:absolute;outline:calc(1.6px*var(--inv,1)) dashed var(--act,#2563eb);background:#2563eb14;pointer-events:none}
-.ce-h{position:absolute;width:calc(14px*var(--inv,1));height:calc(14px*var(--inv,1));margin:calc(-7px*var(--inv,1)) 0 0 calc(-7px*var(--inv,1));background:var(--act,#2563eb);border:calc(2px*var(--inv,1)) solid #fff;border-radius:50%;cursor:nwse-resize;pointer-events:auto;touch-action:none}
-.ce-tiles{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:8px 0}
-.ce-tile{display:flex;flex-direction:column;align-items:center;gap:4px;padding:6px 4px;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--fg);font:inherit;font-size:.74rem;line-height:1.2;cursor:grab;touch-action:pan-y}
-.ce-tile:hover{border-color:var(--act,#2563eb)}.ce-tile:focus-visible{outline:2px solid var(--gold,#c9a54e)}
-.ce-tile img{width:100%;height:64px;object-fit:contain;pointer-events:none}
-.ce-ghost{position:fixed;z-index:9999;pointer-events:none;opacity:.8;max-width:none}
-#ce-q{width:100%;box-sizing:border-box;margin-bottom:6px}
-@media(max-width:1000px){.ce-wrap{grid-template-columns:1fr}.ce-lib,.ce-prop{display:none;max-height:42vh}.ce-wrap.lo .ce-lib{display:block}.ce-wrap.po .ce-prop{display:block}.ce-lib{order:2}.ce-prop{order:2}.ce-view{height:58vh;min-height:320px}.ce-mt{display:flex}.ce-tiles{grid-template-columns:repeat(3,1fr)}}
-.ce-prop input[type=color]{height:38px;padding:2px;cursor:pointer}
-
 /* ===== HERO KDS: ภาพซ้าย · ข้อความและปุ่มขวา (ข้อความคงที่ เปลี่ยนเฉพาะภาพ) ===== */
 .hero .hgrid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:clamp(24px,4vw,56px);align-items:center;padding-top:clamp(28px,4vw,52px);padding-bottom:clamp(28px,4vw,52px)}
 .hmedia{position:relative;aspect-ratio:4/3;border-radius:20px;overflow:hidden;isolation:isolate;background:color-mix(in srgb,var(--kds-secondary) 18%,var(--surface));box-shadow:var(--shadow)}
@@ -905,3 +867,27 @@ body:has(.rules-pg) footer{margin-top:0}
 .sta-tw th,.sta-tw td{border:1px solid var(--line);padding:4px 8px;text-align:left;white-space:nowrap}
 .stu-bad{margin:8px 0;padding-left:1.2em;font-size:.88rem}
 @media(max-width:480px){.stu-flt select{flex:1 1 130px}.sta-a{width:100%}}
+/* ===== อาคาร: การ์ด + รายละเอียด + ผังรายชั้น (ส่วนเสริมของแผนผังสถาบันเดิม ไม่แก้กฎเดิม) ===== */
+.bdg{margin:12px 0 28px}
+.bdc{display:flex;flex-direction:column}
+.bdi{display:block;width:100%;aspect-ratio:4/3;object-fit:cover;background:var(--hover)}
+.bdn{display:grid;place-items:center;color:var(--muted);font-size:2rem}
+.bdb{padding:12px 14px}
+.bdb h3{margin:0 0 6px;font-size:1.1rem}
+.bdb p{margin:0 0 4px}
+.bdb small{color:var(--muted)}
+.bdd h3{margin:24px 0 8px}
+.bdp{display:block;width:100%;padding:0;border:1px solid var(--line);border-radius:14px;background:var(--surface);cursor:zoom-in;overflow:hidden}
+.bdp:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.bdp img{display:block;width:100%;height:auto}
+.bdh{max-width:720px;margin:10px 0}
+.bdf{margin:0 0 20px}
+.bdf figcaption{font-weight:700;margin:0 0 6px}
+.modal.bdlb>div{max-width:96vw;max-height:94vh;width:auto;overflow:auto;padding:12px;position:relative}
+.bdlb .mx{z-index:2}
+.bdlb img{display:block;max-width:100%;max-height:80vh;margin:0 auto;cursor:zoom-in}
+.bdlb img.full{max-width:none;max-height:none;cursor:zoom-out}
+.bdlb p{margin:8px 0 0;text-align:center}
+.bdt{margin:12px 0}
+.sec .bdt a.cmc{display:inline-block;color:var(--fg);text-decoration:none}
+.sec .bdt a.cmc.on{color:#fff}
