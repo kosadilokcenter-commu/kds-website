@@ -234,6 +234,24 @@ const isRulesPg=p=>!!p&&(RULES_SLUGS.includes(p.slug)||RULES_TITLES.includes(Str
 /* หน้า "ข้อมูลจำเพาะโรงเรียน": ใช้เลย์เอาต์เฉพาะหน้า (.spec-pg ใน style.css) · ระบุหน้าจากชื่อหน้า (หรือ slug ใน SPEC_SLUGS ถ้าเปลี่ยนชื่อหน้า) · ไม่อ่าน/เขียนข้อมูล CMS เพิ่ม ใช้ตัวเรนเดอร์เดิมของ heading/text ร่วมกับหน้ากฎระเบียบ */
 const SPEC_SLUGS=['school-spec','school-specs','school-profile'],SPEC_TITLES=['ข้อมูลจำเพาะโรงเรียน'];
 const isSpecPg=p=>!!p&&(SPEC_SLUGS.includes(p.slug)||SPEC_TITLES.some(t=>String(p.title||'').includes(t)));
+/* ตารางข้อมูลจำเพาะ (ตามภาพอ้างอิง) · ค่าตั้งต้นด้านล่างมาจากภาพอ้างอิงที่ผู้ดูแลส่งมา · ถ้าหน้า CMS มีบล็อก "ข้อความ" ที่เขียนเป็นบรรทัด "หัวข้อ: ค่า" ตรงกับหัวข้อในตาราง จะใช้ค่าจาก CMS แทนค่าตั้งต้น และซ่อนบล็อกข้อความนั้นเพื่อไม่ให้แสดงซ้ำ · ไม่เขียน/แก้ข้อมูลใน Supabase */
+const SPEC_FIELDS=[
+ ['ชื่อโรงเรียน','ชื่อโรงเรียน','โรงเรียนสาธิตโกศาดิลก'],
+ ['ชื่อโรงเรียน (อังกฤษ)','','Kosadilok Demonstration School'],
+ ['ชื่อย่อ','ชื่อย่อ','ส.ท.ก. (KDS)'],
+ ['ที่ตั้ง','ที่ตั้ง','ถนนกรุงเทพกรีฑา (ซอย 7) แขวงหัวหมาก เขตบางกะปิ กรุงเทพมหานคร 10240'],
+ ['เนื้อที่โรงเรียน','เนื้อที่โรงเรียน','15 ไร่ (6,000 ตารางวา)'],
+ ['สังกัด','สังกัด','โรงเรียนในกำกับของ สถาบันเทคโนโลยีโกศาดิลก (Kosadilok Institute of Technology : KIT)'],
+ ['ประเภทโรงเรียน','ประเภทโรงเรียน','โรงเรียนเอกชนประเภทสามัญศึกษา สาธิตสหศึกษา'],
+ ['เปิดสอนระดับชั้น','เปิดสอนระดับชั้น','มัธยมศึกษาปีที่ 1 ถึงระดับมัธยมศึกษาปีที่ 6'],
+ ['สีประจำโรงเรียน','สีประจำโรงเรียน','แดงครีมส้ม-เทาสตีล'],
+ ['คำขวัญโรงเรียน','คำขวัญโรงเรียน','สร้างปัญญา หล่อหลอมคุณธรรม ก้าวนำสู่อนาคต']];
+const specFind=p=>{const m={},used=new Set(),K=SPEC_FIELDS.map(f=>f[0]);
+ (p&&p.sections||[]).forEach(s=>{if(!s||s.type!=='text')return;const L=String(s.text||'').split(/\r?\n/).map(x=>x.trim()).filter(Boolean),got=[];let all=L.length>0;
+  for(const ln of L){const r=ln.match(/^(.+?)\s*[:：]\s*(\S.*)$/),k=r&&K.find(x=>x===r[1].trim());if(k)got.push([k,r[2].trim()]);else all=false}
+  if(got.length){got.forEach(([k,v])=>{if(!(k in m))m[k]=v});if(all)used.add(s)}});
+ return{m,used}};
+const specTbl=p=>{const{m}=specFind(p);return `<div class="spec-tw"><table class="spec-tbl"><tbody>${SPEC_FIELDS.map(([k,l,d])=>{const v=k in m?m[k]:d;return `<tr><th scope="row">${E(l)}</th><td>${E(v)||'<span class="spec-no">ไม่มีข้อมูล</span>'}</td></tr>`}).join('')}</tbody></table></div>`};
 let RPG=false;
 /* หัวข้อ: บรรทัดแรก = ชื่อไทย, บรรทัดถัดไป (หรือส่วนท้ายที่เป็นอังกฤษล้วน ≥2 คำ) = คำแปลอังกฤษขนาดเล็ก */
 const rulesHead=raw=>{const L=String(raw==null?'':raw).split(/\r?\n/).map(x=>x.trim()).filter(Boolean);let th=L[0]||'',en=L.slice(1).join(' ');if(!en){const m=th.match(/^(.*?[\u0E00-\u0E7F][^A-Za-z]*?)\s+([A-Za-z][A-Za-z0-9&,'’()\/.\-]*(?:\s+[A-Za-z0-9&,'’()\/.\-]+)+)$/);if(m){th=m[1].trim();en=m[2].trim()}}return E(th)+(en?`<small class="en">${E(en)}</small>`:'')};
@@ -246,8 +264,8 @@ const rulesText=raw=>{const src=String(raw==null?'':raw),L=src.split(/\r?\n/),NR
 const secRaw=s=>{const t=E(s.text),tg=u=>u[0]==='#'?'':' target="_blank" rel="noopener noreferrer"';if(s.type==='heading')return RPG?`<h2>${rulesHead(s.text)}</h2>`:`<h2>${t}</h2>`;if(s.type==='text')return RPG?rulesText(s.text):`<p class="pl">${t}</p>`;if(s.type==='image')return okU(s.url)?`<img src="${E(s.url)}" alt="${E(s.alt)}" style="max-width:100%;height:auto;border-radius:16px;margin:12px 0">`:'';if(s.type==='button')return okL(s.url)?`<p><a class="btn b" href="${E(s.url)}"${tg(s.url)}>${E(s.label)}</a></p>`:'';if(s.type==='cards')return `<div class="grid">${(s.items||[]).map(c=>{const ed=elD(c.st),b=`${okU(c.m)?`<img src="${E(c.m)}" alt=""${okL(c.l)?'':` data-zoom="${E(c.m)}" style="cursor:zoom-in"`}>`:''}<div class="p">${okU(c.ico)?`<div class="chd"><img class="cic" src="${E(c.ico)}" alt="" loading="lazy" decoding="async" onerror="this.style.display='none'"><h3>${E(c.t)}</h3></div>`:`<h3>${E(c.t)}</h3>`}<p class="pl">${E(c.d)}</p></div>`;return okL(c.l)?`<a class="card${ed.c}"${ed.a} href="${E(c.l)}"${tg(c.l)}>${b}</a>`:`<div class="card h${ed.c}"${ed.a}>${b}</div>`}).join('')}</div>`;if(s.type==='calendar')return calView();if(s.type==='campusmap')return cmView();if(s.type==='people')return pplView();if(s.type==='linkcards')return lcHtml(s);if(s.type==='clubs')return clubView();if(s.type==='news')return nwSecView(s);if(s.type==='timetable')return ctView();if(s.type==='curriculum')return cuView('h2');if(s.type==='fees')return feeView(s);if(s.type==='alumni')return alView(s);if(s.type==='sgsched')return sgvView();return ''};
 const secOne=s=>{const h=secRaw(s),a=h?elA(s.st,s.type,'se'):'';return a?`<div${a}>${h}</div>`:h};
 const secsHtml=(a,G)=>{a=a||[];G=G||[];let out='',i=0;while(i<a.length){const s=a[i],g=s.grp&&G.find(x=>x.id===s.grp);if(!g){out+=secOne(s);i++;continue}let j=i,h='';while(j<a.length&&a[j].grp===s.grp){h+=secOne(a[j]);j++}const b=elBuild(g.st,'group');out+=b.ds?`<div class="sg" data-e="${b.ds}" style="${b.st}">${h}</div>`:h;i=j}return out};
-const secsRules=p=>{RPG=isRulesPg(p)||isSpecPg(p);try{return secsHtml(p.sections,p.groups)}finally{RPG=false}};
-const pageView=(p,pv)=>{PVW=!!pv;PPL_PG=p.id;return `<div class="w sec${psC(p.id)}${isRulesPg(p)?' rules-pg':''}${isSpecPg(p)?' spec-pg':''}"${psA(p.id)}>${pv?`<div class="msg">ตัวอย่าง: หน้านี้สถานะ${p.status==='published'?'เผยแพร่':'ฉบับร่าง'} · <a href="#/admin/pages/edit/${p.id}">กลับไปแก้ไข</a></div>`:''}<h1>${isRulesPg(p)?rulesHead(p.title):E(p.title)}</h1>${p.sections&&p.sections.length?secsRules(p):'<p style="opacity:.6">ยังไม่ได้เพิ่มเนื้อหา</p>'}${cpPageSec(p.id)}${pplPageSec(p)}</div>`};
+const secsRules=p=>{RPG=isRulesPg(p)||isSpecPg(p);try{const u=isSpecPg(p)?specFind(p).used:null;return secsHtml(u&&u.size?(p.sections||[]).filter(s=>!u.has(s)):p.sections,p.groups)}finally{RPG=false}};
+const pageView=(p,pv)=>{PVW=!!pv;PPL_PG=p.id;return `<div class="w sec${psC(p.id)}${isRulesPg(p)?' rules-pg':''}${isSpecPg(p)?' spec-pg':''}"${psA(p.id)}>${pv?`<div class="msg">ตัวอย่าง: หน้านี้สถานะ${p.status==='published'?'เผยแพร่':'ฉบับร่าง'} · <a href="#/admin/pages/edit/${p.id}">กลับไปแก้ไข</a></div>`:''}<h1>${isRulesPg(p)?rulesHead(p.title):E(p.title)}</h1>${isSpecPg(p)?specTbl(p):''}${p.sections&&p.sections.length?secsRules(p):'<p style="opacity:.6">ยังไม่ได้เพิ่มเนื้อหา</p>'}${cpPageSec(p.id)}${pplPageSec(p)}</div>`};
 const emptyPub=()=>'<div class="empty-pub"><h1>ยังไม่มีหน้าเว็บที่เผยแพร่</h1><p>เว็บไซต์นี้ยังไม่มีเนื้อหา กรุณากลับมาใหม่ภายหลัง</p></div>';
 /* ===== หน้าแรก: เนื้อหาเก็บใน settings.home (ฐานข้อมูลเดิม site/settings) ===== */
 const HD=()=>Object.assign({t:'',x:'',img:'',b1t:'',b1u:'',b2t:'',b2u:'',it:'',ix:'',iimg:'',sc:null,pt:'',pn:null,stx:false,stt:'',stu:'',stf:'',sl_mj:'',sl_fa:'',sl_stu:'',sl_stf:'',sn_mj:'',sn_fa:'',sta:'',nt:'',nn:null,et:'',en:null},getSet().home||{});

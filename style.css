@@ -978,3 +978,17 @@ body:has(.rules-pg) footer{margin-top:0}
 .spec-pg .card h3{margin:0 0 6px;font-size:1.15rem;line-height:1.4;color:var(--kds-primary-text);overflow-wrap:anywhere}
 .spec-pg .card .p p.pl{margin:0;max-width:none;color:var(--muted);line-height:1.7}
 @media(max-width:600px){.spec-pg h2{margin:36px 0 16px;padding-left:14px}.spec-pg .card .p{padding:14px}.spec-pg>p:has(>.btn) .btn{display:block;text-align:center}}
+
+/* ===== ตารางข้อมูลจำเพาะ (.spec-tbl) ในหน้า .spec-pg: ตามภาพอ้างอิง · แถวสลับสีเทา · ชื่อหัวข้อตัวหนา ===== */
+.spec-pg .spec-tw{--st-a:#EBEBEB;--st-b:#F7F7F7;--st-ink:#222;--st-sub:#555;max-width:880px;margin:8px auto 28px}
+:root[data-theme="dark"] .spec-pg .spec-tw{--st-a:#2C323F;--st-b:#252A35;--st-ink:var(--fg);--st-sub:var(--muted)}
+@media(prefers-color-scheme:dark){:root:not([data-theme]) .spec-pg .spec-tw{--st-a:#2C323F;--st-b:#252A35;--st-ink:var(--fg);--st-sub:var(--muted)}}
+.spec-tbl{width:100%;table-layout:fixed;border-collapse:collapse;border-spacing:0;color:var(--st-ink);font-size:.95rem;line-height:1.6}
+.spec-tbl tr:nth-child(odd){background:var(--st-a)}
+.spec-tbl tr:nth-child(even){background:var(--st-b)}
+.spec-tbl th,.spec-tbl td{padding:14px 18px;border:0;vertical-align:middle;overflow-wrap:anywhere;word-break:normal}
+.spec-tbl th{width:30%;font-weight:700;text-align:center;color:var(--st-ink)}
+.spec-tbl td{text-align:left}
+.spec-tbl .spec-no{color:var(--st-sub);font-style:italic}
+@media(max-width:600px){.spec-tbl{font-size:.9rem}.spec-tbl th,.spec-tbl td{padding:11px 10px}.spec-tbl th{width:34%}}
+
