@@ -964,7 +964,8 @@ body:has(.rules-pg) footer{margin-top:0}
 /* กล่องข้อความมุมโค้งตามภาพอ้างอิง: ข้อความ/พันธกิจที่เป็นเนื้อหาหลักของหน้า (ไม่รวมข้อความในการ์ด) */
 .spec-pg>p.pl,.spec-pg>ol.rl,.spec-pg :is(.sg,.se)>:is(p.pl,ol.rl),.spec-pg .lg-box{max-width:880px;margin:0 auto 24px;padding:20px 30px;border:1px solid var(--line);border-radius:24px;background:var(--surface);box-sizing:border-box}
 .spec-pg ol.rl{padding-left:calc(30px + 1.5em)}
-.spec-pg ol.rl>li{padding:3px 0 3px 4px;border:0;line-height:1.75;font-size:.95rem}
+.spec-pg ol.rl{font-size:.95rem}
+.spec-pg ol.rl>li{padding:3px 0 3px 4px;border:0;line-height:1.75}
 .spec-pg ol.rl>li::marker{font-weight:500;color:inherit}
 /* รูปภาพที่วางต่อกัน (เช่น ตราสัญลักษณ์ 2 แบบ ภาพดอกไม้) เรียงข้างกันบนจอกว้าง และเรียงลงบนมือถือ */
 .spec-pg>img{flex:0 1 330px;height:auto;object-fit:contain}
@@ -996,8 +997,9 @@ body:has(.rules-pg) footer{margin-top:0}
 
 /* ===== ส่วน "โลโก้และปุ่มดาวน์โหลด" (.lgs) ตามภาพอ้างอิง: ป้ายหัวข้อ + กล่องอธิบาย + โลโก้เรียงข้างกัน ปุ่มดำใต้โลโก้ ===== */
 .lgs{width:100%}
-.lgs .lg-box{text-align:center;white-space:pre-line;line-height:1.8;font-size:.95rem}
-.lgr{display:flex;flex-wrap:wrap;justify-content:center;align-items:flex-start;gap:36px 80px;margin:34px 0 28px}
+:where(.lgs) .lg-box{text-align:center}
+.lgs .lg-box{white-space:pre-line;line-height:1.8;font-size:.95rem}
+.lgr{display:flex;flex-wrap:wrap;justify-content:var(--e-bj,center);align-items:flex-start;gap:36px 80px;margin:34px 0 28px}
 .lgi{flex:0 1 300px;min-width:0;margin:0;display:flex;flex-direction:column;align-items:center;gap:22px}
 .lgi img{display:block;width:auto;max-width:100%;max-height:260px;height:auto;object-fit:contain}
 .lgb{display:inline-block;min-width:72px;padding:10px 26px;border:1px solid #7A1A22;border-radius:10px;background:#7A1A22;color:#FFFFFF;font:700 .85rem Anuphan,system-ui,sans-serif;line-height:1.3;text-align:center;text-decoration:none;transition:.2s}
@@ -1014,4 +1016,25 @@ a.lgb:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
 .lgs a.lgb:not(.btn):not(.card):active{background:#4A0E14;color:#FFFFFF;transform:none}
 .lgs .lgb .sr{color:inherit}
 @media(max-width:600px){.lgr{gap:30px;margin:26px 0 20px}.lgi{flex-basis:100%}.lgi img{max-height:220px}}
+
+/* ===== ทำให้ "การจัดวางเฉพาะส่วนนี้" (data-e) มีผลในหน้า .spec-pg =====
+   ต้นเหตุ: องค์ประกอบด้านใน (ป้ายหัวข้อ กล่องข้อความ พันธกิจ โลโก้ ปุ่ม) จัดกึ่งกลางตัวเองด้วย margin:auto / justify-content:center / text-align:center
+   และป้ายหัวข้อที่เป็นลูกตรงของ .spec-pg ถูก flex:0 0 100% ยืดเต็มแถว จึงทับ/กลบค่า --e-* ที่ตั้งบนตัวครอบ (.se/.sg) · แก้โดยให้ตัวด้านในอ่านตัวแปร --e-* เดิม ไม่สร้างระบบใหม่ */
+.spec-pg>h2{flex:0 1 auto}
+/* ตำแหน่งของบล็อก (ba): ตัวด้านในชิดซ้าย/ขวา/กึ่งกลางตามค่า (ใช้ได้แม้ไม่ได้ตั้งความกว้างสูงสุด) */
+.spec-pg :is(.se,.sg)[data-e~=ba]>:is(h2,p.pl,ol.rl),
+.spec-pg :is(.se,.sg)[data-e~=ba] :is(.se,.lgs)>:is(h2,p.pl,ol.rl,.lg-box){margin-left:var(--e-ml);margin-right:var(--e-mr)}
+.spec-pg :is(.se,.sg)[data-e~=ba] p:has(>.btn){text-align:var(--e-bt)}
+/* จัดแนวหัวข้อ (hta): เลื่อนป้ายหัวข้อซ้าย/กลาง/ขวา (ชนะค่าตำแหน่งบล็อกเฉพาะป้ายหัวข้อ) */
+.spec-pg :is(.se,.sg)[data-e~=eh][data-e~=eh] :is(.se,.lgs,.sg)>h2,
+.spec-pg :is(.se,.sg)[data-e~=eh][data-e~=eh]>h2{margin-left:var(--e-hml);margin-right:var(--e-hmr)}
+/* ระยะห่างบน-ล่าง (sp): ใช้ค่าที่ตั้งแทนระยะเริ่มต้นของตัวด้านใน ไม่ให้บวกซ้อน */
+.spec-pg :is(.se,.sg)[data-e~=sp]>:is(h2,p.pl,ol.rl){margin-top:0;margin-bottom:0}
+.spec-pg :is(.se,.sg)[data-e~=sp] .lgs>:first-child{margin-top:0}
+.spec-pg :is(.se,.sg)[data-e~=sp] .lgs>:last-child{margin-bottom:0}
+/* ปุ่มในส่วนที่มีตัวครอบ (.se/.sg) ให้อยู่กึ่งกลางเหมือนปุ่มที่ไม่มีตัวครอบ */
+.spec-pg :is(.se,.sg)>p:has(>.btn){text-align:center}
+/* ความกว้างสูงสุด (w) ในหน้า .spec-pg: ตัวครอบเป็นลูกของ flex-wrap ถ้าใช้ max-width ล้วน ๆ หลายส่วนจะมาเรียงข้างกันในแถวเดียว
+   จึงคงตัวครอบกว้างเต็มแถว แล้วใช้ padding ตามตำแหน่งบล็อก (--e-pl/--e-pr) ให้เนื้อหากว้างไม่เกินค่าที่ตั้งและวางซ้าย/กลาง/ขวาตามที่เลือก */
+.spec-pg>:is(.se,.sg)[data-e~=w]{width:100%;max-width:100%;box-sizing:border-box;padding-left:calc((100% - min(100%,var(--e-w)))*var(--e-pl,.5));padding-right:calc((100% - min(100%,var(--e-w)))*var(--e-pr,.5))}
 

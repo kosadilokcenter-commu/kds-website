@@ -847,16 +847,16 @@ const EL_CL={w:'ความกว้างสูงสุดของการ�
 const EL_K=Object.keys(EL_L);
 const EL_C=['ja','w','sp','ta','hta','bta','hfs','bfs'],EL_G=['ba','w','sp','ta','hta','bta'];
 const EL_T={heading:['ba','w','sp','hta','hfs','hfw','hff'],text:['ba','w','sp','bta','bfs','bfw','bff'],image:['ba','w','sp'],button:['ba','w','sp'],cards:['ba','w','sp','ta','hta','bta','hfs','hfw','hff','bfs','bfw','bff','lay','cw','cc','gap'],linkcards:['ba','w','sp','ta','hta','bta','hfs','hfw','hff','bfs','bfw','bff','lay','cw','cc','gap']};
-EL_T.clubs=EL_T.cards;
+EL_T.clubs=EL_T.cards;EL_T.logos=['ba','w','sp','hta','hfs','hfw','hff','bta','bfs','bfw','bff'];
 function elVal(v,k){if(v==null||v==='')return '';if(EL_O[k]){const x=String(v);return EL_O[k].some(o=>o[0]===x&&x!=='')?x:''}const r=EL_R[k],n=parseFloat(v);return r&&Number.isFinite(n)?Math.min(r[1],Math.max(r[0],n)):''}
 /* แปลงค่า → {ds: ชื่อช่องที่ปรับ, st: ตัวแปร CSS --e-*} เฉพาะช่องที่มีค่า; ta/hta/bta รวมเป็น --e-h (หัวข้อ) และ --e-b (รายละเอียด) เพื่อให้ค่าที่ใกล้กว่าชนะเสมอ */
 function elBuild(o,type){const st=[],ds=[];o=o||{};const A=v=>v==='center'?'center':v==='right'?'flex-end':'flex-start',V={};EL_K.forEach(k=>{V[k]=elVal(o[k],k)});
  EL_K.forEach(k=>{const v=V[k];if(v===''||k==='ta'||k==='hta'||k==='bta')return;
-  if(k==='ba'){ds.push('ba');st.push('--e-ml:'+(v==='left'?'0':'auto'),'--e-mr:'+(v==='right'?'0':'auto'))}
+  if(k==='ba'){ds.push('ba');st.push('--e-ml:'+(v==='left'?'0':'auto'),'--e-mr:'+(v==='right'?'0':'auto'),'--e-bj:'+A(v),'--e-bt:'+v,'--e-pl:'+(v==='left'?'0':v==='right'?'1':'.5'),'--e-pr:'+(v==='left'?'1':v==='right'?'0':'.5'))}
   else if(k==='lay')ds.push(v);
   else if(k==='hff'||k==='bff'){const f=TY_FF.find(x=>x.id===v);if(f&&f.css){tyLoad(v);ds.push(k);st.push('--e-'+k+':'+f.css)}}
   else{ds.push(k);st.push('--e-'+k+':'+v+(EL_U[k]||''))}});
- const h=V.hta||V.ta,b=V.bta||V.ta;if(h){ds.push('eh');st.push('--e-h:'+h)}if(b){ds.push('eb');st.push('--e-b:'+b,'--e-bai:'+A(b))}
+ const h=V.hta||V.ta,b=V.bta||V.ta;if(h){ds.push('eh');st.push('--e-h:'+h,'--e-hml:'+(h==='left'?'0':'auto'),'--e-hmr:'+(h==='right'?'0':'auto'))}if(b){ds.push('eb');st.push('--e-b:'+b,'--e-bai:'+A(b))}
  if(V.ba&&!V.w&&['heading','text','button','image'].includes(type))ds.push('fit');
  return {ds:ds.join(' '),st:st.join(';')}}
 const elA=(o,type,cls)=>{const b=elBuild(o,type);return b.ds?` class="${cls}" data-e="${b.ds}" style="${b.st}"`:''};
