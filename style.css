@@ -954,16 +954,18 @@ body:has(.rules-pg) footer{margin-top:0}
 .w.sec.spec-pg{display:flex;flex-wrap:wrap;justify-content:center;align-content:flex-start;align-items:center;column-gap:24px;padding-bottom:56px}
 .spec-pg>*{flex:0 0 100%;min-width:0;max-width:100%}
 .spec-pg>h1{margin-bottom:4px}
-/* หัวข้อหมวด: แถบสีประจำโรงเรียนด้านซ้าย + เส้นคั่น · คำแปลอังกฤษ (small.en) เป็นป้ายเล็กใต้ชื่อไทย */
-.spec-pg h2{position:relative;margin:48px 0 20px;padding:0 0 12px 18px;border-bottom:1px solid var(--line);color:var(--kds-primary-text);font-size:clamp(1.3rem,3.6vw,1.8rem);line-height:1.35;text-align:left}
-.spec-pg h2::before{content:"";position:absolute;left:0;top:.15em;bottom:calc(12px + .15em);width:5px;border-radius:3px;background:var(--gold)}
-.spec-pg h2 small.en{display:block;margin-top:4px;font-size:.78rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--kds-secondary-text)}
-.spec-pg p.pl{margin:0 auto 16px 0;max-width:72ch;line-height:1.85}
-/* พันธกิจ: รายการลำดับเลขจากข้อความเดิม (เลขเดิมคงไว้ผ่าน value) */
-.spec-pg ol.rl{margin:0 auto 20px 0;padding:0 0 0 2.2em;max-width:80ch}
-.spec-pg ol.rl>li{padding:10px 0 10px 6px;border-bottom:1px solid var(--line);line-height:1.75}
-.spec-pg ol.rl>li:last-child{border-bottom:0}
-.spec-pg ol.rl>li::marker{font-weight:700;color:var(--kds-primary-text)}
+/* หัวข้อหมวด: ป้ายโค้งสีประจำโรงเรียนกึ่งกลาง ตามภาพอ้างอิง · คำแปลอังกฤษ (small.en) เป็นป้ายเล็กใต้ชื่อไทย */
+.spec-pg h2{position:relative;display:block;width:fit-content;max-width:100%;margin:44px auto 18px;padding:9px 40px;border:0;border-radius:16px;background:var(--kds-primary,#7A1A22);color:#fff;box-shadow:0 2px 10px rgba(0,0,0,.18);font-size:clamp(1.05rem,3vw,1.25rem);font-weight:700;line-height:1.4;text-align:center;overflow-wrap:anywhere}
+:root[data-theme="dark"] .spec-pg h2{background:var(--gold)}
+@media(prefers-color-scheme:dark){:root:not([data-theme]) .spec-pg h2{background:var(--gold)}}
+.spec-pg h2::before{display:none}
+.spec-pg h2 small.en{display:block;margin-top:2px;font-size:.78rem;font-weight:500;letter-spacing:.04em;text-transform:none;color:rgba(255,255,255,.88)}
+.spec-pg p.pl{line-height:1.85}
+/* กล่องข้อความมุมโค้งตามภาพอ้างอิง: ข้อความ/พันธกิจที่เป็นเนื้อหาหลักของหน้า (ไม่รวมข้อความในการ์ด) */
+.spec-pg>p.pl,.spec-pg>ol.rl,.spec-pg :is(.sg,.se)>:is(p.pl,ol.rl),.spec-pg .lg-box{max-width:880px;margin:0 auto 24px;padding:20px 30px;border:1px solid var(--line);border-radius:24px;background:var(--surface);box-sizing:border-box}
+.spec-pg ol.rl{padding-left:calc(30px + 1.5em)}
+.spec-pg ol.rl>li{padding:3px 0 3px 4px;border:0;line-height:1.75;font-size:.95rem}
+.spec-pg ol.rl>li::marker{font-weight:500;color:inherit}
 /* รูปภาพที่วางต่อกัน (เช่น ตราสัญลักษณ์ 2 แบบ ภาพดอกไม้) เรียงข้างกันบนจอกว้าง และเรียงลงบนมือถือ */
 .spec-pg>img{flex:0 1 330px;height:auto;object-fit:contain}
 .spec-pg>p:has(>.btn){margin:4px 0 12px;text-align:center}
@@ -977,7 +979,7 @@ body:has(.rules-pg) footer{margin-top:0}
 .spec-pg .card:has(>img) .p{text-align:center}
 .spec-pg .card h3{margin:0 0 6px;font-size:1.15rem;line-height:1.4;color:var(--kds-primary-text);overflow-wrap:anywhere}
 .spec-pg .card .p p.pl{margin:0;max-width:none;color:var(--muted);line-height:1.7}
-@media(max-width:600px){.spec-pg h2{margin:36px 0 16px;padding-left:14px}.spec-pg .card .p{padding:14px}.spec-pg>p:has(>.btn) .btn{display:block;text-align:center}}
+@media(max-width:600px){.spec-pg h2{margin:36px auto 16px;padding:8px 24px}.spec-pg>p.pl,.spec-pg>ol.rl,.spec-pg :is(.sg,.se)>:is(p.pl,ol.rl),.spec-pg .lg-box{padding:16px 18px;border-radius:18px}.spec-pg ol.rl{padding-left:calc(18px + 1.4em)}.spec-pg .card .p{padding:14px}.spec-pg>p:has(>.btn) .btn{display:block;text-align:center}}
 
 /* ===== ตารางข้อมูลจำเพาะ (.spec-tbl) ในหน้า .spec-pg: ตามภาพอ้างอิง · แถวสลับสีเทา · ชื่อหัวข้อตัวหนา ===== */
 .spec-pg .spec-tw{--st-a:#EBEBEB;--st-b:#F7F7F7;--st-ink:#222;--st-sub:#555;max-width:880px;margin:8px auto 28px}
@@ -991,4 +993,18 @@ body:has(.rules-pg) footer{margin-top:0}
 .spec-tbl td{text-align:left}
 .spec-tbl .spec-no{color:var(--st-sub);font-style:italic}
 @media(max-width:600px){.spec-tbl{font-size:.9rem}.spec-tbl th,.spec-tbl td{padding:11px 10px}.spec-tbl th{width:34%}}
+
+/* ===== ส่วน "โลโก้และปุ่มดาวน์โหลด" (.lgs) ตามภาพอ้างอิง: ป้ายหัวข้อ + กล่องอธิบาย + โลโก้เรียงข้างกัน ปุ่มดำใต้โลโก้ ===== */
+.lgs{width:100%}
+.lgs .lg-box{text-align:center;white-space:pre-line;line-height:1.8;font-size:.95rem}
+.lgr{display:flex;flex-wrap:wrap;justify-content:center;align-items:flex-start;gap:36px 80px;margin:34px 0 28px}
+.lgi{flex:0 1 300px;min-width:0;margin:0;display:flex;flex-direction:column;align-items:center;gap:22px}
+.lgi img{display:block;width:auto;max-width:100%;max-height:260px;height:auto;object-fit:contain}
+.lgb{display:inline-block;min-width:72px;padding:10px 26px;border:1px solid #000;border-radius:10px;background:#000;color:#fff;font:700 .85rem Anuphan,system-ui,sans-serif;line-height:1.3;text-align:center;text-decoration:none;transition:.2s}
+:root[data-theme="dark"] .lgb{border-color:rgba(255,255,255,.4)}
+@media(prefers-color-scheme:dark){:root:not([data-theme]) .lgb{border-color:rgba(255,255,255,.4)}}
+a.lgb:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,0,0,.28)}
+a.lgb:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+.lgb.off{opacity:.5;cursor:not-allowed}
+@media(max-width:600px){.lgr{gap:30px;margin:26px 0 20px}.lgi{flex-basis:100%}.lgi img{max-height:220px}}
 
