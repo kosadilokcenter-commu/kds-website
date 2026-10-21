@@ -872,3 +872,36 @@ html.kld-on{overflow:hidden}
 @media(max-width:600px){.w.sec.rules-pg{padding:0 14px 36px}.rules-pg>h1,.rules-pg h2{padding:13px 0}.rules-pg h2{margin:28px auto 16px}.rules-pg ol.rl{padding-left:1.45em}.rules-pg p.pl,.rules-pg ol.rl{font-size:.95rem;line-height:1.7}}
 /* ปิดช่องว่างสีพื้นเว็บระหว่างเนื้อหากับ footer เดิม เฉพาะหน้าที่มี .rules-pg (footer ยังเป็นตัวเดิม ไม่สร้างซ้ำ) */
 body:has(.rules-pg) footer{margin-top:0}
+
+/* ===== รายชื่อนักเรียน (หน้าค้นหา #/students และหลังบ้าน #/admin/students) ===== */
+.stu-bar{display:flex;flex-wrap:wrap;gap:10px;margin:14px 0 6px;align-items:center}
+.stu-bar>input[type=search]{flex:1 1 260px;min-width:0;width:auto}
+.stu-flt{display:flex;flex-wrap:wrap;gap:10px}
+.stu-flt select{width:auto;min-width:140px}
+.stu-cnt{margin:10px 0;color:var(--muted);font-size:.9rem}
+.stu-st{opacity:.7;padding:18px 0}
+.stu-g{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:14px}
+.stu-c{border:1px solid var(--line);border-radius:14px;background:var(--surface);overflow:hidden;display:flex;flex-direction:column}
+.stu-pm{position:relative;aspect-ratio:3/4;display:grid;place-items:center;color:var(--muted);background:color-mix(in srgb,var(--act) 8%,var(--surface))}
+.stu-pm img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;cursor:zoom-in}
+.stu-ph svg{width:3.2rem;height:3.2rem;opacity:.5}
+.stu-b{padding:10px 12px 12px}
+.stu-b h3{margin:0 0 4px;font-size:1.02rem;line-height:1.35;overflow-wrap:anywhere}
+.stu-b p{margin:3px 0;font-size:.92rem;color:var(--muted)}
+.stu-mr,.stu-pg{text-align:center;margin:18px 0}
+.stu-pg span{margin:0 8px}
+.stu-pg .btn[disabled],.stu-mr .btn[disabled]{opacity:.5;cursor:default;transform:none;box-shadow:none}
+.sta-r{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.sta-pm{position:relative;width:48px;height:64px;flex:0 0 auto;border-radius:8px;overflow:hidden;display:grid;place-items:center;color:var(--muted);border:1px solid var(--line);background:color-mix(in srgb,var(--act) 8%,var(--surface))}
+.sta-pm.lg{width:96px;height:128px}
+.sta-pm img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.sta-pm .stu-ph svg{width:1.6rem;height:1.6rem}
+.sta-pm.lg .stu-ph svg{width:2.4rem;height:2.4rem}
+.sta-i{flex:1 1 200px;min-width:0;overflow-wrap:anywhere}
+.sta-a{flex:0 0 auto;display:flex;gap:6px}
+.sta-ph{display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap}
+.sta-tw{overflow-x:auto;margin:10px 0}
+.sta-tw table{border-collapse:collapse;font-size:.85rem;width:100%}
+.sta-tw th,.sta-tw td{border:1px solid var(--line);padding:4px 8px;text-align:left;white-space:nowrap}
+.stu-bad{margin:8px 0;padding-left:1.2em;font-size:.88rem}
+@media(max-width:480px){.stu-flt select{flex:1 1 130px}.sta-a{width:100%}}
