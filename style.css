@@ -948,3 +948,33 @@ body:has(.rules-pg) footer{margin-top:0}
 .alc{background:var(--nav-bg,#7A1A22);color:#fff;border-radius:24px;padding:clamp(22px,5vw,40px)}.alc h2{color:#fff}
 .alc dl{display:grid;grid-template-columns:auto 1fr;gap:10px 22px;margin:0}.alc dt{color:#C9D0DC;font-weight:600}.alc dd{margin:0;overflow-wrap:anywhere}.alc a{color:#fff;text-decoration:underline}.alcn{margin:16px 0 0;color:#E4E8EF}
 @media(max-width:700px){.als{grid-template-columns:1fr}.als:nth-child(even) .alsp{order:0}.alh{min-height:260px}.alc dl{grid-template-columns:1fr;gap:2px}.alc dd{margin-bottom:10px}.alg{grid-template-columns:repeat(auto-fill,minmax(130px,1fr))}}
+
+/* ===== หน้า "ข้อมูลจำเพาะโรงเรียน" (.spec-pg): จัดวางตามต้นแบบ — ข้อมูลพื้นฐาน · ตราสัญลักษณ์ · พันธกิจ · ค่านิยม KDS · สีประจำโรงเรียน · ดอกไม้ประจำโรงเรียน
+   ใช้เฉพาะหน้าที่ isSpecPg() ใน app.js ระบุ · ปรับเฉพาะการแสดงผลของส่วนเนื้อหา CMS เดิม (heading/text/image/button/cards) ไม่เปลี่ยนข้อมูล · ขนาดตัวอักษรที่ผู้ดูแลตั้งรายหน้า (.pgs) ยังมีผลตามเดิม ===== */
+.w.sec.spec-pg{display:flex;flex-wrap:wrap;justify-content:center;align-content:flex-start;align-items:center;column-gap:24px;padding-bottom:56px}
+.spec-pg>*{flex:0 0 100%;min-width:0;max-width:100%}
+.spec-pg>h1{margin-bottom:4px}
+/* หัวข้อหมวด: แถบสีประจำโรงเรียนด้านซ้าย + เส้นคั่น · คำแปลอังกฤษ (small.en) เป็นป้ายเล็กใต้ชื่อไทย */
+.spec-pg h2{position:relative;margin:48px 0 20px;padding:0 0 12px 18px;border-bottom:1px solid var(--line);color:var(--kds-primary-text);font-size:clamp(1.3rem,3.6vw,1.8rem);line-height:1.35;text-align:left}
+.spec-pg h2::before{content:"";position:absolute;left:0;top:.15em;bottom:calc(12px + .15em);width:5px;border-radius:3px;background:var(--gold)}
+.spec-pg h2 small.en{display:block;margin-top:4px;font-size:.78rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--kds-secondary-text)}
+.spec-pg p.pl{margin:0 auto 16px 0;max-width:72ch;line-height:1.85}
+/* พันธกิจ: รายการลำดับเลขจากข้อความเดิม (เลขเดิมคงไว้ผ่าน value) */
+.spec-pg ol.rl{margin:0 auto 20px 0;padding:0 0 0 2.2em;max-width:80ch}
+.spec-pg ol.rl>li{padding:10px 0 10px 6px;border-bottom:1px solid var(--line);line-height:1.75}
+.spec-pg ol.rl>li:last-child{border-bottom:0}
+.spec-pg ol.rl>li::marker{font-weight:700;color:var(--kds-primary-text)}
+/* รูปภาพที่วางต่อกัน (เช่น ตราสัญลักษณ์ 2 แบบ ภาพดอกไม้) เรียงข้างกันบนจอกว้าง และเรียงลงบนมือถือ */
+.spec-pg>img{flex:0 1 330px;height:auto;object-fit:contain}
+.spec-pg>p:has(>.btn){margin:4px 0 12px;text-align:center}
+.spec-pg :is(.sg,.se) img{max-width:100%;height:auto}
+/* การ์ด: ค่านิยม KDS / สีประจำโรงเรียน / ข้อมูลพื้นฐาน · กริดปรับจำนวนคอลัมน์ตามความกว้าง (มือถือ 1 คอลัมน์) */
+.spec-pg .grid{grid-template-columns:repeat(auto-fit,minmax(min(100%,250px),1fr));gap:20px;margin:0 0 24px}
+.spec-pg .card{border:1px solid var(--line);border-radius:16px;box-shadow:none}
+.spec-pg .card.h:hover{transform:none;box-shadow:none;border-color:var(--line)}
+.spec-pg .card>img{height:auto;aspect-ratio:4/3;object-fit:contain;padding:14px;box-sizing:border-box;background:var(--hover)}
+.spec-pg .card .p{padding:16px 18px 18px;border-top:3px solid var(--gold)}
+.spec-pg .card:has(>img) .p{text-align:center}
+.spec-pg .card h3{margin:0 0 6px;font-size:1.15rem;line-height:1.4;color:var(--kds-primary-text);overflow-wrap:anywhere}
+.spec-pg .card .p p.pl{margin:0;max-width:none;color:var(--muted);line-height:1.7}
+@media(max-width:600px){.spec-pg h2{margin:36px 0 16px;padding-left:14px}.spec-pg .card .p{padding:14px}.spec-pg>p:has(>.btn) .btn{display:block;text-align:center}}
