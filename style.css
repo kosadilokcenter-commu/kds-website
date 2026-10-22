@@ -1174,3 +1174,13 @@ a.lgb:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
 .rules-pg .rl-foot p{margin:0;color:inherit}
 .rules-pg .rl-foot .rl-fr{color:#6E1114}
 @media(max-width:600px){.rules-pg .rl-foot{margin:22px auto 4px;padding:14px 12px;font-size:.97rem}}
+
+/* ===== ไอคอนโซเชียลใน Footer (.soc) ===== */
+footer .soc{list-style:none;display:flex;flex-wrap:wrap;gap:10px;margin:16px 0 0;padding:0}
+footer .soc li{margin:0;padding:0}
+footer .soc a{display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;width:44px;height:44px;border:1px solid #8D99AE;border-radius:50%;color:#fff;text-decoration:none;transition:background-color .18s,color .18s,border-color .18s,transform .18s}
+footer .soc svg{width:22px;height:22px;fill:currentColor;display:block}
+footer .soc .soc-t{font:700 11px/1 system-ui,Arial,sans-serif;letter-spacing:-.2px}
+footer .soc a:focus-visible{outline:3px solid #fff;outline-offset:3px}
+@media(hover:hover){footer .soc a:hover{background:#fff;border-color:#fff;color:#7A1A22;transform:translateY(-2px)}}
+@media(prefers-reduced-motion:reduce){footer .soc a{transition:none}footer .soc a:hover{transform:none}}
