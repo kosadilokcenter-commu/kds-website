@@ -789,30 +789,47 @@ html.kld-on{overflow:hidden}
 .cu[data-cu~="sr"] .cuqi,.cu[data-cu~="sr"] .cusr{font-size:var(--cu-sr)}
 
 /* ===== ตารางค่าธรรมเนียมการศึกษา (ส่วนเนื้อหาประเภท fees) ===== */
-.fee{margin:8px 0 28px}.fees{margin:0 0 30px}.fees>h2{margin:0 0 .4em}
-.feew{overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+.fee{--fe-amt:#7A1A22;--fe-head:#7A1A22;--fe-zb:#F5F6F9;--fe-nb:#FBF6E9;--fe-nl:#E8DDBF;--fe-gold:#B8892B;--fe-sh:0 2px 10px rgba(31,36,48,.07);margin:8px 0 28px}
+:root[data-theme="dark"] .fee{--fe-amt:#F0B8BE;--fe-head:#4F1016;--fe-zb:#2A303C;--fe-nb:#2E2A21;--fe-nl:#5A4F33;--fe-sh:0 2px 10px rgba(0,0,0,.35)}
+.fees{margin:0 0 42px}.fees>h2{margin:0 0 14px;font-size:clamp(1.3rem,3vw,1.65rem);line-height:1.3;color:var(--kds-primary-text)}
+/* ตารางค่าธรรมเนียม */
+.feew{overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--line);border-radius:14px;background:var(--surface);box-shadow:var(--fe-sh)}
 .feew:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
-.feet{width:100%;min-width:720px;border-collapse:collapse}.feet tbody td:nth-child(2){min-width:230px}
-.feet th,.feet td{padding:10px 14px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
-.feet thead th{background:var(--hover);font-size:.9rem}
+.feet{width:100%;min-width:700px;border-collapse:collapse;font-size:1rem}.feet tbody td:nth-child(2){min-width:240px}
+.feet th,.feet td{padding:14px 18px;border-bottom:1px solid var(--line);text-align:left;vertical-align:middle;line-height:1.5}
+.fee .feet thead th{background:var(--fe-head);color:#fff;font-size:.92rem;font-weight:600;border-bottom:0;vertical-align:bottom}
+.feet tbody th{font-weight:700;white-space:nowrap;background:var(--surface)}
+.feet tbody td{background:var(--surface)}
+.feet tbody tr:nth-child(even)>*{background:var(--fe-zb)}
 .feet tbody tr:last-child>*{border-bottom:0}
-.feet tbody th{font-weight:700;white-space:nowrap}
 .feet .fen{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
-.feet tbody td.fen{font-weight:600}
-.fee-hint{display:none;margin:6px 2px 0;font-size:.85rem;color:var(--muted)}
-.feeg{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,200px),1fr));gap:12px;margin:0 0 12px}
-.feec{border:1px solid var(--line);border-radius:14px;background:var(--surface);padding:14px 16px;display:flex;flex-direction:column;gap:2px;min-width:0}
-.feec b{font-size:.95rem;color:var(--muted);font-weight:600}
-.fev{font-size:1.6rem;font-weight:700;color:var(--gold-text);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
-.fev small{font-size:.9rem;font-weight:600;color:var(--fg);margin-left:6px}
-.fent{margin:0 0 8px}
-.fecv b{display:block;font-size:.88rem;color:var(--muted)}.fecv p{margin:2px 0 0}
-.fesl{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,270px),1fr));gap:14px}
-.fesv{border:1px solid var(--line);border-radius:14px;background:var(--surface);padding:14px 16px;min-width:0;overflow-wrap:anywhere}
-.fesv h3{font-size:1.1rem;line-height:1.4;margin:0 0 2px}.fesv p{margin:6px 0}
-.fesen{color:var(--muted);font-size:.9rem}.fesp{font-weight:700;color:var(--gold-text)}
-.fenote{margin:0;padding-left:1.4em}.fenote li{margin:4px 0;overflow-wrap:anywhere}
-@media(max-width:700px){.fee-hint{display:block}.feet th,.feet td{padding:8px 10px;font-size:.92rem}.feet tbody th{position:sticky;left:0;z-index:1;background:var(--surface);box-shadow:1px 0 0 var(--line)}.feet thead th:first-child{position:sticky;left:0;z-index:2;background:linear-gradient(var(--hover),var(--hover)),var(--surface);box-shadow:1px 0 0 var(--line)}}
+.feet tbody td.fen{font-size:1.1rem;font-weight:700;color:var(--fe-amt)}
+.feet tbody td.fen:last-child{font-size:1.18rem}
+.fee-hint{display:none;margin:8px 2px 0;font-size:.85rem;color:var(--muted)}
+@media(max-width:880px){.fee-hint{display:block}}
+/* การ์ดค่าธรรมเนียมแรกเข้า */
+.feeg{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,260px),1fr));gap:16px;margin:0 0 14px}
+.feec{display:flex;flex-direction:column;gap:6px;min-width:0;padding:20px 22px;border:1px solid var(--line);border-top:3px solid var(--silver);border-radius:16px;background:var(--surface);box-shadow:var(--fe-sh)}
+.feec b{font-size:1rem;line-height:1.4;color:var(--fg);font-weight:600}
+.fev{font-size:2rem;line-height:1.2;font-weight:700;color:var(--fe-amt);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.fev small{font-size:.95rem;font-weight:600;color:var(--muted);margin-left:6px}
+.fent{margin:0 0 10px;color:var(--muted)}
+.fecv{margin-top:6px}.fecv b{display:block;font-size:.88rem;color:var(--muted);font-weight:600}.fecv p{margin:2px 0 0}
+/* การ์ดบริการและสิ่งอำนวยความสะดวก */
+.fesl{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:18px;align-items:stretch}
+.fesv{display:flex;flex-direction:column;min-width:0;padding:20px 22px;border:1px solid var(--line);border-radius:16px;background:var(--surface);box-shadow:var(--fe-sh);overflow-wrap:break-word}
+.fesv h3{margin:0;font-size:1.08rem;line-height:1.45}.fesv p{margin:8px 0 0}
+.fesen{color:var(--muted);font-size:.88rem;margin-top:2px!important}
+.fesv .fesp{margin:14px 0 0;padding-top:12px;border-top:1px solid var(--line);font-size:1.2rem;line-height:1.35;font-weight:700;color:var(--fe-amt)}
+.fesv .fecv{margin-top:12px}
+/* กล่องหมายเหตุท้ายหน้า */
+.fenb{display:grid;grid-template-columns:auto minmax(0,1fr);gap:16px;align-items:start;padding:20px 24px;border:1px solid var(--fe-nl);border-radius:16px;background:var(--fe-nb)}
+.fenb-ic{display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:50%;background:var(--fe-gold);color:#fff}
+.fenb-ic svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round}
+.fenb-bd{min-width:0}.fenb .fenb-h{margin:0 0 6px;font-size:1.05rem;line-height:1.5;font-weight:700;color:var(--fg)}
+.fenote{margin:0;padding-left:1.4em}.fenote li{margin:5px 0;line-height:1.6;overflow-wrap:break-word}
+@media(max-width:700px){.fee-hint{display:block}.feet{min-width:500px}.feet tbody td:nth-child(2){min-width:150px}.feet thead th.fen{white-space:normal;min-width:92px}.feet th,.feet td{padding:11px 12px;font-size:.95rem}.feet tbody td.fen{font-size:1.02rem}.feet tbody td.fen:last-child{font-size:1.06rem}.feet tbody th{position:sticky;left:0;z-index:1;box-shadow:1px 0 0 var(--line)}.fee .feet thead th:first-child{position:sticky;left:0;z-index:2;box-shadow:1px 0 0 #ffffff33}
+ .fees{margin-bottom:34px}.feec,.fesv{padding:16px 18px}.fev{font-size:1.75rem}.fenb{grid-template-columns:auto minmax(0,1fr);gap:12px;padding:16px}.fenb-ic{width:34px;height:34px}.fenb-ic svg{width:19px;height:19px}.fenote{padding-left:1.2em}}
 
 /* ===== กลุ่มสาระ: กำหนดวิชา/ตารางสอน (หลังบ้าน) ===== */
 .sgxn{margin:6px 0 10px;color:var(--muted);font-size:.92rem}.sgxbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:12px 0}.sgxbar select{max-width:100%;min-width:0}
