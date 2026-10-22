@@ -1056,17 +1056,19 @@ a.lgb:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
 
 /* ===== สีประจำโรงเรียน (.sc) ในหน้า .spec-pg: ตามภาพอ้างอิง · ป้ายเล็ก + หัวข้อใหญ่ + เส้นแดงสั้น + การ์ดสีคู่ (แถบสีใหญ่ด้านบน แถบขาวด้านล่าง) ===== */
 .spec-pg .sc{--sc-c:var(--kds-primary-text,#7A1A22);text-align:center;margin:40px 0 28px}
-.spec-pg .sc-eye{margin:0 0 4px;font-size:.72rem;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--sc-c);line-height:1.4}
+.spec-pg .sc-eye{margin:0 0 4px;font-size:.72rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--sc-c);line-height:1.4}
 .spec-pg .sc-t{display:inline-block;margin:0;padding:0 0 12px;position:relative;font-size:clamp(1.7rem,5vw,2.3rem);font-weight:800;line-height:1.3;color:var(--fg);overflow-wrap:anywhere}
 .spec-pg .sc-t::after{content:"";position:absolute;left:50%;bottom:0;width:40px;height:2px;background:var(--sc-c);transform:translateX(-50%)}
-.spec-pg .sc-g{display:grid;grid-template-columns:repeat(2,1fr);gap:24px;max-width:640px;margin:36px auto 0}
+.spec-pg .sc-g{display:grid;grid-template-columns:repeat(2,1fr);grid-auto-rows:1fr;gap:24px;max-width:860px;margin:28px auto 0}
 .spec-pg .sc-c{min-width:0;border-radius:18px;overflow:hidden;background:var(--surface,#fff);box-shadow:0 4px 16px rgba(0,0,0,.1);text-align:left}
-.spec-pg .sc-sw{height:120px}
+.spec-pg .sc-sw{aspect-ratio:2.4/1}
 .spec-pg .sc-f{display:flex;align-items:center;gap:12px;padding:14px 18px}
 .spec-pg .sc-dot{flex:0 0 auto;width:20px;height:20px;border-radius:50%}
 .spec-pg .sc-n{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;line-height:1.3}
 .spec-pg .sc-n b{font-size:.82rem;font-weight:700;text-transform:uppercase;color:var(--fg);overflow-wrap:anywhere}
 .spec-pg .sc-n span{font-size:.7rem;color:var(--muted);overflow-wrap:anywhere}
 .spec-pg .sc-f code{flex:0 0 auto;font-family:inherit;font-size:.72rem;line-height:1;color:var(--fg);background:none;padding:0}
-@media(max-width:560px){.spec-pg .sc-g{grid-template-columns:1fr;max-width:340px;gap:18px}.spec-pg .sc-sw{height:104px}}
-
+@media(max-width:700px){.spec-pg .sc-g{grid-template-columns:1fr;max-width:340px;gap:18px}}
+/* หัวเรื่องของ "สีประจำโรงเรียน" ใช้ค่าชุดเดียวกับ "ค่านิยมหลัก KDS" (ขนาด น้ำหนัก ระยะบรรทัด ระยะห่างตัวอักษร) · ตั้งซ้ำแบบเจาะจงเพื่อไม่ให้กฎอื่นทำให้ต่างกัน */
+.spec-pg .sc .sc-eye{font-size:.72rem;font-weight:600;letter-spacing:.06em;line-height:1.4}
+.spec-pg .sc .sc-t{font-size:clamp(1.7rem,5vw,2.3rem);font-weight:800;line-height:1.3;letter-spacing:normal;padding-bottom:12px}
