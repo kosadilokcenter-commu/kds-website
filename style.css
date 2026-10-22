@@ -1170,3 +1170,7 @@ a.lgb:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
 .rules-pg .rl-nb ol.rl>li{margin:0 0 .5em}
 .rules-pg .rl-nb>:last-child{margin-bottom:0}
 @media(max-width:600px){.w.sec.rules-pg h2.rl-ch{margin-bottom:16px;padding:12px 14px}.rules-pg .rl-note{gap:10px;padding:14px}}
+.rules-pg .rl-foot{box-sizing:border-box;max-width:520px;margin:28px auto 8px;padding:18px 24px;background:#fff;border:1px solid #1F2430;color:#000;text-align:center;font-weight:700;line-height:1.7;overflow-wrap:break-word}
+.rules-pg .rl-foot p{margin:0;color:inherit}
+.rules-pg .rl-foot .rl-fr{color:#6E1114}
+@media(max-width:600px){.rules-pg .rl-foot{margin:22px auto 4px;padding:14px 12px;font-size:.97rem}}
