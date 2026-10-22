@@ -1185,3 +1185,12 @@ footer .soc .soc-t{font:700 11px/1 system-ui,Arial,sans-serif;letter-spacing:-.2
 footer .soc a:focus-visible{outline:3px solid #fff;outline-offset:3px}
 @media(hover:hover){footer .soc a:hover{background:#fff;border-color:#fff;color:#7A1A22;transform:translateY(-2px)}}
 @media(prefers-reduced-motion:reduce){footer .soc a{transition:none}footer .soc a:hover{transform:none}}
+/* ===== หน้ารวมข่าว: ปุ่มกรองหมวดหมู่ + หลังบ้านจัดการหมวดหมู่ข่าว ===== */
+.nwcs{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 16px}
+.nwcf{max-width:100%;border:1.5px solid var(--line);background:var(--card);color:var(--fg);border-radius:99px;min-height:40px;padding:8px 16px;font:600 .92rem Anuphan,system-ui,sans-serif;line-height:1.35;text-align:center;overflow-wrap:anywhere;cursor:pointer;transition:.2s}
+.nwcf:hover{border-color:var(--gold)}
+.nwcf.on{background:var(--act);color:#fff;border-color:var(--act)}
+.nwcf:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.nwcr input{max-width:100%}
+.nwcm .nwcr .tag{white-space:nowrap}
+@media(max-width:640px){.nwcs{gap:6px}.nwcf{padding:8px 13px;font-size:.88rem}.nwcr input{width:100%}}
