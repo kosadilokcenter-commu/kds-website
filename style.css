@@ -115,7 +115,8 @@ a.bk{transition:opacity .2s}
 a.bk:hover,a.bk:focus-visible{opacity:.65}
 /* แผนผังสถาบัน */
 .cm{margin:12px 0}
-.cm>.pl{margin:0 0 16px;max-width:68ch;color:var(--muted);font-size:.95rem;line-height:1.6}
+.cm>.pl{margin:0 0 16px;max-width:none;text-align:left;color:var(--muted);font-size:.95rem;line-height:1.6}
+@media(min-width:720px){.cm>.pl{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:clamp(.72rem,calc((min(100vw,1100px) - 52px)/62),.95rem)}}
 .cmt{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center;margin:0 0 16px;padding:10px 12px;border:1px solid var(--line);border-radius:14px;background:var(--card)}
 .cmt input[type=search]{flex:1 1 280px;max-width:420px;min-height:44px;margin:0;padding:10px 14px;font-size:1rem}
 .cmcs{display:flex;flex-wrap:wrap;gap:8px}
@@ -149,14 +150,14 @@ a.bk:hover,a.bk:focus-visible{opacity:.65}
 .cml{border:1px solid var(--line);border-radius:16px;background:var(--card);padding:14px;min-width:0}
 .cml>.evm{margin:0 0 12px;padding:0 2px;font-size:1.05rem;font-weight:700;line-height:1.4;color:var(--fg)}
 .cml ul{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,230px),1fr));gap:8px 10px}
-.cmi{width:100%;height:100%;text-align:left;display:flex;flex-wrap:wrap;gap:4px 8px;align-items:center;align-content:flex-start;border:1px solid var(--line);border-radius:12px;background:var(--surface,var(--card));color:var(--fg);min-height:56px;padding:11px 14px;font:inherit;line-height:1.4;cursor:pointer;transition:.2s}
+.cmi{width:100%;height:100%;text-align:left;display:grid;grid-template-columns:minmax(0,1fr);gap:6px;justify-items:start;align-content:start;border:1px solid var(--line);border-radius:12px;background:var(--surface,var(--card));color:var(--fg);min-height:56px;padding:12px 14px;font:inherit;line-height:1.4;cursor:pointer;transition:.2s}
 .cmi:hover{background:var(--hover);border-color:var(--gold)}
 .cmi.on{background:color-mix(in srgb,var(--act) 12%,var(--card));border-color:var(--act);box-shadow:inset 4px 0 0 var(--act)}
 .cmi.on b{color:var(--kds-primary-text);font-weight:700}
 .cmi:focus-visible{outline:3px solid var(--gold);outline-offset:1px}
-.cmi b{flex:1 1 100%;min-width:0;font-size:1rem;line-height:1.4;overflow-wrap:break-word}
-.cmi .tag{margin:0}
-.cmi small{flex:0 1 auto;color:var(--muted);font-size:.85rem;line-height:1.4}
+.cmi b{min-width:0;max-width:100%;font-size:1rem;line-height:1.4;overflow-wrap:anywhere}
+.cmi .tag{margin:0;max-width:100%;line-height:1.5;padding:1px 10px}
+.cmi small{min-width:0;max-width:100%;color:var(--muted);font-size:.85rem;line-height:1.4;overflow-wrap:anywhere}
 .cmpk{position:relative;display:inline-block;max-width:100%;border:1px solid var(--line);border-radius:12px;overflow:hidden;cursor:crosshair;touch-action:pan-y pinch-zoom;line-height:0}
 .cmpk img{display:block;max-width:100%;height:auto;user-select:none;-webkit-user-drag:none}
 .cmpkp{position:absolute;width:0;height:0;pointer-events:none}
