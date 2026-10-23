@@ -847,6 +847,34 @@ html.kld-on{overflow:hidden}
 @media(max-width:700px){.fee-hint{display:block}.feet{min-width:500px}.feet tbody td:nth-child(2){min-width:150px}.feet thead th.fen{white-space:normal;min-width:92px}.feet th,.feet td{padding:11px 12px;font-size:.95rem}.feet tbody td.fen{font-size:1.02rem}.feet tbody td.fen:last-child{font-size:1.06rem}.feet tbody th{position:sticky;left:0;z-index:1;box-shadow:1px 0 0 var(--line)}.fee .feet thead th:first-child{position:sticky;left:0;z-index:2;box-shadow:1px 0 0 #ffffff33}
  .fees{margin-bottom:34px}.fesv{padding:16px 18px}.fenb{grid-template-columns:auto minmax(0,1fr);gap:12px;padding:16px}.fenb-ic{width:34px;height:34px}.fenb-ic svg{width:19px;height:19px}.fenote{padding-left:1.2em}}
 
+/* ===== ค่าธรรมเนียมการศึกษา: ปรับดีไซน์ตารางตามต้นแบบ (ขอบเขตเฉพาะ .fee-tbl / .fe-hd) ===== */
+.fee-tbl{--fe-zb:#FBF8F3;--fe-ink:#1F2430}
+:root[data-theme="dark"] .fee-tbl{--fe-zb:#2E2A21;--fe-ink:#EEF0F4}
+.fee .fe-hd{margin:0 0 18px}
+.fee-tbl .feew{border:0;border-radius:14px;background:var(--surface);box-shadow:var(--fe-sh)}
+.fee-tbl .feet{min-width:760px;font-size:.95rem}
+.fee-tbl .feet th,.fee-tbl .feet td{border-bottom:0;padding:18px 20px;line-height:1.65;vertical-align:middle}
+.fee .fee-tbl .feet thead th{background:var(--fe-head);color:#fff;text-align:center;font-weight:700;font-size:.95rem;padding:14px 16px;vertical-align:middle;position:static;box-shadow:none;border-left:1px solid rgba(255,255,255,.55)}
+.fee .fee-tbl .feet thead th:first-child{border-left:0;position:static;box-shadow:none}
+.fee .fee-tbl .feet thead .fe-grp{border-bottom:1px solid rgba(255,255,255,.55)}
+.fee-tbl .feet thead tr:nth-child(2) th{padding-top:12px;padding-bottom:12px;font-weight:600}
+.fee-tbl .feet tbody th,.fee-tbl .feet tbody td{background:var(--surface);color:var(--fe-ink)}
+.fee-tbl .feet tbody tr:nth-child(even)>*{background:var(--fe-zb)}
+.fee-tbl .feet tbody th.fe-c1{width:27%;min-width:150px;padding-left:52px;text-align:left;font-weight:700;white-space:normal;position:static;box-shadow:none;vertical-align:top}
+.fee-tbl .feet tbody td.fe-c2{width:30%;min-width:240px;text-align:left;font-weight:500;vertical-align:top}
+.fee-tbl .feet tbody td.fen{width:21.5%;text-align:center;font-size:1.02rem;font-weight:700;color:var(--fe-ink);font-variant-numeric:tabular-nums;white-space:nowrap}
+.fee-tbl .feet tbody td.fen:last-child{font-size:1.02rem}
+.fee-tbl .feet .sr{position:absolute;left:-9999px}
+@media(max-width:700px){
+ .fee-tbl .feet{min-width:640px;font-size:.9rem}
+ .fee-tbl .feet th,.fee-tbl .feet td{padding:14px 12px}
+ .fee .fee-tbl .feet thead th{padding:12px 10px;font-size:.88rem}
+ .fee-tbl .feet tbody th.fe-c1{min-width:120px;padding-left:16px;position:static;box-shadow:none}
+ .fee-tbl .feet tbody td.fe-c2{min-width:200px}
+ .fee-tbl .feet tbody td.fen{font-size:.98rem;min-width:96px}
+ .fee .fe-hd{margin-bottom:14px}
+}
+
 /* ===== กลุ่มสาระ: กำหนดวิชา/ตารางสอน (หลังบ้าน) ===== */
 .sgxn{margin:6px 0 10px;color:var(--muted);font-size:.92rem}.sgxbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:12px 0}.sgxbar select{max-width:100%;min-width:0}
 
