@@ -881,8 +881,10 @@ html.kld-on{overflow:hidden}
 }
 
 /* ===== บริการและทรัพยากรนักเรียน: การ์ดใบเดียวรวม 5 รายการ (ขอบเขตเฉพาะ .fee-svc) ===== */
-.fee-svc{--fe-sl:#E8E8EC}
-:root[data-theme="dark"] .fee-svc{--fe-sl:rgba(255,255,255,.14)}
+.fee-svc{--fe-sl:#E8E8EC;--fe-ic:#6E1118}
+.fee-svc .fe-ic{flex:none;color:#fff}
+.fee-svc .fe-ic svg{display:block;width:26px;height:26px}
+:root[data-theme="dark"] .fee-svc{--fe-sl:rgba(255,255,255,.14);--fe-ic:#9B2733}
 .fee-svc .fesl{display:block;border:1px solid var(--fe-sl);border-radius:16px;background:var(--surface);box-shadow:none;overflow:hidden}
 .fee-svc .fesv{display:block;padding:30px 56px 28px;border:0;border-bottom:1px solid var(--fe-sl);border-radius:0;background:transparent;box-shadow:none}
 .fee-svc .fesv:last-child{border-bottom:0}
@@ -898,6 +900,7 @@ html.kld-on{overflow:hidden}
 @media(max-width:900px){.fee-svc .fesv{padding:26px 32px 24px}}
 @media(max-width:700px){
  .fee-svc .fesl{border-radius:14px}
+ .fee-svc .fe-ic svg{width:22px;height:22px}
  .fee-svc .fesv{padding:22px 18px 20px}
  .fee-svc .fesv h3{font-size:1.05rem;overflow-wrap:anywhere}
  .fee-svc .fesv .fesen{padding-left:1.4em;overflow-wrap:anywhere}
