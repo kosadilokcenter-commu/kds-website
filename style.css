@@ -1308,5 +1308,5 @@ footer .soc a:focus-visible{outline:3px solid #fff;outline-offset:3px}
 .sch-pg .sch-bl .sch-cd{margin:12px 0 0;padding:0;border:0;color:var(--ink);font-size:.88rem;line-height:1.55;text-align:left;white-space:pre-line;overflow-wrap:break-word}
 .sch-pg .sch-bl .sch-cd b{color:var(--sc);font-weight:700}
 /* กันพื้น/ขอบจากการตั้งค่ารูปแบบองค์ประกอบที่ห่อหัวข้อ (ไม่แก้ข้อมูลใน CMS) */
-.sch-pg :is(.se,.ce):has(>.sch-hd){background:none!important;border:0!important;box-shadow:none!important;padding-top:0;padding-bottom:0}
+.sch-pg :is(.se,.ce):has(>.sch-hd),.sch-pg .sg:has(>.sch-hd):not(:has(>.sch-bl,>.sch-g,>.sch-c)){background:none!important;border:0!important;box-shadow:none!important;padding-top:0;padding-bottom:0}
 @media(max-width:599px){.sch-pg .sch-bl{--no:26px;--gp:10px;gap:14px}.sch-pg .sch-bl .sch-bn{padding:14px 14px 14px}.sch-pg .sch-bl .sch-bn h3{font-size:1.02rem}.sch-pg .sch-bl .sch-bn ul{margin-left:calc(var(--no) + var(--gp))}.sch-pg .sch-bl .sch-bn li{font-size:.9rem}}
