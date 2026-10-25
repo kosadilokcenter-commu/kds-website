@@ -1271,7 +1271,8 @@ footer .soc a:focus-visible{outline:3px solid #fff;outline-offset:3px}
 .nwcm .nwcr .tag{white-space:nowrap}
 @media(max-width:640px){.nwcs{gap:6px}.nwcf{padding:8px 13px;font-size:.88rem}.nwcr input{width:100%}}
 /* ===== หน้าทุนการศึกษา (scholarships-kds): หัวข้อพื้นขาว + การ์ดทุนแนวนอน · ใช้เฉพาะ .sch-pg ===== */
-.sch-pg{--sc:#7A1A22;--ink:#262B36;--mut:#566070;--ln:#E3E6EC}
+.sch-pg{--sc:#7A1A22;--ink:#262B36;--mut:#566070;--ln:#E3E6EC;--nb:#FBF6E9;--nl:#E8DDBF;--ng:#B8892B}
+:root[data-theme="dark"] .sch-pg{--nb:#2E2A21;--nl:#5A4F33}
 .sch-pg .sch-hd{display:flex;align-items:center;gap:16px;margin:0 0 26px;padding:0;background:none;border:0;box-shadow:none}
 .sch-pg .sch-ht{min-width:0}
 .sch-pg h2{margin:0;padding:0;background:none;border:0;box-shadow:none;color:var(--kds-primary-text,var(--sc));font-weight:700;line-height:1.3;letter-spacing:0;text-align:left;overflow-wrap:break-word}
@@ -1295,7 +1296,7 @@ footer .soc a:focus-visible{outline:3px solid #fff;outline-offset:3px}
 @media(max-width:959px){.sch-pg .sch-g{grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}}
 @media(max-width:599px){.sch-pg .sch-g{grid-template-columns:minmax(0,1fr)}.sch-pg .sch-c{padding:16px;gap:14px}.sch-pg .sch-hd{gap:12px}.sch-pg .sch-hd .sch-ic{width:46px;height:46px}.sch-pg .sch-hd .sch-ic svg{width:24px;height:24px}}
 /* สิทธิประโยชน์ (ใน .sch-pg): การ์ดแนวตั้งเรียงลำดับ กึ่งกลางหน้า · หัวการ์ด = วงกลมเลข + (ชื่อไทย/ชื่ออังกฤษ) แถวเดียวกัน · รายการเยื้องใต้ชื่อ · เงื่อนไขทุนท้ายการ์ด · ความสูงตามเนื้อหา */
-.sch-pg .sch-bl{--no:28px;--gp:12px;display:flex;flex-direction:column;align-items:stretch;gap:18px;width:100%;max-width:640px;margin:0 auto 8px}
+.sch-pg .sch-bl{--no:28px;--gp:12px;display:flex;flex-direction:column;align-items:stretch;gap:18px;width:100%;max-width:560px;margin:0 auto 8px}
 .sch-pg .sch-bl .sch-bn{display:block;box-sizing:border-box;min-width:0;margin:0;padding:18px 22px 16px;background:#fff;color:var(--ink);border:1px solid rgba(31,36,48,.06);border-radius:14px;box-shadow:0 2px 12px rgba(31,36,48,.08)}
 .sch-pg .sch-bl .sch-bh{display:flex;align-items:center;gap:var(--gp);min-width:0}
 .sch-pg .sch-bl .sch-no{display:inline-flex;align-items:center;justify-content:center;flex:none;width:var(--no);height:var(--no);border-radius:50%;background:var(--sc);color:#fff;font-weight:700;font-size:.95rem;line-height:1}
@@ -1310,3 +1311,11 @@ footer .soc a:focus-visible{outline:3px solid #fff;outline-offset:3px}
 /* กันพื้น/ขอบจากการตั้งค่ารูปแบบองค์ประกอบที่ห่อหัวข้อ (ไม่แก้ข้อมูลใน CMS) */
 .sch-pg :is(.se,.ce):has(>.sch-hd),.sch-pg .sg:has(>.sch-hd):not(:has(>.sch-bl,>.sch-g,>.sch-c)){background:none!important;border:0!important;box-shadow:none!important;padding-top:0;padding-bottom:0}
 @media(max-width:599px){.sch-pg .sch-bl{--no:26px;--gp:10px;gap:14px}.sch-pg .sch-bl .sch-bn{padding:14px 14px 14px}.sch-pg .sch-bl .sch-bn h3{font-size:1.02rem}.sch-pg .sch-bl .sch-bn ul{margin-left:calc(var(--no) + var(--gp))}.sch-pg .sch-bl .sch-bn li{font-size:.9rem}}
+/* เงื่อนไขการรักษาทุน: คำอธิบายใต้ชื่อ (ชิดแนวเดียวกับชื่อ) และกล่องหมายเหตุสีครีม */
+.sch-pg .sch-bl .sch-rd{margin:10px 0 0 calc(var(--no) + var(--gp));padding:0;color:var(--ink);font-size:.9rem;line-height:1.7;text-align:left;white-space:pre-line;overflow-wrap:break-word}
+.sch-pg .sch-bl .sch-nb{box-sizing:border-box;min-width:0;padding:16px 20px;background:var(--nb);color:var(--fg);border:1px solid var(--nl);border-radius:16px}
+.sch-pg .sch-bl .sch-ni{display:block;width:30px;height:30px;color:var(--ng);margin:0 0 6px}
+.sch-pg .sch-bl .sch-ni svg{display:block;width:100%;height:100%;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.sch-pg .sch-bl .sch-nb p{margin:0;font-size:.85rem;line-height:1.6;text-align:left;white-space:pre-line;overflow-wrap:break-word}
+.sch-pg .sch-bl .sch-nb b{font-weight:700}.sch-pg .sch-bl .sch-nb .sch-nw{color:var(--fg)}
+@media(max-width:599px){.sch-pg .sch-bl .sch-rd{margin-left:calc(var(--no) + var(--gp))}.sch-pg .sch-bl .sch-nb{padding:14px}}
