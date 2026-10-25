@@ -1373,3 +1373,18 @@ html:has(.sch-pg){overflow-x:clip}
 .anr h3{margin:0;font-size:1rem;line-height:1.4;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;transition:color .2s}
 @media(max-width:900px){.nwl{grid-template-columns:minmax(0,1fr)}}
 @media(prefers-reduced-motion:reduce){.sec a.anf:not(.btn):not(.card),.anr h3{transition:none}}
+
+/* ===== ปรับรายละเอียดข่าวเด่น/ข่าวรองบนหน้าแรก (ต่อยอดจากเวอร์ชันก่อนหน้า) · ย้อนกลับ: style.css.bak-before-newsdetail ===== */
+/* ข่าวเด่น: ไล่เฉดสีเข้มด้านล่างให้นุ่มขึ้น (คำโปรยจำกัด 2 บรรทัดอยู่ใน .nwfs เดิม) */
+.nwf::after{background:linear-gradient(to top,#151B28F0 0%,#151B28DB 22%,#151B289E 42%,#151B284D 62%,#151B2814 82%,#151B2800 100%)}
+/* ข่าวรอง: ภาพย่อใหญ่ขึ้น สัดส่วนเท่ากันทุกแถว (ไม่มีภาพ = กรอบสีน้ำตาลแดงเดิม) ข้อความจัดกึ่งกลางแนวตั้งกับภาพ */
+.nwl .nwx{justify-content:center}
+.nwl .nwx>.nwr:only-child{flex:0 0 auto}
+.sec .nwl a.nwr:not(.btn):not(.card){gap:14px;padding:10px 14px 10px 10px;border-radius:14px}
+.nwl .nwrm{flex:0 0 clamp(104px,10vw,120px);aspect-ratio:4/3;border-radius:10px}
+.nwl .nwrm:empty{background:color-mix(in srgb,var(--gold) 14%,var(--hover))}
+.nwl .nwrb{gap:6px}
+.nwl .nwrb h3{line-height:1.4}
+@media(max-width:560px){.nwl .nwrm,.nwmo .nwrm{flex-basis:92px}.nwl .nwx{gap:10px}}
+.nwmo .nwrm{flex:0 0 clamp(92px,9vw,104px);aspect-ratio:4/3;border-radius:10px}
+.nwmo .nwrm:empty{background:color-mix(in srgb,var(--gold) 14%,var(--hover))}
