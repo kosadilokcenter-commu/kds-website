@@ -1605,3 +1605,49 @@ html:has(.sch-pg){overflow-x:clip}
 .ttp .ttbar .cuh.pl{display:grid;grid-template-columns:minmax(0,1fr)}
 .ttp .tth{font-size:1.1rem}
 }
+
+/* ===== หน้าโครงสร้างหลักสูตร (.cu): ดีไซน์ใหม่ — สีหลัก --kds-primary (#7A1A22) สีรอง --kds-secondary (#8D99AE) · ทุกกฎขึ้นต้นด้วย .cu จึงไม่กระทบหน้าอื่น
+   ขนาดตัวอักษรที่ตั้งจากหลังบ้าน (data-cu / --cu-*) ยังมีผลเหมือนเดิม ===== */
+.cu .cuin{margin:0 0 16px;color:var(--muted);line-height:1.8}
+.cu .cul{display:grid;gap:26px;margin:22px 0 30px}
+.cu .cuLv{min-width:0}
+.cu .cuLt{display:flex;align-items:center;flex-wrap:wrap;gap:6px 12px;margin:0 0 12px;padding-left:12px;border-left:4px solid var(--kds-primary)}
+.cu .cuLt b{font-size:1.15rem;line-height:1.4;color:var(--kds-primary-text)}
+.cu .cuLt small{color:var(--muted);font-size:.9rem}
+.cu .cuLt .cugr{margin-left:auto}
+.cu .cugr{display:flex;flex-wrap:wrap;gap:8px}
+.cu .cuchip{min-height:40px;min-width:64px;padding:6px 16px;font:inherit;font-weight:700;color:var(--fg);background:var(--surface);border:1px solid var(--line);border-radius:999px;cursor:pointer}
+.cu .cuchip:hover{border-color:var(--kds-primary)}
+.cu .cuchip.on{color:#fff;background:var(--kds-primary);border-color:var(--kds-primary)}
+.cu :is(.cuchip,.cupc):focus-visible{outline:3px solid var(--act);outline-offset:2px}
+.cu .cupi{display:inline-grid;place-items:center;flex:0 0 auto;width:48px;height:48px;border-radius:14px;color:var(--kds-primary-text);background:color-mix(in srgb,var(--kds-secondary) 20%,var(--surface))}
+.cu .cupi svg{width:26px;height:26px}
+.cu .cumc,.cu .cupc{background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:0 2px 10px #1F243014}
+.cu .cumc{display:flex;align-items:center;gap:16px;max-width:560px;padding:16px 18px}
+.cu .cumt{display:grid;gap:10px;min-width:0}
+.cu .cumt>b{font-size:1.05rem;line-height:1.5}
+.cu .cupg{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px}
+.cu .cupc{display:flex;flex-direction:column;align-items:flex-start;gap:12px;min-width:0;padding:16px;font:inherit;color:inherit;text-align:left;cursor:pointer;transition:border-color .15s,box-shadow .15s}
+.cu .cupc:hover{border-color:var(--kds-secondary);box-shadow:0 4px 14px #1F24301F}
+.cu .cupt{display:grid;gap:2px;min-width:0}
+.cu .cupt small{color:var(--muted);font-size:.85rem;font-weight:700}
+.cu .cupt b{line-height:1.5;overflow-wrap:anywhere}
+.cu :is(.cumc,.cupc).on{border-color:var(--kds-primary);box-shadow:0 0 0 1px var(--kds-primary),0 4px 14px #7A1A2226;background:color-mix(in srgb,var(--kds-primary) 4%,var(--surface))}
+.cu :is(.cumc,.cupc).on .cupi{color:#fff;background:var(--kds-primary)}
+.cu .cuhd{margin:0 0 16px;padding-left:12px;border-left:4px solid var(--kds-primary)}
+.cu .cuti{margin:0 0 4px;font-size:clamp(1.3rem,3vw,1.75rem);line-height:1.4}
+.cu .cuse{margin:2px 0}
+.cu .cupl{font-weight:700;color:var(--kds-primary-text)}
+.cu .cutt{display:flex;align-items:center;gap:8px;margin:0 0 10px;font-size:1.15rem;color:var(--kds-primary-text)}
+.cu .cuw{border-radius:14px;box-shadow:0 2px 10px #1F243014}
+.cu .cut thead th{color:var(--kds-primary-text);background:color-mix(in srgb,var(--kds-primary) 7%,var(--surface));border-bottom:2px solid var(--kds-primary)}
+.cu .cut .cuth th{background:color-mix(in srgb,var(--kds-secondary) 16%,var(--surface))}
+.cu .cut tfoot td{border-top:2px solid var(--kds-primary);background:color-mix(in srgb,var(--kds-primary) 7%,var(--surface))}
+@media(max-width:640px){
+.cu .cul{gap:22px}
+.cu .cuLt .cugr{margin-left:0;width:100%}
+.cu .cumc{max-width:none;padding:14px}
+.cu .cupg{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.cu .cupc{padding:14px;gap:10px}
+.cu .cupi{width:44px;height:44px}
+}
