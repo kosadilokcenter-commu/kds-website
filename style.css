@@ -1498,3 +1498,25 @@ html:has(.sch-pg){overflow-x:clip}
 @media(max-width:800px){.svh-top{grid-template-columns:minmax(0,1fr);gap:22px}.svh-sec{grid-template-columns:minmax(0,1fr);padding:22px 0}}
 @media(max-width:600px){.svh-tab{padding:10px 14px}.svh-tbl thead{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}.svh-tbl,.svh-tbl tbody,.svh-tbl tr,.svh-tbl td{display:block}.svh-tbl tr{padding:10px 0;border-bottom:1px solid var(--line)}.svh-tbl td{padding:4px 0;border:0}.svh-tbl td::before{content:attr(data-l) ": ";color:var(--muted);font-weight:600;font-size:.88rem}}
 @media(prefers-reduced-motion:reduce){.svh-tab{transition:none}}
+/* ===== หน้าสมาคมศิษย์เก่า (alumni-kds): เลย์เอาต์เนื้อหาภายในหน้า · ใช้ตัวแปรสี/ตัวอักษรเดิมของเว็บไซต์ ===== */
+.alu{text-align:left}
+.alu-s{padding:34px 0;border-top:1px solid var(--line)}
+.alu-s:first-child{padding-top:8px;border-top:0}
+.alu-s>h2{margin:0 0 18px}
+.alu p{white-space:normal;overflow-wrap:anywhere}
+.alu-lead{max-width:68ch;margin:0 0 26px;font-size:1.05rem;line-height:1.85}
+.alu-dl{margin:0}
+.alu-dl>div{display:grid;grid-template-columns:200px minmax(0,1fr);gap:6px clamp(24px,4vw,48px);padding:16px 0;border-top:1px solid var(--line)}
+.alu-dl dt{font-weight:700;line-height:1.7;color:var(--kds-primary-text)}
+.alu-dl dd{margin:0;line-height:1.8;overflow-wrap:anywhere}
+.alu-g{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:28px clamp(24px,4vw,48px)}
+.alu-g li{min-width:0;padding-top:16px;border-top:3px solid var(--gold)}
+.alu-g h3{margin:0 0 6px;font-size:1.1rem;line-height:1.5;color:var(--kds-primary-text)}
+.alu-g p{margin:0;line-height:1.75}
+.alu-n{display:grid;gap:16px}
+.alu-nb{min-width:0;padding:20px 24px;border:1px solid var(--line);border-left:4px solid var(--gold);border-radius:12px;background:color-mix(in srgb,var(--gold) 6%,var(--surface))}
+.alu-nb h3{margin:0 0 8px;font-size:1rem;line-height:1.5;color:var(--kds-primary-text)}
+.alu-nb p{margin:0;line-height:1.8}
+.alu-nb ul{margin:0;padding-left:1.2em;display:grid;gap:10px}
+.alu-nb li{line-height:1.8;overflow-wrap:anywhere}
+@media(max-width:800px){.alu-s{padding:26px 0}.alu-dl>div{grid-template-columns:minmax(0,1fr);padding:14px 0}.alu-g{grid-template-columns:minmax(0,1fr);gap:22px}.alu-nb{padding:16px 18px}}
