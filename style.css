@@ -1326,3 +1326,27 @@ html:has(.sch-pg){overflow-x:clip}
 @media(max-width:599px){.sch-pg .sch-bl .sch-rd{margin-left:calc(var(--no) + var(--gp))}.sch-pg .sch-bl .sch-nb{padding:14px}}
 /* หัวข้อ: ล้างพื้นหลัง/ขอบ/เงา/ส่วนตกแต่งของทุกชั้นที่ห่อหัวข้อภายใน .sch-pg (ไม่แตะพื้นหลังส่วนกลางหรือหน้าอื่น) */
 .sch-pg :is(div,section,header,article):has(.sch-hd):not(:has(.sch-bn,.sch-c,.sch-nb)),.sch-pg :is(div,section,header,article):has(.sch-hd):not(:has(.sch-bn,.sch-c,.sch-nb))::before,.sch-pg :is(div,section,header,article):has(.sch-hd):not(:has(.sch-bn,.sch-c,.sch-nb))::after,.sch-pg .sch-hd,.sch-pg .sch-hd::after,.sch-pg .sch-ht,.sch-pg .sch-ht h2{background:transparent!important;background-image:none!important;border:0!important;box-shadow:none!important}
+
+/* ===== แอนิเมชันเปิดหน้า: Fade in + Slide up (class .rv ถูกใส่/ถอดบน #app โดย pgIn() ใน app.js) · ไม่กระทบ header/footer/ภาพ Hero · ปิดเมื่อผู้ใช้ตั้งค่าลดการเคลื่อนไหว · ย้อนกลับ: style.css.bak-before-pagein ===== */
+@keyframes rvIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:no-preference){
+/* หน้าทั่วไป: หัวข้อก่อน แล้วเนื้อหาไล่ตามลงมา */
+#app.rv>.sec:not(.hn)>:not(:is(.cpg,.nwg,.evcg)){animation:rvIn .5s ease-out 100ms backwards}
+#app.rv>.sec:not(.hn)>:not(:is(.cpg,.nwg,.evcg)):nth-child(n+4){animation-delay:160ms}
+#app.rv>.sec:not(.hn)>:not(:is(.cpg,.nwg,.evcg)):nth-child(n+6){animation-delay:220ms}
+#app.rv>.sec:not(.hn)>:is(h1,h2):nth-child(n){animation-delay:0ms}
+#app.rv>.sec:not(.hn) :is(.cpg,.nwg,.evcg)>*{animation:rvIn .5s ease-out 140ms backwards}
+#app.rv>.sec:not(.hn) :is(.cpg,.nwg,.evcg)>:nth-child(2){animation-delay:190ms}
+#app.rv>.sec:not(.hn) :is(.cpg,.nwg,.evcg)>:nth-child(3){animation-delay:240ms}
+#app.rv>.sec:not(.hn) :is(.cpg,.nwg,.evcg)>:nth-child(4){animation-delay:290ms}
+#app.rv>.sec:not(.hn) :is(.cpg,.nwg,.evcg)>:nth-child(n+5){animation-delay:340ms}
+/* หน้าแรก: ข้อความ Hero → หัวข้อสถิติ → การ์ดสถิติไล่ทีละใบ → ส่วนถัดไป */
+#app.rv>.hero .hc{animation:rvIn .55s ease-out backwards}
+#app.rv>.hn>.sts .stt{animation:rvIn .5s ease-out 120ms backwards}
+#app.rv>.hn>.sts .stc{animation:rvIn .5s ease-out 240ms backwards}
+#app.rv>.hn>.sts .stc:nth-child(2){animation-delay:320ms}
+#app.rv>.hn>.sts .stc:nth-child(3){animation-delay:400ms}
+#app.rv>.hn>.sts .stc:nth-child(4){animation-delay:480ms}
+#app.rv>.hn>:not(.sts){animation:rvIn .5s ease-out 560ms backwards}
+#app.rv>.hn>:not(.sts):nth-child(n+3){animation-delay:640ms}
+}
