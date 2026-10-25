@@ -325,17 +325,13 @@ const SVH_SLUGS=['student-services-kds'];
 const isSvhPg=p=>!!p&&SVH_SLUGS.includes(p.slug);
 const SVH_IC={
  bus:'<rect x="4" y="3.5" width="16" height="14" rx="2.5"/><path d="M4 11h16M8 21v-3.5M16 21v-3.5"/><circle cx="8" cy="14.2" r=".9" fill="currentColor" stroke="none"/><circle cx="16" cy="14.2" r=".9" fill="currentColor" stroke="none"/>',
- cart:'<path d="M3 17V9.5a2 2 0 0 1 2-2h8.5l2.5 3.5H20a1 1 0 0 1 1 1V17"/><path d="M9 7.5V4M5 4h8"/><circle cx="7.5" cy="17.5" r="2"/><circle cx="16.5" cy="17.5" r="2"/>',
+ cart:'<path d="M3.5 4h16.5M4.8 4v6.5M18.2 4l-2 6.5"/><path d="M5.1 15.5H3.5v-4a1 1 0 0 1 1-1h11.7l3.3 1.8a1 1 0 0 1 .5.9v2.3h-.7M15.1 15.5H9.3"/><path d="M7.4 10.5V7.4M7.4 9.1h5"/><circle cx="7.2" cy="16.8" r="2.3"/><circle cx="17.2" cy="16.8" r="2.3"/>',
  gen:'<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5v5l3 2"/>'};
 const SVH_SERVICES=[
- {id:'bus',tab:'รถบัสรับ–ส่ง',en:'School Bus',ic:'bus',img:'',sample:true,
-  sum:'บริการรถบัสรับ–ส่งนักเรียนระหว่างโรงเรียนกับจุดรับ–ส่งตามเส้นทางที่กำหนด',
-  facts:[['ผู้ใช้บริการ','นักเรียนที่ลงทะเบียนใช้บริการ'],['ค่าบริการ','ตามประกาศของโรงเรียน'],['ติดต่อสอบถาม','ฝ่ายบริการนักเรียน']],
-  desc:['รายละเอียดของบริการ เช่น ขอบเขตการให้บริการ วิธีลงทะเบียน และผู้รับผิดชอบ','ย่อหน้าที่สองสำหรับข้อมูลเพิ่มเติม'],
-  stops:[['จุดรับ–ส่งที่ 1','ชื่อสถานที่และจุดสังเกต'],['จุดรับ–ส่งที่ 2','ชื่อสถานที่และจุดสังเกต'],['จุดรับ–ส่งที่ 3','ชื่อสถานที่และจุดสังเกต'],['จุดรับ–ส่งที่ 4','ชื่อสถานที่และจุดสังเกต']],
-  route:['ต้นทาง','จุดรับ–ส่งที่ 1','จุดรับ–ส่งที่ 2','จุดรับ–ส่งที่ 3','โรงเรียนสาธิตโกศาดิลก'],
-  sch:{cols:['รอบ','เวลา','หมายเหตุ'],rows:[['รอบเช้า (รับ)','06:30 – 07:30','ถึงโรงเรียนก่อนเข้าแถว'],['รอบเย็น (ส่ง)','16:00 – 17:00','ออกจากโรงเรียนหลังเลิกเรียน']]},
-  terms:['เงื่อนไขการลงทะเบียนใช้บริการ','ข้อปฏิบัติของผู้โดยสารบนรถ','แนวทางการแจ้งยกเลิกหรือเปลี่ยนจุดรับ–ส่ง']},
+ {id:'bus',tab:'รถบัสรับ–ส่ง',ti:'บริการรถบัสรับ–ส่งนักเรียน',en:'KDS School Bus Service',ic:'bus',img:'',
+  desc:['สำหรับนักเรียนที่สมัครใช้บริการและชำระค่าบริการรถรับ–ส่งของโรงเรียน โดยจัดเส้นทางและจุดรับ–ส่งตามพื้นที่ที่โรงเรียนกำหนด เพื่ออำนวยความสะดวกในการเดินทาง ลดความแออัดบริเวณทางเข้าโรงเรียน และแยกการจราจรออกจากพื้นที่การเรียนรู้หลัก','นักเรียนผู้ใช้บริการจะขึ้น–ลงรถ ณ จุดรับ–ส่งที่กำหนด และมีพื้นที่พักคอยภายในโรงเรียนพร้อมหลังคากันแดดและฝน โดยมีเจ้าหน้าที่ดูแลการเข้า–ออกและการขึ้น–ลงรถตามรอบบริการ'],
+  sch:{cols:['ช่วง / รอบ','เวลา','รายละเอียด'],rows:[['ช่วงเช้า · รับนักเรียนเข้าโรงเรียน','ตั้งแต่ประมาณ 05:45 น.','รถเริ่มออกจากจุดบริการและรับนักเรียนตามจุดต่าง ๆ · รถทุกสายมุ่งหน้าเข้าสู่โรงเรียน'],['ช่วงเช้า · เวลาถึงโรงเรียน','ประมาณ 07:15–07:45 น.','นักเรียนควรเดินทางถึงโรงเรียนในช่วงเวลานี้ · สิ้นสุดการรับนักเรียนช่วงเช้าก่อนเวลาเข้าเรียน'],['ช่วงเย็น · รอบหลัก','15:40 น.','ส่งนักเรียนกลับบ้าน หลังเลิกเรียน'],['ช่วงเย็น · รอบเสริม','16:30 น.','ส่งนักเรียนกลับบ้าน สำหรับนักเรียนที่มีกิจกรรมหลังเลิกเรียน'],['ช่วงเย็น · รอบสุดท้าย','18:30 น.','ส่งนักเรียนกลับบ้าน']]},
+  note:'ตารางเวลา จุดรับ–ส่ง และเส้นทางของรถแต่ละสายอาจแตกต่างกันตามพื้นที่ให้บริการ โดยโรงเรียนจะแจ้งรายละเอียดให้แก่นักเรียนและผู้ปกครองก่อนเริ่มใช้บริการ'},
  {id:'cart',tab:'รถกอล์ฟภายในโรงเรียน',en:'Campus Golf Cart',ic:'cart',img:'',sample:true,
   sum:'บริการรถกอล์ฟเคลื่อนที่ภายในบริเวณโรงเรียน สำหรับการเดินทางระหว่างอาคาร',
   facts:[['ผู้ใช้บริการ','ตามเงื่อนไขของโรงเรียน'],['ค่าบริการ','ตามประกาศของโรงเรียน'],['ติดต่อสอบถาม','ฝ่ายบริการนักเรียน']],
@@ -348,13 +344,13 @@ let SVH_SEL='';
 function svhHtml(){const L=SVH_SERVICES.filter(x=>x&&x.id&&x.tab);if(!L.length)return '';if(!L.some(x=>x.id===SVH_SEL))SVH_SEL=L[0].id;
  const ic=k=>`<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">${SVH_IC[k]||SVH_IC.gen}</svg>`,sec=(h,b)=>b?`<section class="svh-sec"><h3>${E(h)}</h3><div class="svh-sb">${b}</div></section>`:'';
  const tabs=L.map(x=>`<button type="button" role="tab" class="svh-tab${x.id===SVH_SEL?' on':''}" id="svt-${E(x.id)}" aria-controls="svp-${E(x.id)}" aria-selected="${x.id===SVH_SEL}" tabindex="${x.id===SVH_SEL?0:-1}" data-id="${E(x.id)}" onclick="svhTab('${E(x.id)}')" onkeydown="return svhKey(event)">${ic(x.ic)}<span>${E(x.tab)}</span></button>`).join('');
- const pan=x=>{const on=x.id===SVH_SEL,fa=(x.facts||[]).filter(f=>f&&f[1]),ds=(x.desc||[]).filter(Boolean),st=(x.stops||[]).filter(f=>f&&f[0]),rt=(x.route||[]).filter(Boolean),sc=x.sch&&x.sch.rows&&x.sch.rows.length?x.sch:null,tm=(x.terms||[]).filter(Boolean);
-  const img=okU(x.img)?`<div class="svh-img"><img src="${E(x.img)}" alt="${E(x.tab)}" loading="lazy"></div>`:`<div class="svh-img svh-ph" aria-hidden="true">${ic(x.ic)}<span>พื้นที่สำหรับภาพประกอบ</span></div>`;
-  return `<div class="svh-pn" role="tabpanel" id="svp-${E(x.id)}" aria-labelledby="svt-${E(x.id)}"${on?'':' hidden'}><div class="svh-top">${img}<div class="svh-sm"><h2>${E(x.tab)}</h2>${x.en?`<p class="svh-sen">${E(x.en)}</p>`:''}${x.sample?'<p><span class="tag">ข้อมูลตัวอย่าง</span></p>':''}${x.sum?`<p class="svh-lead">${E(x.sum)}</p>`:''}${fa.length?`<dl class="svh-facts">${fa.map(f=>`<div><dt>${E(f[0])}</dt><dd>${E(f[1])}</dd></div>`).join('')}</dl>`:''}</div></div>`
+ const pan=x=>{const on=x.id===SVH_SEL,fa=(x.facts||[]).filter(f=>f&&f[1]),ds=(x.desc||[]).filter(Boolean),st=(x.stops||[]).filter(f=>f&&f[0]),rt=(x.route||[]).filter(Boolean),sc=x.sch&&x.sch.rows&&x.sch.rows.length?x.sch:null,tm=(x.terms||[]).filter(Boolean),nt=String(x.note||'').trim();
+  const img=okU(x.img)?`<div class="svh-img"><img src="${E(x.img)}" alt="${E(x.ti||x.tab)}" loading="lazy"></div>`:`<div class="svh-img svh-ph" aria-hidden="true">${ic(x.ic)}<span>พื้นที่สำหรับภาพประกอบ</span></div>`;
+  return `<div class="svh-pn" role="tabpanel" id="svp-${E(x.id)}" aria-labelledby="svt-${E(x.id)}"${on?'':' hidden'}><div class="svh-top">${img}<div class="svh-sm"><h2>${E(x.ti||x.tab)}</h2>${x.en?`<p class="svh-sen">${E(x.en)}</p>`:''}${x.sample?'<p><span class="tag">ข้อมูลตัวอย่าง</span></p>':''}${x.sum?`<p class="svh-lead">${E(x.sum)}</p>`:''}${fa.length?`<dl class="svh-facts">${fa.map(f=>`<div><dt>${E(f[0])}</dt><dd>${E(f[1])}</dd></div>`).join('')}</dl>`:''}</div></div>`
   +sec('รายละเอียดบริการ',ds.map(p=>`<p>${E(p)}</p>`).join(''))
   +sec('จุดให้บริการ',st.length?`<ul class="svh-stops">${st.map(f=>`<li><b>${E(f[0])}</b>${f[1]?`<small>${E(f[1])}</small>`:''}</li>`).join('')}</ul>`:'')
   +sec('เส้นทาง',rt.length?`<ol class="svh-route">${rt.map(f=>`<li>${E(f)}</li>`).join('')}</ol>`:'')
-  +sec('ตารางเวลา',sc?`<div class="svh-tw"><table class="svh-tbl"><thead><tr>${(sc.cols||[]).map(c=>`<th scope="col">${E(c)}</th>`).join('')}</tr></thead><tbody>${sc.rows.map(r=>`<tr>${r.map((c,i)=>`<td data-l="${E((sc.cols||[])[i]||'')}">${E(c)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`:'')
+  +sec('ตารางเวลา',(sc?`<div class="svh-tw"><table class="svh-tbl"><thead><tr>${(sc.cols||[]).map(c=>`<th scope="col">${E(c)}</th>`).join('')}</tr></thead><tbody>${sc.rows.map(r=>`<tr>${r.map((c,i)=>`<td data-l="${E((sc.cols||[])[i]||'')}">${E(c)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`:'')+(nt?`<p class="svh-note">${E(nt)}</p>`:''))
   +sec('เงื่อนไขการใช้บริการ',tm.length?`<ul class="svh-terms">${tm.map(f=>`<li>${E(f)}</li>`).join('')}</ul>`:'')+'</div>'};
  return `<div class="svh"><div class="svh-hd"><h1>บริการนักเรียน <span class="svh-en">/ Student Services</span></h1><p class="svh-intro">เลือกบริการจากแท็บด้านล่างเพื่อดูรายละเอียด จุดให้บริการ เส้นทาง ตารางเวลา และเงื่อนไข</p></div><div class="svh-tabs" role="tablist" aria-label="เลือกบริการนักเรียน">${tabs}</div>${L.map(pan).join('')}</div>`}
 function svhTab(id){const r=document.querySelector('.svh');if(!r)return;SVH_SEL=id;r.querySelectorAll('.svh-tab').forEach(b=>{const on=b.dataset.id===id;b.classList.toggle('on',on);b.setAttribute('aria-selected',on?'true':'false');b.tabIndex=on?0:-1});r.querySelectorAll('.svh-pn').forEach(p=>{p.hidden=p.id!=='svp-'+id})}
