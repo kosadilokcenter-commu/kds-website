@@ -374,6 +374,60 @@ function aluHtml(){const A=ALU;
  return `<div class="alu"><section class="alu-s" aria-labelledby="alu-h1"><div class="alu-intro"><div class="alu-lg"><img class="alu-logo" src="${ALU_LOGO}" width="300" height="300" alt="โลโก้สมาคมศิษย์เก่า โรงเรียนสาธิตโกศาดิลก" decoding="async"></div><div class="alu-tx"><h2 id="alu-h1">${E(A.h1)}</h2><p class="alu-lead">${E(A.intro)}</p></div></div><dl class="alu-dl">${A.facts.map(f=>`<div><dt>${E(f[0])}</dt><dd>${E(f[1])}</dd></div>`).join('')}</dl></section>`
  +`<section class="alu-s" aria-labelledby="alu-h2"><h2 id="alu-h2">${E(A.h2)}</h2><ul class="alu-g">${A.support.map(f=>`<li><h3>${E(f[0])}</h3><p>${E(f[1])}</p></li>`).join('')}</ul></section>`
  +`<section class="alu-s alu-n" aria-label="หมายเหตุและข้อจำกัด"><div class="alu-nb"><h3>${E(A.noteT)}</h3><p>${E(A.note)}</p></div><div class="alu-nb"><h3>${E(A.limT)}</h3><ul>${A.lim.map(f=>`<li><b>${E(f[0])}</b> ${E(f[1])}</li>`).join('')}</ul></div></section></div>`}
+/* ===== หน้าบัตรประจำตัว (slug id-card-kds): เลย์เอาต์ใหม่ภายในหน้า · ส่วนหัวหน้า (h1 ชื่อหน้า) ยังใช้ของ pageView ตัวเดียวกับทุกหน้า ไม่แก้ =====
+   เนื้อหาอยู่ในค่าคงที่ IDC_TYPES / IDC_LANYARD / IDC_COLORS ด้านล่าง (ข้อความตามบรีฟ) · ไม่อ่าน/เขียนฐานข้อมูล ไม่แก้ส่วน CMS เดิม · ทำงานเฉพาะหน้าที่ slug อยู่ใน IDC_SLUGS หน้าอื่นเรนเดอร์เหมือนเดิม
+   เพิ่มรูปภายหลัง: ใส่ URL https:// ในช่อง img ของการ์ดบัตร / IDC_LANYARD · เพิ่มลิงก์ภายนอก: ใส่ URL https:// ในช่อง url ของการ์ดบัตร (เว้นว่าง = ปุ่มปิดใช้งานและแสดง "ยังไม่ได้ตั้งค่าลิงก์") */
+const IDC_SLUGS=['id-card-kds'];
+const isIdcPg=p=>!!p&&IDC_SLUGS.includes(p.slug);
+const IDC_TYPES=[
+ {id:'student',t:'บัตรประจำตัวนักเรียน',img:'',url:''},
+ {id:'teacher',t:'บัตรประจำตัวอาจารย์',img:'',url:''},
+ {id:'staff',t:'บัตรประจำตัวบุคลากร',img:'',url:''}];
+const IDC_LANYARD={h:'สายคล้องบัตรประจำตัว',tx:'โรงเรียนสาธิตโกศาดิลก กำหนดสายคล้องบัตรประจำตัว (ID Card Lanyard) เพื่อใช้ในการแสดงตัวตน ระดับชั้น ช่วยให้การยืนยันตัวตนภายในโรงเรียนเป็นไปอย่างรวดเร็วและปลอดภัย',img:''};
+/* body: ['p',ข้อความ] ย่อหน้า · ['h',หัวข้อย่อย] · ['ul',[รายการ]] · ['note',ข้อความ] กล่องหมายเหตุ */
+const IDC_COLORS=[
+ {id:'green',c:'#2E9E5B',n:'สีเขียว',t:'นักเรียนระดับมัธยมศึกษาตอนต้น (ม.1–ม.3)',body:[
+  ['p','ใช้สำหรับนักเรียนในระดับมัธยมศึกษาตอนต้น เพื่อแสดงสถานะสมาชิกในขณะที่อยู่ภายในบริเวณโรงเรียน'],
+  ['h','สิทธิ์การเข้าถึง'],
+  ['ul',['พื้นที่การเรียนรู้ตามตารางเรียน','ห้องเรียนประจำระดับชั้น','พื้นที่ส่วนกลางสำหรับนักเรียนทั่วไป']]]},
+ {id:'blue',c:'#2563C9',n:'สีน้ำเงิน',t:'นักเรียนระดับมัธยมศึกษาตอนปลาย (ม.4–ม.6)',body:[
+  ['p','ใช้สำหรับนักเรียนระดับมัธยมศึกษาตอนปลาย ซึ่งมีความรับผิดชอบและสิทธิ์การใช้งานพื้นที่เฉพาะตามแผนการเรียนมากขึ้น'],
+  ['h','สิทธิ์การเข้าถึง'],
+  ['ul',['ห้องเรียนเฉพาะสายการเรียน','ห้องปฏิบัติการตามหลักสูตร','พื้นที่กิจกรรมระดับมัธยมศึกษาตอนปลาย']]]},
+ {id:'red',c:'#D13438',n:'สีแดง',t:'สมาชิกสภานักเรียนและผู้นำกิจกรรมนักเรียน',body:[
+  ['p','ใช้สำหรับนักเรียนที่ได้รับแต่งตั้งให้ดำรงตำแหน่งผู้นำภายในโรงเรียน เช่น'],
+  ['ul',['คณะกรรมการสภานักเรียน','ประธานชมรม','คณะกรรมการกิจกรรมนักเรียน']],
+  ['h','สิทธิ์การเข้าถึงเพิ่มเติม'],
+  ['ul',['สิทธิ์เข้าถึงห้องกิจกรรมและพื้นที่ชมรมตามหน้าที่รับผิดชอบ','สิทธิ์ใช้งานพื้นที่ส่วนกลางนอกเวลาเรียนตามระเบียบโรงเรียน','ได้รับมอบหมายหน้าที่ดูแลและประสานงานกิจกรรม']],
+  ['note','หมายเหตุ: การเข้าถึงพื้นที่พิเศษยังคงอยู่ภายใต้การอนุมัติและระบบควบคุมของโรงเรียน']]},
+ {id:'yellow',c:'#F2B705',n:'สีเหลือง',t:'นักเรียนทุนการศึกษา',body:[
+  ['p','ใช้สำหรับนักเรียนที่ได้รับทุนสนับสนุนจากโรงเรียน เพื่อแสดงถึงความเป็นเลิศ ความสามารถ หรือศักยภาพที่ได้รับการสนับสนุนจาก KDS'],
+  ['h','ครอบคลุม'],
+  ['ul',['ทุนเรียนดีเด่น','ทุนความสามารถพิเศษ','ทุนสนับสนุนผู้ขาดแคลนทุนทรัพย์']],
+  ['h','สิทธิ์การเข้าถึงเพิ่มเติม'],
+  ['ul',['สิทธิ์เข้าร่วมโครงการพัฒนาศักยภาพนักเรียนทุน','การสนับสนุนด้านวิชาการหรือกิจกรรมเฉพาะตามประเภททุน','สิทธิ์เข้าถึงทรัพยากรสนับสนุนตามเงื่อนไขของทุน']]]},
+ {id:'gray',c:'#8C95A3',n:'สีเทา',t:'เจ้าหน้าที่และบุคลากรในโรงเรียน',body:[
+  ['p','ใช้สำหรับบุคลากรของโรงเรียนและสถาบันเทคโนโลยีโกศาดิลก'],
+  ['h','สิทธิ์การเข้าถึง'],
+  ['ul',['พื้นที่ปฏิบัติงานตามตำแหน่ง','ห้องพักครูและสำนักงาน','พื้นที่ควบคุมสำหรับบุคลากร']]]},
+ {id:'black',c:'#1A1A1A',n:'สีดำ',t:'คณะครู อาจารย์',body:[
+  ['p','ใช้สำหรับบุคลากรของโรงเรียนและสถาบันเทคโนโลยีโกศาดิลก'],
+  ['h','สิทธิ์การเข้าถึง'],
+  ['ul',['พื้นที่ปฏิบัติงานตามตำแหน่ง','ห้องพักครูและสำนักงาน','พื้นที่ควบคุมสำหรับบุคลากร']]]}];
+let IDC_OPEN='';
+const IDC_SVG={card:'<rect x="3" y="5" width="18" height="14" rx="2.5"/><circle cx="8.5" cy="11" r="2"/><path d="M5.8 16c.5-1.6 1.6-2.4 2.7-2.4s2.2.8 2.7 2.4M14 9.5h4M14 12.5h4M14 15.5h2.5"/>',lan:'<path d="M8 3c0 5 2 7 4 9m4-9c0 5-2 7-4 9"/><path d="M12 12v2.5"/><rect x="9" y="14.5" width="6" height="6.5" rx="1.4"/>',arr:'<path d="M6 9l6 6 6-6"/>'};
+function idcHtml(){
+ const sv=(k,w)=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"${w?` class="${w}"`:''}>${IDC_SVG[k]}</svg>`,
+ ph=(k,t)=>`<div class="idc-ph" aria-hidden="true">${sv(k)}<span>${E(t)}</span></div>`,
+ pic=(u,alt,k,t)=>okU(u)?`<img src="${E(u)}" alt="${E(alt)}" loading="lazy" decoding="async">`:ph(k,t),
+ card=x=>`<article class="idc-card"><div class="idc-im">${pic(x.img,x.t,'card','พื้นที่สำหรับรูปบัตร')}</div><h3>${E(x.t)}</h3>${okU(x.url)?`<a class="btn b" href="${E(x.url)}" target="_blank" rel="noopener noreferrer">เปิดลิงก์ ${ic('ext')}<span class="sr">(เปิดในแท็บใหม่)</span></a>`:`<button type="button" class="btn" disabled aria-disabled="true">เปิดลิงก์</button><p class="idc-un">ยังไม่ได้ตั้งค่าลิงก์</p>`}</article>`,
+ blk=b=>b[0]==='p'?`<p>${E(b[1])}</p>`:b[0]==='h'?`<h4 class="idl-h">${E(b[1])}</h4>`:b[0]==='ul'?`<ul>${b[1].map(i=>`<li>${E(i)}</li>`).join('')}</ul>`:b[0]==='note'?`<p class="idl-nt">${E(b[1])}</p>`:'',
+ col=x=>{const o=IDC_OPEN===x.id;return `<li class="idl-i${o?' on':''}" data-id="${E(x.id)}" style="--lc:${x.c}"><button type="button" class="idl-b" id="idb-${E(x.id)}" aria-expanded="${o}" aria-controls="idp-${E(x.id)}" onclick="idcTog('${E(x.id)}')"><span class="idl-t"><span class="idl-c">${E(x.n)}</span><span class="idl-n">${E(x.t)}</span></span>${sv('arr','idl-ar')}</button><div class="idl-p" id="idp-${E(x.id)}" role="region" aria-labelledby="idb-${E(x.id)}"${o?'':' hidden'}>${x.body.map(blk).join('')}</div></li>`},
+ L=IDC_LANYARD;
+ return `<div class="idc"><section class="idc-s" aria-labelledby="idc-h1"><h2 id="idc-h1">ประเภทบัตรประจำตัว</h2><div class="idc-g">${IDC_TYPES.map(card).join('')}</div></section>`
+ +`<section class="idc-s" aria-labelledby="idc-h2"><h2 id="idc-h2">${E(L.h)}</h2><p class="idc-lead">${E(L.tx)}</p><div class="idc-ly">${pic(L.img,'สายคล้องบัตรประจำตัว (ID Card Lanyard) ของโรงเรียนสาธิตโกศาดิลก','lan','พื้นที่สำหรับรูปสายคล้องบัตร')}</div></section>`
+ +`<section class="idc-s" aria-labelledby="idc-h3"><h2 id="idc-h3">รายละเอียดสายคล้องบัตร 6 สี</h2><ul class="idl">${IDC_COLORS.map(col).join('')}</ul></section></div>`}
+function idcTog(id){const r=document.querySelector('.idc');if(!r)return;IDC_OPEN=IDC_OPEN===id?'':id;r.querySelectorAll('.idl-i').forEach(c=>{const on=c.dataset.id===IDC_OPEN,b=c.querySelector('.idl-b'),p=c.querySelector('.idl-p');c.classList.toggle('on',on);b.setAttribute('aria-expanded',on?'true':'false');p.hidden=!on})}
 /* ===== หน้าทุนการศึกษา (slug scholarships-kds): จัดวางการ์ดทุนใหม่จากข้อมูลเดิมใน CMS โดยไม่เปลี่ยนข้อมูล =====
    อ่านจากส่วน "การ์ด" ของหน้า (ชื่อ c.t · คำอธิบาย c.d · ลิงก์ c.l ถ้ามี) · ชื่อภาษาอังกฤษ: บรรทัดที่เป็นอังกฤษล้วนใน c.t, ข้อความในวงเล็บท้ายชื่อ, หรือบรรทัดแรกของ c.d ถ้าเป็นอังกฤษล้วนและสั้น
    ไอคอน SVG เลือกจากคำในชื่อทุน (ไม่เจอคำจะใช้ไอคอนรางวัล) · ไม่ใช้รูป c.m / ไอคอนอัปโหลด · ถ้าไม่มีการ์ดในส่วนนั้น จะแสดงเหมือนเดิม · ไม่อ่าน/เขียนข้อมูลเพิ่มจากฐานข้อมูล */
@@ -496,7 +550,7 @@ function rlHtml(p){const all=p.sections||[];if(all.some(s=>s.grp))return '';cons
  const G=p.groups,hash=E(location.hash||'#/'),mob=!!(window.matchMedia&&matchMedia('(max-width:700px)').matches);
  const toc=ch.length>=3?`<details class="rlt"${mob?'':' open'}><summary>สารบัญ</summary><ul>${ch.map((c,i)=>`<li><a href="${hash}" onclick="return rlGo('rl-${i+1}')">${rlTi(c[0].text)}</a></li>`).join('')}</ul></details>`:'';
  return secsHtml(intro,G)+toc+ch.map((c,i)=>`<section class="rls" id="rl-${i+1}" tabindex="-1">${secsHtml(c,G)}</section>`).join('')}
-const secsRules=p=>{RPG=isRulesPg(p)||isSpecPg(p);RLP=isRulesPg(p)&&!isSpecPg(p);SPG=isSpecPg(p);PLN=isPlnPg(p);SCH=isSchPg(p);SCHK='';try{if(isAluPg(p))return aluHtml();if(isSvhPg(p)){const sh=svhHtml();if(sh)return sh}if(isHstPg(p)){const hs=hstSecs(p.sections);if(hs)return secsHtml(hs,p.groups)}if(isRulesPg(p)&&!isSpecPg(p)){const rh=rlHtml(p);if(rh)return rh}const u=SPG?specFind(p).used:null,all=p.sections||[],hide=new Set();if(SPG)all.forEach((s,i)=>{if(i&&(kvOf(s)||scOf(s))){const h=all[i-1];if(h&&h.type==='heading'&&/ค่านิยม|สี(ประจำ)?โรงเรียน|visual identity/i.test(h.text||''))hide.add(h)}});const fl=SPG?flFind(all.filter(s=>!(u&&u.has(s))&&!hide.has(s))):null;if(!(u&&u.size||hide.size||fl))return secsHtml(p.sections,p.groups);const out=[];all.forEach(s=>{if((u&&u.has(s))||hide.has(s))return;if(fl&&fl.used.has(s)){if(s===fl.first)out.push({id:s.id,type:'flower',st:s.st,grp:s.grp,fl:fl.d});return}out.push(s)});return secsHtml(out,p.groups)}finally{RPG=false;RLP=false;SPG=false;PLN=false;SCH=false;SCHK=''}};
+const secsRules=p=>{RPG=isRulesPg(p)||isSpecPg(p);RLP=isRulesPg(p)&&!isSpecPg(p);SPG=isSpecPg(p);PLN=isPlnPg(p);SCH=isSchPg(p);SCHK='';try{if(isAluPg(p))return aluHtml();if(isIdcPg(p))return idcHtml();if(isSvhPg(p)){const sh=svhHtml();if(sh)return sh}if(isHstPg(p)){const hs=hstSecs(p.sections);if(hs)return secsHtml(hs,p.groups)}if(isRulesPg(p)&&!isSpecPg(p)){const rh=rlHtml(p);if(rh)return rh}const u=SPG?specFind(p).used:null,all=p.sections||[],hide=new Set();if(SPG)all.forEach((s,i)=>{if(i&&(kvOf(s)||scOf(s))){const h=all[i-1];if(h&&h.type==='heading'&&/ค่านิยม|สี(ประจำ)?โรงเรียน|visual identity/i.test(h.text||''))hide.add(h)}});const fl=SPG?flFind(all.filter(s=>!(u&&u.has(s))&&!hide.has(s))):null;if(!(u&&u.size||hide.size||fl))return secsHtml(p.sections,p.groups);const out=[];all.forEach(s=>{if((u&&u.has(s))||hide.has(s))return;if(fl&&fl.used.has(s)){if(s===fl.first)out.push({id:s.id,type:'flower',st:s.st,grp:s.grp,fl:fl.d});return}out.push(s)});return secsHtml(out,p.groups)}finally{RPG=false;RLP=false;SPG=false;PLN=false;SCH=false;SCHK=''}};
 const pageView=(p,pv)=>{PVW=!!pv;PPL_PG=p.id;return `<div class="w sec${psC(p.id)}${isRulesPg(p)?' rules-pg':''}${isSpecPg(p)?' spec-pg':''}${isPlnPg(p)?' pln-pg':''}${isSchPg(p)?' sch-pg':''}"${psA(p.id)}>${pv?`<div class="msg">ตัวอย่าง: หน้านี้สถานะ${p.status==='published'?'เผยแพร่':'ฉบับร่าง'} · <a href="#/admin/pages/edit/${p.id}">กลับไปแก้ไข</a></div>`:''}${isSvhPg(p)?'':`<h1>${isRulesPg(p)?rulesHead(p.title):E(p.title)}</h1>`}${isSpecPg(p)?specTbl(p):''}${(isSvhPg(p)||isAluPg(p)||p.sections&&p.sections.length)?secsRules(p):'<p style="opacity:.6">ยังไม่ได้เพิ่มเนื้อหา</p>'}${cpPageSec(p.id)}${pplPageSec(p)}</div>`};
 const emptyPub=()=>'<div class="empty-pub"><h1>ยังไม่มีหน้าเว็บที่เผยแพร่</h1><p>เว็บไซต์นี้ยังไม่มีเนื้อหา กรุณากลับมาใหม่ภายหลัง</p></div>';
 /* ===== หน้าแรก: เนื้อหาเก็บใน settings.home (ฐานข้อมูลเดิม site/settings) ===== */
