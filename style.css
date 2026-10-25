@@ -498,8 +498,11 @@ body .hn>.sts:first-child{margin-top:0}
 .hn>.sts+.hin{margin-top:38px}
 /* สถิติหน้าแรก: White Minimal Cards — ไม่มีกรอบใหญ่ครอบ การ์ดขาว 4 ใบแยกกัน มุมโค้ง เงาบาง · ย้อนกลับ: style.css.bak-before-stats-cards */
 .stb{display:block}
-.stt{display:flex;flex-direction:column;gap:4px;margin:0 0 16px;padding:0;min-width:0}
-.sts .stt h2{margin:0;font-size:1.05rem;line-height:1.35}
+.stt{display:flex;flex-direction:column;gap:8px;margin:0 0 22px;padding:0;min-width:0}
+.sts .stt h2{margin:0;font-size:clamp(1.3rem,2.6vw,1.6rem);line-height:1.3;font-weight:700;color:var(--fg);overflow-wrap:break-word}
+.sts .stt h2::after{content:"";display:block;width:56px;height:3px;background:#7A1A22;margin-top:.4em;border-radius:2px}
+:root[data-theme="dark"] .sts .stt h2::after{background:var(--gold)}
+@media(prefers-color-scheme:dark){:root:not([data-theme]) .sts .stt h2::after{background:var(--gold)}}
 .stg{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px;padding:0;min-width:0}
 .stc{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:14px;padding:26px 16px 24px;min-width:0;text-align:center;background:var(--surface);border:1px solid color-mix(in srgb,var(--line) 35%,transparent);border-radius:16px;box-shadow:0 1px 3px #1F24300F,0 1px 2px #1F24300A}
 .sti{flex:0 0 auto;display:grid;place-items:center;width:52px;height:52px;border-radius:50%;font-size:1.5rem;color:var(--gold-text);background:color-mix(in srgb,var(--gold) 10%,var(--surface))}
