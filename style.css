@@ -1350,3 +1350,26 @@ html:has(.sch-pg){overflow-x:clip}
 #app.rv>.hn>:not(.sts){animation:rvIn .5s ease-out 560ms backwards}
 #app.rv>.hn>:not(.sts):nth-child(n+3){animation-delay:640ms}
 }
+
+/* ===== หน้าแรก: ข่าวสาร = ข่าวเด่น + ข่าวรอง · ประกาศ = กล่องเด่น + รายการข้อความ (ใช้สีและฟอนต์เดิม) · ย้อนกลับ: style.css.bak-before-newslayout ===== */
+.nwl{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:18px;align-items:stretch;min-width:0}
+.nwl.nwl1{grid-template-columns:minmax(0,1fr)}
+.nwl .nwx{min-width:0;gap:12px}
+.nwl .nwx>.nwr{flex:1 1 0}
+.nwmo{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:12px;margin-top:12px}
+.sec a.nwr:not(.btn):not(.card) .nwrb h3{-webkit-line-clamp:2}
+.anl{display:flex;flex-direction:column;gap:6px;min-width:0}
+.sec a.anf:not(.btn):not(.card){display:flex;flex-direction:column;gap:8px;min-width:0;padding:18px 20px;background:var(--surface);color:var(--fg);border:1px solid var(--line);border-left:4px solid var(--gold);border-radius:14px;text-decoration:none;transition:border-color .2s,box-shadow .2s}
+.sec a.anf:not(.btn):not(.card):hover{border-color:var(--gold);box-shadow:var(--shadow)}
+.sec a.anf:not(.btn):not(.card):focus-visible,.sec a.anr:not(.btn):not(.card):focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.anfd,.anid{font-size:.82rem;color:var(--muted)}
+.anf h3{margin:0;font-size:clamp(1.08rem,1.6vw,1.25rem);line-height:1.4;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.anfs{margin:0;color:var(--muted);font-size:.92rem;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.anx{display:flex;flex-direction:column;min-width:0}
+.sec a.anr:not(.btn):not(.card){display:flex;align-items:center;gap:12px;padding:12px 4px;color:var(--fg);text-decoration:none;border-bottom:1px solid var(--line);min-width:0}
+.sec a.anr:not(.btn):not(.card):last-child{border-bottom:0}
+.sec a.anr:not(.btn):not(.card):hover h3{color:var(--gold-text)}
+.anrb{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.anr h3{margin:0;font-size:1rem;line-height:1.4;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;transition:color .2s}
+@media(max-width:900px){.nwl{grid-template-columns:minmax(0,1fr)}}
+@media(prefers-reduced-motion:reduce){.sec a.anf:not(.btn):not(.card),.anr h3{transition:none}}
