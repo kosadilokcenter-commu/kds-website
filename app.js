@@ -327,7 +327,7 @@ const SCH_CD=/^เงื่อนไขทุน\s*[:：]?\s*/,schBul=x=>x.repla
 function schBenCard(i,name,en,L){L=L.map(x=>x.trim());while(L.length&&!L[0])L.shift();if(!en&&L.length&&schEn(L[0])&&L[0].length<=60)en=L.shift();
  const k=L.findIndex(x=>SCH_CD.test(x)),pre=(k<0?L:L.slice(0,k)).map(schBul).filter(Boolean),cd=k<0?'':[L[k].replace(SCH_CD,'')].concat(L.slice(k+1)).map(x=>x.trim()).filter(Boolean).join('\n');
  if(!name&&!pre.length&&!cd)return '';
- return `<article class="sch-bn"><span class="sch-no" aria-hidden="true">${i}</span><div class="sch-bb"><h3>${E(name)}</h3>${en?`<p class="sch-en">${E(en)}</p>`:''}${pre.length?`<ul>${pre.map(x=>`<li>${E(x)}</li>`).join('')}</ul>`:''}${k>=0?`<p class="sch-cd"><b>เงื่อนไขทุน:</b>${cd?' '+E(cd):''}</p>`:''}</div></article>`}
+ return `<article class="sch-bn"><div class="sch-bh"><span class="sch-no" aria-hidden="true">${i}</span><div class="sch-bt"><h3>${E(name)}</h3>${en?`<p class="sch-en">${E(en)}</p>`:''}</div></div>${pre.length?`<ul>${pre.map(x=>`<li>${E(x)}</li>`).join('')}</ul>`:''}${k>=0?`<p class="sch-cd"><b>เงื่อนไขทุน:</b>${cd?' '+E(cd):''}</p>`:''}</article>`}
 const schIsBen=s=>s&&((s.type==='text'&&/(^|\n)\s*เงื่อนไขทุน/.test(s.text||''))||(s.type==='cards'&&(s.items||[]).some(c=>c&&/(^|\n)\s*เงื่อนไขทุน/.test(c.d||''))));
 function schBenHtml(s){let n=0,out=[];if(s.type==='cards'){(s.items||[]).forEach(c=>{if(!c)return;const h=schSplit(schNum(c.t)),r=schBenCard(n+1,h.t,h.en,String(c.d||'').split(/\r?\n/));if(r){n++;out.push(r)}})}
  else String(s.text||'').split(/\r?\n\s*\r?\n/).forEach(b=>{const L=b.split(/\r?\n/).map(x=>x.trim()).filter(Boolean);if(!L.length)return;const h=schSplit(schNum(L[0])),r=schBenCard(n+1,h.t,h.en,L.slice(1));if(r){n++;out.push(r)}});
