@@ -1319,3 +1319,5 @@ footer .soc a:focus-visible{outline:3px solid #fff;outline-offset:3px}
 .sch-pg .sch-bl .sch-nb p{margin:0;font-size:.85rem;line-height:1.6;text-align:left;white-space:pre-line;overflow-wrap:break-word}
 .sch-pg .sch-bl .sch-nb b{font-weight:700}.sch-pg .sch-bl .sch-nb .sch-nw{color:var(--fg)}
 @media(max-width:599px){.sch-pg .sch-bl .sch-rd{margin-left:calc(var(--no) + var(--gp))}.sch-pg .sch-bl .sch-nb{padding:14px}}
+/* หัวข้อ: ล้างพื้นหลัง/ขอบ/เงา/ส่วนตกแต่งของทุกชั้นที่ห่อหัวข้อภายใน .sch-pg (ไม่แตะพื้นหลังส่วนกลางหรือหน้าอื่น) */
+.sch-pg :is(div,section,header,article):has(.sch-hd):not(:has(.sch-bn,.sch-c,.sch-nb)),.sch-pg :is(div,section,header,article):has(.sch-hd):not(:has(.sch-bn,.sch-c,.sch-nb))::before,.sch-pg :is(div,section,header,article):has(.sch-hd):not(:has(.sch-bn,.sch-c,.sch-nb))::after,.sch-pg .sch-hd,.sch-pg .sch-hd::before,.sch-pg .sch-hd::after,.sch-pg .sch-ht,.sch-pg .sch-ht h2{background:transparent!important;background-image:none!important;border:0!important;box-shadow:none!important}
