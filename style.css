@@ -1568,7 +1568,7 @@ html:has(.sch-pg){overflow-x:clip}
 
 /* ===== หน้าบ้าน: ตารางเรียน (.ttp) ดีไซน์ใหม่ · ใช้ตัวแปรสี/ตัวอักษรเดิมของเว็บ (สีเลือดหมู = --kds-primary)
    ขอบเขต: ทุกกฎขึ้นต้นด้วย .ttp (มีเฉพาะ ctView) จึงไม่กระทบตารางฝั่งหลังบ้าน (.ttw/.ttt ในหน้าจัดตาราง) และตารางสอนกลุ่มสาระ (.sgv)
-   เดสก์ท็อป = ตาราง (.ttw) · มือถือ (≤760px) = การ์ดรายวัน (.ttd) สร้างจากข้อมูลเดียวกัน ===== */
+   ทุกขนาดหน้าจอ = ตารางรายสัปดาห์ (.ttw) · ≤1023px เลื่อนแนวนอนภายในกรอบ ===== */
 .ttp .ttbar{gap:0;padding:4px 20px;margin:0 0 24px;border-radius:14px;background:var(--surface);box-shadow:0 2px 10px #1F243014}
 .ttp .ttf{display:grid;grid-template-columns:170px minmax(0,1fr);align-items:center;gap:12px;padding:12px 0}
 .ttp .ttf+.ttf{border-top:1px solid var(--line)}
@@ -1589,25 +1589,13 @@ html:has(.sch-pg){overflow-x:clip}
 .ttp .ttt td{text-align:center;vertical-align:middle;background:color-mix(in srgb,var(--kds-primary) 3%,var(--surface))}
 .ttp .ttt td.ttx{background:var(--surface)}
 .ttp .tn{display:block;font-size:.9rem;font-weight:700;line-height:1.4;overflow-wrap:anywhere}
-.ttp .ttt small,.ttp .ttd small{display:block;color:var(--muted);font-size:.8rem;line-height:1.5;overflow-wrap:anywhere}
+.ttp .ttt small{display:block;color:var(--muted);font-size:.8rem;line-height:1.5;overflow-wrap:anywhere}
 .ttp .ttt thead small{margin-top:2px;font-size:.72rem;font-weight:400}
 .ttp .ttt td small{margin-top:2px;font-size:.76rem;line-height:1.4}
-.ttp .ttd{display:none}
-.ttp .tdc{overflow:hidden;background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:0 2px 10px #1F243014}
-.ttp .tdc h3{margin:0;padding:10px 16px;font-size:1.05rem;line-height:1.5;color:var(--kds-primary-text);background:color-mix(in srgb,var(--kds-primary) 7%,var(--surface));border-bottom:2px solid var(--kds-primary)}
-.ttp .tdc ol{list-style:none;margin:0;padding:0}
-.ttp .tdc li{display:grid;grid-template-columns:96px minmax(0,1fr);gap:12px;padding:12px 16px;border-top:1px solid var(--line)}
-.ttp .tdc li:first-child{border-top:0}
-.ttp .tdp,.ttp .tds{display:grid;align-content:start;gap:2px;min-width:0}
-.ttp .tdp b{color:var(--kds-primary-text)}
-.ttp .tdp small{white-space:nowrap}
-.ttp .tde{margin:0;padding:12px 16px;color:var(--muted)}
+/* แท็บเล็ต/มือถือ (≤1023px): ใช้ตารางรายสัปดาห์เดียวกับคอมพิวเตอร์ ความกว้างตามจำนวนคาบจริง (--n) ช่องคาบกว้างอย่างน้อย 112px เลื่อนแนวนอนภายในกรอบตารางเท่านั้น · คอลัมน์วันติดซ้ายขณะเลื่อน (กฎ sticky เดิม) */
 @media(max-width:1023px){
-.ttp .ttw{display:none}
-.ttp .ttd{display:grid;gap:14px}
-}
-@media(min-width:640px) and (max-width:1023px){
-.ttp .ttd{grid-template-columns:repeat(2,minmax(0,1fr));align-items:start}
+.ttp .ttw{overflow-x:auto;overflow-y:hidden;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch;max-width:100%}
+.ttp .ttt{min-width:calc(76px + var(--n,8)*112px)}
 }
 @media(max-width:760px){
 .ttp .ttbar{padding:2px 14px}
@@ -1616,5 +1604,4 @@ html:has(.sch-pg){overflow-x:clip}
 .ttp .ttbar .cuh.tg{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
 .ttp .ttbar .cuh.pl{display:grid;grid-template-columns:minmax(0,1fr)}
 .ttp .tth{font-size:1.1rem}
-.ttp .tdc li{grid-template-columns:96px minmax(0,1fr);gap:10px;padding:12px 14px}
 }
