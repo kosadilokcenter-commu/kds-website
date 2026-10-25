@@ -1270,3 +1270,28 @@ footer .soc a:focus-visible{outline:3px solid #fff;outline-offset:3px}
 .nwcr input{max-width:100%}
 .nwcm .nwcr .tag{white-space:nowrap}
 @media(max-width:640px){.nwcs{gap:6px}.nwcf{padding:8px 13px;font-size:.88rem}.nwcr input{width:100%}}
+/* ===== หน้าทุนการศึกษา (scholarships-kds): หัวข้อพื้นขาว + การ์ดทุนแนวนอน · ใช้เฉพาะ .sch-pg ===== */
+.sch-pg{--sc:#7A1A22;--ink:#262B36;--mut:#566070;--ln:#E3E6EC;background:#fff;color:var(--ink);border-radius:16px}
+.sch-pg .sch-hd{display:flex;align-items:center;gap:16px;margin:0 0 26px;padding:0;background:none;border:0;box-shadow:none}
+.sch-pg .sch-ht{min-width:0}
+.sch-pg h1,.sch-pg h2{margin:0;padding:0;background:none;border:0;box-shadow:none;color:var(--sc);font-weight:700;line-height:1.3;letter-spacing:0;text-align:left;overflow-wrap:break-word}
+.sch-pg h1{font-size:clamp(1.5rem,4.2vw,2.1rem)}
+.sch-pg h2{font-size:clamp(1.25rem,3.4vw,1.6rem)}
+.sch-pg h1::after{display:none}
+.sch-pg .sch-hd+*,.sch-pg>*+.sch-hd{margin-top:0}
+.sch-pg>.sch-hd:not(:first-child){margin-top:34px}
+.sch-pg .sch-ic{display:inline-flex;align-items:center;justify-content:center;flex:none;width:52px;height:52px;border-radius:50%;background:var(--sc);color:#fff}
+.sch-pg .sch-ic svg{width:27px;height:27px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.sch-pg .sch-en{margin:2px 0 0;color:var(--mut);font-size:.88rem;line-height:1.4}
+.sch-pg .sch-g{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;align-items:stretch;margin:0 0 8px}
+.sch-pg .sch-c{display:flex;align-items:flex-start;gap:16px;box-sizing:border-box;min-width:0;padding:20px;background:#fff;color:var(--ink);border:1px solid var(--ln);border-radius:16px;box-shadow:0 2px 10px rgba(31,36,48,.07);text-decoration:none}
+.sch-pg a.sch-c{transition:box-shadow .2s,border-color .2s}
+.sch-pg a.sch-c:hover{box-shadow:0 6px 18px rgba(31,36,48,.13);border-color:var(--sc)}
+.sch-pg a.sch-c:focus-visible{outline:2px solid var(--sc);outline-offset:3px}
+.sch-pg .sch-c .sch-ic{width:48px;height:48px}.sch-pg .sch-c .sch-ic svg{width:25px;height:25px}
+.sch-pg .sch-bd{flex:1 1 auto;min-width:0}
+.sch-pg .sch-c h3{margin:0;color:var(--ink);font-size:1.08rem;font-weight:700;line-height:1.35;overflow-wrap:break-word}
+.sch-pg .sch-c .sch-en{margin:2px 0 0;font-size:.82rem}
+.sch-pg .sch-d{margin:10px 0 0;max-width:none;color:var(--mut);font-size:.92rem;line-height:1.65;text-align:left;white-space:pre-line;overflow-wrap:break-word}
+@media(max-width:959px){.sch-pg .sch-g{grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}}
+@media(max-width:599px){.sch-pg .sch-g{grid-template-columns:minmax(0,1fr)}.sch-pg .sch-c{padding:16px;gap:14px}.sch-pg .sch-hd{gap:12px}.sch-pg .sch-hd .sch-ic{width:46px;height:46px}.sch-pg .sch-hd .sch-ic svg{width:24px;height:24px}}
