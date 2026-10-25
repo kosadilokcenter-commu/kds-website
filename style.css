@@ -1651,3 +1651,42 @@ html:has(.sch-pg){overflow-x:clip}
 .cu .cupc{padding:14px;gap:10px}
 .cu .cupi{width:44px;height:44px}
 }
+
+/* ===== หน้าบ้าน: ตารางสอนกลุ่มสาระการเรียนรู้ (.sgv) ดีไซน์ใหม่ · ใช้ตัวแปรสีเดิมของเว็บ (--kds-primary #7A1A22 · --kds-secondary #8D99AE)
+   ขอบเขต: ทุกกฎขึ้นต้นด้วย .sgv (มีเฉพาะ sgvView ที่ #/p/<slug> ของส่วนตารางสอน) · ไม่แก้ .ttp (ตารางเรียน) และ .ttw/.ttt ฝั่งหลังบ้าน
+   คาบเป็นคอลัมน์ วันเป็นแถว เหมือนหน้าตารางเรียน · ตารางเลื่อนแนวนอนภายในกรอบ .ttw เท่านั้น ===== */
+.sgv .sgvbar{gap:0;padding:4px 20px;margin:0 0 24px;border-radius:14px;background:var(--surface);box-shadow:0 2px 10px #1F243014}
+.sgv .ttf{display:grid;grid-template-columns:170px minmax(0,1fr);align-items:center;gap:12px;padding:12px 0;min-width:0}
+.sgv .ttf+.ttf{border-top:1px solid var(--line)}
+.sgv .ttl{font-size:.85rem;font-weight:700;color:var(--kds-primary-text)}
+.sgv .sgvbar .cuh{margin:0;display:flex;flex-wrap:wrap;gap:8px}
+.sgv .sgvbar .btn.s{min-height:40px;padding:7px 16px}
+.sgv .sgvbar select{width:100%;max-width:440px;min-height:40px}
+.sgv .sgvhd{margin:0 0 12px}
+.sgv .sgvh{margin:0;padding-left:12px;border-left:4px solid var(--kds-primary);font-size:1.25rem;line-height:1.5;overflow-wrap:anywhere}
+.sgv .sgvs{margin:2px 0 0;padding-left:16px;color:var(--muted);font-size:.9rem}
+.sgv .ttw{margin:0;overflow-x:auto;overflow-y:hidden;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch;background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:0 2px 10px #1F243014}
+.sgv .sgt{width:100%;min-width:calc(88px + var(--n,8)*88px);table-layout:fixed;border-collapse:separate;border-spacing:0}
+.sgv .sgt th,.sgv .sgt td{border:0;border-right:1px solid var(--line);border-bottom:1px solid var(--line);padding:10px 6px;line-height:1.45;text-align:center;vertical-align:middle;overflow-wrap:anywhere}
+.sgv .sgt tr>:last-child{border-right:0}
+.sgv .sgt tbody tr:last-child>*{border-bottom:0}
+.sgv .sgt thead th{font-size:.88rem;font-weight:700;white-space:normal;color:var(--kds-primary-text);background:color-mix(in srgb,var(--kds-primary) 7%,var(--surface));border-bottom:2px solid var(--kds-primary)}
+.sgv .sgt thead th:first-child,.sgv .sgt tbody th{position:sticky;left:0;z-index:1;width:88px;padding-left:4px;padding-right:4px;white-space:nowrap;font-weight:700;color:var(--kds-primary-text);background:color-mix(in srgb,var(--kds-primary) 7%,var(--surface))}
+.sgv .sgt td{background:color-mix(in srgb,var(--kds-primary) 3%,var(--surface))}
+.sgv .sgt td.ttx{background:var(--surface)}
+.sgv .sgt small{display:block;margin-top:2px;color:var(--muted);font-size:.76rem;line-height:1.4;overflow-wrap:anywhere}
+.sgv .sgt thead small{font-size:.72rem;font-weight:400}
+.sgv .tn{display:block;font-size:.9rem;font-weight:700;line-height:1.4;overflow-wrap:anywhere}
+.sgv .ttk+.ttk{margin-top:8px;padding-top:8px;border-top:1px dashed var(--kds-secondary)}
+.sgv .sgt small.kc{display:inline-block;margin-top:4px;padding:1px 8px;border-radius:8px;font-weight:700;color:var(--kds-secondary-text);background:color-mix(in srgb,var(--kds-secondary) 18%,var(--surface))}
+@media(max-width:1023px){.sgv .sgt{min-width:calc(88px + var(--n,8)*112px)}}
+@media(max-width:760px){
+.sgv .sgvbar{padding:2px 14px}
+.sgv .ttf{grid-template-columns:minmax(0,1fr);gap:8px;padding:12px 0}
+.sgv .sgvbar .cuh.tg{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+.sgv .sgvbar .cuh.gg{display:grid;grid-template-columns:repeat(4,minmax(0,1fr))}
+.sgv .sgvbar .btn.s{padding:7px 8px}
+.sgv .sgvh{font-size:1.1rem}
+.sgv .sgt{min-width:calc(76px + var(--n,8)*112px)}
+.sgv .sgt thead th:first-child,.sgv .sgt tbody th{width:76px}
+}
