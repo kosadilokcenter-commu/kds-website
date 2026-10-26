@@ -1629,6 +1629,7 @@ html:has(.sch-pg){overflow-x:clip}
 .cu .cupg{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px}
 .cu .cupc{display:flex;flex-direction:column;align-items:flex-start;gap:12px;min-width:0;padding:16px;font:inherit;color:inherit;text-align:left;cursor:pointer;transition:border-color .15s,box-shadow .15s}
 .cu .cupc:hover{border-color:var(--kds-secondary);box-shadow:0 4px 14px #1F24301F}
+.cu .cupg.cupg1{grid-template-columns:minmax(0,1fr)}
 .cu .cupt{display:grid;gap:2px;min-width:0}
 .cu .cupt small{color:var(--muted);font-size:.85rem;font-weight:700}
 .cu .cupt b{line-height:1.5;overflow-wrap:anywhere}
