@@ -809,6 +809,12 @@ function sgvView(){const G=sgxGrps().filter(fqIsPub);
 ${rows.length?`<div class="ttw"><table class="ttt sgt" style="--n:${cfg.n}"><caption class="sr">${E('ตารางสอน '+ttl)}</caption><thead><tr><th scope="col">วัน</th>${head}</tr></thead><tbody>${body}</tbody></table></div>`:`<p class="empty-ev">${nCrs?'ยังไม่มีตารางสอนของกลุ่มสาระนี้ในภาคเรียนที่ '+SGV.t+(SGV.g?' ม.'+SGV.g:'')+(lt?' ('+flName(SGV.l)+')':''):'ยังไม่มีข้อมูลรายวิชาของกลุ่มสาระนี้'}</p>`}${sgvReg(SGV.gid)}</div>`}
 function sgxAdmin(){const T=SGX.tab;return `<h1>กลุ่มสาระ: กำหนดวิชาและตารางสอน</h1>${dbBanner()}${secPageBox('sgsched','ตารางสอนกลุ่มสาระการเรียนรู้','sgsched','sgxMakePage')}<nav class="cuh" aria-label="ส่วนของระบบ"><button type="button" class="btn s${T==='assign'?' b':''}" aria-pressed="${T==='assign'}" onclick="sgxTab('assign')">1. กำหนดกลุ่มสาระให้รายวิชา</button><button type="button" class="btn s${T==='sched'?' b':''}" aria-pressed="${T==='sched'}" onclick="sgxTab('sched')">2. ตารางสอนกลุ่มสาระ</button></nav>${T==='sched'?sgxSched():sgxAssign()}`}
 /* ---------- หน้าเว็บ (ผู้เข้าชม): #/timetable/<ม.1–6>/<ภาค> หรือส่วน "ตารางเรียน" ในหน้า CMS · เห็นเฉพาะตารางที่เผยแพร่ ทีมงานเห็นฉบับร่างพร้อมป้าย ---------- */
+/* ช่องวิชาในตารางเรียน: แตะ/กดเพื่อดูชื่อวิชาเต็ม + รหัส วัน/คาบ ห้อง ครู (อ่านจาก data-* ของปุ่ม .ttc ไม่แตะข้อมูลตารางหรือทะเบียนวิชา) · ใช้ #md/.modal เดิม ปิดด้วยปุ่ม ✕ / คลิกพื้นหลัง / Esc */
+let ctvLast=null;
+function ctvOpen(el){const d=el&&el.dataset;if(!d)return;ctvLast=el;const r=(l,v)=>v?`<div class=\"ctvr\"><dt>${l}</dt><dd>${E(v)}</dd></div>`:'';
+ $('md').innerHTML=`<div class=\"modal wide ctvm\" role=\"dialog\" aria-modal=\"true\" aria-labelledby=\"ctvt\" onclick=\"if(event.target===this)ctvClose()\"><div><button type=\"button\" class=\"mx\" aria-label=\"ปิดรายละเอียดวิชา\" onclick=\"ctvClose()\">${ic('close')}</button><h3 id=\"ctvt\">${E(d.nm)}</h3><dl class=\"ctvl\">${r('รหัสวิชา',d.cd)}${r('วัน/คาบ',d.d+' คาบ '+d.p+(d.tm?' ('+d.tm+')':''))}${r('ห้องเรียน',d.rm)}${r('ครูผู้สอน',d.tc)}</dl></div></div>`;
+ const b=document.querySelector('#md .mx');if(b)b.focus()}
+function ctvClose(){calClose();const e=ctvLast;ctvLast=null;if(e&&document.contains(e))e.focus()}
 function ctView(){const g=CTV.g=ctOkG(CTV.g),t=CTV.t=ctOkT(CTV.t),adm=Auth.canAccessAdmin(),cfg=ctCfg(),P=g>=4?ctPlans():[];if(g>=4&&!P.some(m=>m.id===CTV.p))CTV.p=P[0]?P[0].id:'';const pid=g>=4?CTV.p:'',it=g>=4&&!pid?null:ctTab(g,t,pid),lbl=g>=4&&!pid?'':ctRoomLbl(g,pid),
  gb=CT_G.map(n=>`<button type="button" class="btn s${n===g?' b':''}" aria-pressed="${n===g}" onclick="ctvSel('g',${n})">ม.${n}</button>`).join(''),tb=CT_T.map(n=>`<button type="button" class="btn s${n===t?' b':''}" aria-pressed="${n===t}" onclick="ctvSel('t',${n})">ภาคเรียนที่ ${n}</button>`).join(''),
  pb=g>=4&&P.length?`<div class="cuh pl" role="group" aria-label="เลือกห้องเรียน/แผนการเรียน">${P.map(m=>`<button type="button" class="btn s${m.id===pid?' b':''}" aria-pressed="${m.id===pid}" data-id="${E(m.id)}" onclick="ctvSel('p',this.dataset.id)">${E('ม.'+g+'/'+m.code+' — '+m.name)}</button>`).join('')}</div>`:'',
@@ -817,9 +823,8 @@ function ctView(){const g=CTV.g=ctOkG(CTV.g),t=CTV.t=ctOkT(CTV.t),adm=Auth.canAc
  if(!it||(!it.pub&&!adm))return `<div class="fq ttp">${bar}<div class="empty-ev"><b>ยังไม่มีตารางเรียน ${E(lbl||'ม.'+g)} ภาคเรียนที่ ${t}</b><br>${adm?'<a href="#/admin/curriculum">จัดตารางเรียนที่หลังบ้าน</a>':'กรุณากลับมาใหม่ภายหลัง'}</div></div>`;
  const cells=it.cells||{},crs=ctCrs(),tm=p=>ctTime(cfg,p),
  cell=(dk,p)=>{const c=cells[dk+'_'+p];if(!c)return null;const x=c.cid&&crs.find(k=>k.id===c.cid);return {nm:x?x.name:c.name,cd:x?x.code:c.code,rm:c.room||it.home||'',tc:c.teacher||''}},
- det=c=>`${c.cd?`<small>${E(c.cd)}</small>`:''}${c.rm?`<small>ห้อง ${E(c.rm)}</small>`:''}${c.tc?`<small>${E(c.tc)}</small>`:''}`,
- head=Array.from({length:cfg.n},(_,p)=>`<th scope="col">คาบ ${p+1}${tm(p)?'<small>'+E(tm(p))+'</small>':''}</th>`).join(''),
- rows=CT_D.map(([dk,dn])=>`<tr><th scope="row">${dn}</th>${Array.from({length:cfg.n},(_,p)=>{const c=cell(dk,p);return c?`<td><b class="tn">${E(c.nm)}</b>${det(c)}</td>`:'<td class="ttx"></td>'}).join('')}</tr>`).join(''),
+  head=Array.from({length:cfg.n},(_,p)=>`<th scope="col">คาบ ${p+1}${tm(p)?'<small>'+E(tm(p))+'</small>':''}</th>`).join(''),
+ rows=CT_D.map(([dk,dn])=>`<tr><th scope="row">${dn}</th>${Array.from({length:cfg.n},(_,p)=>{const c=cell(dk,p);if(!c)return '<td class="ttx"></td>';const tt=tm(p);return `<td><button type="button" class="ttc" aria-haspopup="dialog" title="${E(c.nm)}" aria-label="${E((c.cd?c.cd+' ':'')+c.nm+' '+dn+' คาบ '+(p+1)+' แตะเพื่อดูรายละเอียด')}" data-nm="${E(c.nm)}" data-cd="${E(c.cd||'')}" data-rm="${E(c.rm)}" data-tc="${E(c.tc)}" data-d="${E(dn)}" data-p="${p+1}" data-tm="${E(tt)}" onclick="ctvOpen(this)">${c.cd?`<b class="tn">${E(c.cd)}</b><span class="tnm">${E(c.nm)}</span>`:`<b class="tn tnn">${E(c.nm)}</b>`}</button></td>`}).join('')}</tr>`).join(''),
  ttl='ตารางเรียน '+lbl+' ภาคเรียนที่ '+t;
  return `<div class="fq ttp">${bar}${it.pub?'':'<div class="msg er">ฉบับร่าง — ผู้เข้าชมทั่วไปยังไม่เห็นตารางนี้ (เปิดเผยแพร่ได้ที่หลังบ้าน)</div>'}<div class="tthd"><h2 class="tth">${E(ttl)}</h2></div><div class="ttw"><table class="ttt" style="--n:${cfg.n}"><caption class="sr">${E(ttl)}</caption><thead><tr><th scope="col">วัน</th>${head}</tr></thead><tbody>${rows}</tbody></table></div></div>`}
 PUB.timetable=(a,b)=>{if(a)CTV.g=ctOkG(a);if(b)CTV.t=ctOkT(b);return `<div class="w sec"><p><a class="bk" href="#/">← กลับหน้าแรก</a></p><h1>ตารางเรียน</h1>${ctView()}</div>`};
@@ -1421,14 +1426,14 @@ const pplCard=p=>{const ph=okU(p.photo)?p.photo:'',nm=pplName(p);return `<div cl
 /* แสดงตามประเภท (ลำดับตามหลังบ้าน) → ภายในประเภทแยกตามกลุ่มสาระ (ลำดับตามหลังบ้าน) · กลุ่มที่ปิดใช้งานหรือไม่มี → "ไม่ระบุกลุ่มสาระ" · คณะผู้บริหารแสดงแบบไม่แบ่งกลุ่ม */
 /* ดีไซน์หน้า #/p/people-kds (.ppl-pg): ใช้เฉพาะหน้าที่ slug อยู่ใน PPL_SLUGS · หน้าอื่นที่มีส่วนบุคลากรยังได้ markup เดิมทุกประการ · ไอคอนกลุ่มสาระเลือกจาก id มาตรฐาน (pg_*) หรือคำในชื่อกลุ่ม · ไม่ตรงเลย = ไอคอนทั่วไป (ไม่เดากลุ่ม) · ไม่แก้ข้อมูล/การจัดกลุ่ม */
 const PPL_SLUGS=['people-kds'],isPplPg=p=>!!p&&PPL_SLUGS.includes(p.slug),pplKds=()=>isPplPg(pgById(PPL_PG));
-const PPL_GI={th:'<path d="M2 4h6a4 4 0 014 4v12a3 3 0 00-3-3H2z"/><path d="M22 4h-6a4 4 0 00-4 4v12a3 3 0 013-3h7z"/>',
+const PPL_GI={th:'<path d="M4 3.5h12.5a2 2 0 012 2V20H6.5a2.5 2.5 0 01-2.5-2.5z"/><path d="M4 17.5A2.5 2.5 0 016.5 15h12"/><circle cx="9.3" cy="11.6" r="1.5"/><path d="M10.8 11.6V8.6a2 2 0 012-2h.2a2 2 0 012 2v4.6"/>',
  ma:'<rect x="5" y="2.5" width="14" height="19" rx="2"/><path d="M8.5 6.5h7M9 11h.01M12 11h.01M15 11h.01M9 14.5h.01M12 14.5h.01M15 14.5h.01M9 18h.01M12 18h.01M15 18h.01"/>',
  fl:'<path d="m5 8 6 6"/><path d="m4 14 6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="m22 22-5-10-5 10"/><path d="M14 18h6"/>',
- so:'<path d="M3 9.5L12 4l9 5.5"/><path d="M5.5 10v8M10 10v8M14 10v8M18.5 10v8"/><path d="M3 20.5h18"/>',
+ so:'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3.2 3 3.2 15 0 18M12 3c-3.2 3-3.2 15 0 18"/>',
  sc:'<circle cx="12" cy="12" r="1.2"/><path d="M20.2 20.2c2-2 0-7.4-4.5-11.9C11.2 3.8 5.8 1.8 3.8 3.8c-2 2-.02 7.4 4.5 11.9 4.5 4.5 9.9 6.5 11.9 4.5z"/><path d="M15.7 15.7c4.5-4.5 6.5-9.9 4.5-11.9-2-2-7.4 0-11.9 4.5-4.5 4.5-6.5 9.9-4.5 11.9 2 2 7.4 0 11.9-4.5z"/>',
  wk:'<path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.8-3.8a6 6 0 01-7.9 7.9l-6.9 6.9a2.1 2.1 0 01-3-3l6.9-6.9a6 6 0 017.9-7.9l-3.8 3.8z"/>',
  ar:'<path d="M12 21.5a9.5 9.5 0 110-19c5.2 0 9.5 3.4 9.5 7.6 0 2.9-2.3 3.9-4.3 3.9H15a2 2 0 00-1.4 3.4c.8.9.4 4.1-1.6 4.1z"/><circle cx="7.5" cy="11" r="1"/><circle cx="10.8" cy="7" r="1"/><circle cx="16" cy="8" r="1"/>',
- he:'<path d="M6.5 6.5v11M17.5 6.5v11M3 9v6M21 9v6M6.5 12h11"/>',
+ he:'<circle cx="14.5" cy="4.5" r="1.8"/><path d="M13 8.5l-3 3.5 3.5 2.5-1.5 5.5M10 12l-3.5 1M13 8.5l3.5 2.5 2.5-.5M13.5 14.5l3.5 2.5 2.5-.5"/>',
  ac:'<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20v-1.5a4.5 4.5 0 014.5-4.5h4a4.5 4.5 0 014.5 4.5V20"/><path d="M16 4.6a3.5 3.5 0 010 6.8M21.5 20v-1.5a4.5 4.5 0 00-3-4.2"/>',
  df:'<path d="M22 10L12 5 2 10l10 5 10-5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/>',
  nn:'<path d="M3 7a2 2 0 012-2h4l2 2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>'};
