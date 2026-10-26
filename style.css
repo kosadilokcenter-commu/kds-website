@@ -1678,6 +1678,11 @@ html:has(.sch-pg){overflow-x:clip}
 .sgv .sgreg{margin-top:32px;min-width:0}
 @media(min-width:761px){.sgv .sgreg .cqw{background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:0 2px 10px #1F243014}.sgv .sgr{width:100%;border-collapse:separate;border-spacing:0}.sgv .sgr th,.sgv .sgr td{padding:10px 14px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line);overflow-wrap:anywhere}.sgv .sgr thead th{font-size:.88rem;white-space:nowrap;color:var(--kds-primary-text);background:color-mix(in srgb,var(--kds-primary) 7%,var(--surface));border-bottom:2px solid var(--kds-primary)}.sgv .sgr tbody tr:last-child td{border-bottom:0}.sgv .sgr tbody tr:nth-child(even) td{background:color-mix(in srgb,var(--kds-primary) 3%,var(--surface))}}
 @media(max-width:760px){.sgv .sgr td,.sgv .sgr tbody tr:last-child td{overflow-wrap:anywhere;border-bottom:0}}
+/* ช่องค้นหา/ตัวกรองของทะเบียน (.sgrbar) · ใช้ .sgvbar/.ttf/.cuh/.btn.s เดิมของหน้า · เฉพาะ .sgv */
+.sgv .sgrbar{margin:0 0 16px}
+.sgv .sgrbar input[type=search]{box-sizing:border-box;width:100%;max-width:440px;min-height:40px;margin:0;padding:8px 14px;font:inherit}
+.sgv .sgreg .empty-ev .btn{margin:8px 0 0}
+@media(max-width:600px){.sgv .sgrbar input[type=search]{max-width:none}}
 /* ความกว้างคอลัมน์คาบเท่ากันทุกคอลัมน์ + ความสูงขั้นต่ำของแถววันเท่ากันทุกวัน (วันที่ไม่มีคาบคงขนาดเดียวกับวันอื่น ไม่หดตามข้อมูล) · เฉพาะ .sgv */
 .sgv .sgt thead th:not(:first-child){width:calc((100% - 88px)/var(--n,8))}
 .sgv .sgt tbody tr{height:120px}

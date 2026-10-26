@@ -768,12 +768,31 @@ const sgxMakePage=()=>secPageMake('sgsched','ตารางสอนกลุ�
    ผู้เข้าชมเห็นเฉพาะกลุ่มสาระที่เผยแพร่ + ตารางเรียนที่ pub === true (แม้เป็นทีมงานก็แสดงเท่านี้ — ดูฉบับร่างได้ที่หลังบ้าน) · ไม่แสดงชื่อครู ===== */
 const SGV={gid:'',t:1,g:0,l:''};
 function sgvSel(k,v){SGV[k]=k==='l'?flOk(v):k==='gid'?String(v):k==='t'?ctOkT(v):(CT_G.includes(+v)?+v:0);render()}
-/* ===== ทะเบียนรหัสวิชาและสาระการเรียนรู้ (ท้ายหน้าตารางสอน #/p/<slug>) · อ่านจาก settings.ctcourses ชุดเดิม (ไม่สร้างข้อมูลใหม่) · กรองเฉพาะรายวิชาที่ sg ตรงกับกลุ่มสาระที่เลือกในหน้า (SGV.gid) · วิชาที่ไม่มี sg ไม่แสดงในทะเบียนของกลุ่มใด (ไม่เดา) · ระดับ/ชั้นปีได้จากชั้น g (ม.1–3 = ตอนต้น · ม.4–6 = ตอนปลาย) · สาระการเรียนรู้ = ชื่อกลุ่มสาระที่เผยแพร่ตาม sg (ไม่มี/ไม่พบ = "ยังไม่ระบุ" ไม่เดา) · รหัสเดียวกันในหลายภาคเรียน/แผนรวมเป็นแถวเดียวต่อชั้น · วิชาที่ไม่มีรหัสไม่อยู่ในทะเบียน ===== */
-function sgvReg(gid){const gm=new Map(sgxGrps().filter(fqIsPub).map(x=>[x.id,x.name])),M=new Map();
+/* ===== ทะเบียนรหัสวิชาและสาระการเรียนรู้ (ท้ายหน้าตารางสอน #/p/<slug>) · อ่านจาก settings.ctcourses ชุดเดิม (ไม่สร้างข้อมูลใหม่) · กรองเฉพาะรายวิชาที่ sg ตรงกับกลุ่มสาระที่เลือกในหน้า (SGV.gid) · มีช่องค้นหา + ตัวกรองระดับ/ชั้นปี (sgrQ/sgrSet/sgrReset) · วิชาที่ไม่มี sg ไม่แสดงในทะเบียนของกลุ่มใด (ไม่เดา) · ระดับ/ชั้นปีได้จากชั้น g (ม.1–3 = ตอนต้น · ม.4–6 = ตอนปลาย) · สาระการเรียนรู้ = ชื่อกลุ่มสาระที่เผยแพร่ตาม sg (ไม่มี/ไม่พบ = "ยังไม่ระบุ" ไม่เดา) · รหัสเดียวกันในหลายภาคเรียน/แผนรวมเป็นแถวเดียวต่อชั้น · วิชาที่ไม่มีรหัสไม่อยู่ในทะเบียน ===== */
+const SGR={q:'',lv:'',y:0,key:'',gid:''},SGR_LN={l:'มัธยมศึกษาตอนต้น',u:'มัธยมศึกษาตอนปลาย'},sgrLv=g=>g?(g<4?'l':'u'):'',sgrNm=s=>String(s==null?'':s).normalize('NFC').toLowerCase().replace(/\s+/g,'');
+/* ข้อมูลทะเบียนของกลุ่มสาระ gid (เฉพาะรายวิชาที่ sg ตรงกลุ่ม · ไม่เดากลุ่ม) · ตัวกรอง SGR: q = ค้นหาจากรหัสวิชา/ชื่อสาระการเรียนรู้ · lv = ระดับ (l ตอนต้น/u ตอนปลาย) · y = ชั้นปี (1–6) · ตัวเลือกระดับ/ชั้นปีสร้างจากข้อมูลจริงของกลุ่มนั้น · ตัวกรองเป็นแบบ AND · อัปเดตเฉพาะ #sgrb/#sgrn ไม่เรนเดอร์ทั้งหน้าใหม่ (ช่องค้นหาไม่เสียโฟกัส) */
+function sgrData(gid){const gm=new Map(sgxGrps().filter(fqIsPub).map(x=>[x.id,x.name])),M=new Map();
  ctCrs().forEach(c=>{const code=String(c.code==null?'':c.code).trim();if(!code||c.sg!==gid)return;const g=CT_G.includes(+c.g)?+c.g:0,k=g+'|'+code,n=c.sg&&gm.get(c.sg)||'';let r=M.get(k);if(!r){r={g,code,n:[]};M.set(k,r)}if(n&&!r.n.includes(n))r.n.push(n)});
- const L=[...M.values()].sort((a,b)=>(a.g||99)-(b.g||99)||a.code.localeCompare(b.code,'th'));
- const body=L.map(r=>`<tr><td data-l="ระดับ">${r.g?(r.g<4?'มัธยมศึกษาตอนต้น':'มัธยมศึกษาตอนปลาย'):'-'}</td><td data-l="ชั้นปี">${r.g?'ม.'+r.g:'-'}</td><td data-l="รหัสวิชา">${E(r.code)}</td><td data-l="สาระการเรียนรู้">${r.n.length?E(r.n.join(', ')):'ยังไม่ระบุ'}</td></tr>`).join('');
- return `<section class="sgreg" aria-label="ทะเบียนรหัสวิชาและสาระการเรียนรู้"><div class="sgvhd"><h2 class="sgvh">ทะเบียนรหัสวิชาและสาระการเรียนรู้</h2>${L.length?`<p class="sgvs">${L.length} รหัสวิชา</p>`:''}</div>${L.length?`<div class="cqw"><table class="cqt sgr"><caption class="sr">ทะเบียนรหัสวิชาและสาระการเรียนรู้</caption><thead><tr><th scope="col">ระดับ</th><th scope="col">ชั้นปี</th><th scope="col">รหัสวิชา</th><th scope="col">สาระการเรียนรู้</th></tr></thead><tbody>${body}</tbody></table></div>`:'<p class="empty-ev">ยังไม่มีรหัสวิชาในกลุ่มสาระนี้</p>'}</section>`}
+ return [...M.values()].sort((a,b)=>(a.g||99)-(b.g||99)||a.code.localeCompare(b.code,'th'))}
+function sgrRows(L){const q=sgrNm(SGR.q);return L.filter(r=>(!SGR.lv||sgrLv(r.g)===SGR.lv)&&(!SGR.y||r.g===SGR.y)&&(!q||sgrNm(r.code).includes(q)||r.n.some(x=>sgrNm(x).includes(q))))}
+const sgrCnt=(R,L)=>R.length===L.length?L.length+' รหัสวิชา':R.length+' จาก '+L.length+' รหัสวิชา';
+function sgrBody(L,R){if(!L.length)return '<p class="empty-ev">ยังไม่มีรหัสวิชาในกลุ่มสาระนี้</p>';
+ if(!R.length)return '<p class="empty-ev">ไม่พบรหัสวิชาที่ตรงกับเงื่อนไข <button type="button" class="btn s" onclick="sgrReset()">ล้างตัวกรอง</button></p>';
+ const body=R.map(r=>`<tr><td data-l="ระดับ">${r.g?SGR_LN[sgrLv(r.g)]:'-'}</td><td data-l="ชั้นปี">${r.g?'ม.'+r.g:'-'}</td><td data-l="รหัสวิชา">${E(r.code)}</td><td data-l="สาระการเรียนรู้">${r.n.length?E(r.n.join(', ')):'ยังไม่ระบุ'}</td></tr>`).join('');
+ return `<div class="cqw"><table class="cqt sgr"><caption class="sr">ทะเบียนรหัสวิชาและสาระการเรียนรู้</caption><thead><tr><th scope="col">ระดับ</th><th scope="col">ชั้นปี</th><th scope="col">รหัสวิชา</th><th scope="col">สาระการเรียนรู้</th></tr></thead><tbody>${body}</tbody></table></div>`}
+function sgrRefresh(){const L=sgrData(SGR.gid),R=sgrRows(L),b=$('sgrb'),n=$('sgrn');if(b)b.innerHTML=sgrBody(L,R);if(n)n.textContent=sgrCnt(R,L);
+ document.querySelectorAll('.sgrbt').forEach(x=>{const on=x.dataset.k==='lv'?SGR.lv===x.dataset.v:SGR.y===+x.dataset.v;x.classList.toggle('b',on);x.setAttribute('aria-pressed',String(on))})}
+function sgrQ(v){SGR.q=String(v==null?'':v);sgrRefresh()}
+function sgrSet(k,v){if(k==='lv')SGR.lv=v==='l'||v==='u'?v:'';else SGR.y=CT_G.includes(+v)?+v:0;sgrRefresh()}
+function sgrReset(){SGR.q='';SGR.lv='';SGR.y=0;const i=$('sgrq');if(i)i.value='';sgrRefresh()}
+function sgvReg(gid){const key=location.hash+'|'+gid;if(SGR.key!==key){SGR.key=key;SGR.q='';SGR.lv='';SGR.y=0}SGR.gid=gid;
+ const L=sgrData(gid),lvs=['l','u'].filter(v=>L.some(r=>sgrLv(r.g)===v)),ys=CT_G.filter(y=>L.some(r=>r.g===y));
+ if(SGR.lv&&!lvs.includes(SGR.lv))SGR.lv='';if(SGR.y&&!ys.includes(SGR.y))SGR.y=0;
+ const R=sgrRows(L),
+ bt=(k,v,t,on)=>`<button type="button" class="btn s sgrbt${on?' b':''}" data-k="${k}" data-v="${E(v)}" aria-pressed="${on}" onclick="sgrSet('${k}',this.dataset.v)">${E(t)}</button>`,
+ fl=(l,h)=>`<div class="ttf"><span class="ttl" aria-hidden="true">${l}</span>${h}</div>`,
+ bar=L.length?`<div class="sgvbar sgrbar" role="search" aria-label="ค้นหาและกรองทะเบียนรหัสวิชา"><div class="ttf"><label class="ttl" for="sgrq">ค้นหา</label><input id="sgrq" type="search" placeholder="ค้นหารหัสวิชาหรือสาระการเรียนรู้" autocomplete="off" value="${E(SGR.q)}" oninput="sgrQ(this.value)" aria-controls="sgrb"></div>${lvs.length?fl('ระดับ',`<div class="cuh tg" role="group" aria-label="กรองตามระดับ">${bt('lv','','ทั้งหมด',!SGR.lv)}${lvs.map(v=>bt('lv',v,SGR_LN[v],SGR.lv===v)).join('')}</div>`):''}${ys.length?fl('ชั้นปี',`<div class="cuh gg" role="group" aria-label="กรองตามชั้นปี">${bt('y','0','ทั้งหมด',!SGR.y)}${ys.map(y=>bt('y',String(y),'ม.'+y,SGR.y===y)).join('')}</div>`):''}</div>`:'';
+ return `<section class="sgreg" aria-label="ทะเบียนรหัสวิชาและสาระการเรียนรู้"><div class="sgvhd"><h2 class="sgvh">ทะเบียนรหัสวิชาและสาระการเรียนรู้</h2>${L.length?`<p class="sgvs" id="sgrn" aria-live="polite">${sgrCnt(R,L)}</p>`:''}</div>${bar}<div id="sgrb">${sgrBody(L,R)}</div></section>`}
 function sgvView(){const G=sgxGrps().filter(fqIsPub);
  if(!G.length)return '<div class="sgv"><p class="empty-ev">ยังไม่มีข้อมูลกลุ่มสาระการเรียนรู้</p></div>';
  if(!G.some(x=>x.id===SGV.gid))SGV.gid=G[0].id;SGV.t=ctOkT(SGV.t);if(!CT_G.includes(SGV.g))SGV.g=0;
