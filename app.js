@@ -380,10 +380,10 @@ function aluHtml(){const A=ALU;
 const IDC_SLUGS=['id-card-kds'];
 const isIdcPg=p=>!!p&&IDC_SLUGS.includes(p.slug);
 const IDC_TYPES=[
- {id:'student',t:'บัตรประจำตัวนักเรียน',img:'',url:''},
- {id:'teacher',t:'บัตรประจำตัวอาจารย์',img:'',url:''},
- {id:'staff',t:'บัตรประจำตัวบุคลากร',img:'',url:''}];
-const IDC_LANYARD={h:'สายคล้องบัตรประจำตัว',tx:'โรงเรียนสาธิตโกศาดิลก กำหนดสายคล้องบัตรประจำตัว (ID Card Lanyard) เพื่อใช้ในการแสดงตัวตน ระดับชั้น ช่วยให้การยืนยันตัวตนภายในโรงเรียนเป็นไปอย่างรวดเร็วและปลอดภัย',img:''};
+ {id:'student',t:'บัตรประจำตัวนักเรียน',img:'',url:'https://canva.link/utvyhz37a1uq8q8'},
+ {id:'teacher',t:'บัตรประจำตัวอาจารย์',img:'',url:'https://canva.link/jl4hg7mlqxapobu'},
+ {id:'staff',t:'บัตรประจำตัวบุคลากร',img:'',url:'https://canva.link/jl4hg7mlqxapobu'}];
+const IDC_LANYARD={h:'สายคล้องบัตรประจำตัว',tx:'โรงเรียนสาธิตโกศาดิลก กำหนดสายคล้องบัตรประจำตัว (ID Card Lanyard) เพื่อใช้ในการแสดงตัวตน ระดับชั้น ช่วยให้การยืนยันตัวตนภายในโรงเรียนเป็นไปอย่างรวดเร็วและปลอดภัย',img:'',url:'https://canva.link/8f0g3uyhzuc15dm'};
 /* body: ['p',ข้อความ] ย่อหน้า · ['h',หัวข้อย่อย] · ['ul',[รายการ]] · ['note',ข้อความ] กล่องหมายเหตุ */
 const IDC_COLORS=[
  {id:'green',c:'#2E9E5B',n:'สีเขียว',t:'นักเรียนระดับมัธยมศึกษาตอนต้น (ม.1–ม.3)',body:[
@@ -425,7 +425,7 @@ function idcHtml(){
  col=x=>{const o=IDC_OPEN===x.id;return `<li class="idl-i${o?' on':''}" data-id="${E(x.id)}" style="--lc:${x.c}"><button type="button" class="idl-b" id="idb-${E(x.id)}" aria-expanded="${o}" aria-controls="idp-${E(x.id)}" onclick="idcTog('${E(x.id)}')"><span class="idl-t"><span class="idl-c">${E(x.n)}</span><span class="idl-n">${E(x.t)}</span></span>${sv('arr','idl-ar')}</button><div class="idl-p" id="idp-${E(x.id)}" role="region" aria-labelledby="idb-${E(x.id)}"${o?'':' hidden'}>${x.body.map(blk).join('')}</div></li>`},
  L=IDC_LANYARD;
  return `<div class="idc"><section class="idc-s" aria-labelledby="idc-h1"><h2 id="idc-h1">ประเภทบัตรประจำตัว</h2><div class="idc-g">${IDC_TYPES.map(card).join('')}</div></section>`
- +`<section class="idc-s" aria-labelledby="idc-h2"><h2 id="idc-h2">${E(L.h)}</h2><p class="idc-lead">${E(L.tx)}</p><div class="idc-ly">${pic(L.img,'สายคล้องบัตรประจำตัว (ID Card Lanyard) ของโรงเรียนสาธิตโกศาดิลก','lan','พื้นที่สำหรับรูปสายคล้องบัตร')}</div></section>`
+ +`<section class="idc-s" aria-labelledby="idc-h2"><h2 id="idc-h2">${E(L.h)}</h2><p class="idc-lead">${E(L.tx)}</p><div class="idc-ly">${pic(L.img,'สายคล้องบัตรประจำตัว (ID Card Lanyard) ของโรงเรียนสาธิตโกศาดิลก','lan','พื้นที่สำหรับรูปสายคล้องบัตร')}</div>${okU(L.url)?`<div class="idc-lyb"><a class="btn b" href="${E(L.url)}" target="_blank" rel="noopener noreferrer">เปิดลิงก์ ${ic('ext')}<span class="sr">(เปิดในแท็บใหม่)</span></a></div>`:''}</section>`
  +`<section class="idc-s" aria-labelledby="idc-h3"><h2 id="idc-h3">รายละเอียดสายคล้องบัตร 6 สี</h2><ul class="idl">${IDC_COLORS.map(col).join('')}</ul></section></div>`}
 function idcTog(id){const r=document.querySelector('.idc');if(!r)return;IDC_OPEN=IDC_OPEN===id?'':id;r.querySelectorAll('.idl-i').forEach(c=>{const on=c.dataset.id===IDC_OPEN,b=c.querySelector('.idl-b'),p=c.querySelector('.idl-p');c.classList.toggle('on',on);b.setAttribute('aria-expanded',on?'true':'false');p.hidden=!on})}
 /* ===== หน้าทุนการศึกษา (slug scholarships-kds): จัดวางการ์ดทุนใหม่จากข้อมูลเดิมใน CMS โดยไม่เปลี่ยนข้อมูล =====
