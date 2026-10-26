@@ -380,9 +380,9 @@ function aluHtml(){const A=ALU;
 const IDC_SLUGS=['id-card-kds'];
 const isIdcPg=p=>!!p&&IDC_SLUGS.includes(p.slug);
 const IDC_TYPES=[
- {id:'student',t:'บัตรประจำตัวนักเรียน',img:'',url:'https://canva.link/utvyhz37a1uq8q8'},
- {id:'teacher',t:'บัตรประจำตัวอาจารย์',img:'',url:'https://canva.link/jl4hg7mlqxapobu'},
- {id:'staff',t:'บัตรประจำตัวบุคลากร',img:'',url:'https://canva.link/jl4hg7mlqxapobu'}];
+ {id:'student',t:'บัตรประจำตัวนักเรียน',img:'assets/id-card/id-card-student.webp',url:'https://canva.link/utvyhz37a1uq8q8'},
+ {id:'teacher',t:'บัตรประจำตัวอาจารย์',img:'assets/id-card/id-card-teacher.webp',url:'https://canva.link/jl4hg7mlqxapobu'},
+ {id:'staff',t:'บัตรประจำตัวบุคลากร',img:'assets/id-card/id-card-staff.webp',url:'https://canva.link/jl4hg7mlqxapobu'}];
 const IDC_LANYARD={h:'สายคล้องบัตรประจำตัว',tx:'โรงเรียนสาธิตโกศาดิลก กำหนดสายคล้องบัตรประจำตัว (ID Card Lanyard) เพื่อใช้ในการแสดงตัวตน ระดับชั้น ช่วยให้การยืนยันตัวตนภายในโรงเรียนเป็นไปอย่างรวดเร็วและปลอดภัย',img:'',url:'https://canva.link/8f0g3uyhzuc15dm'};
 /* body: ['p',ข้อความ] ย่อหน้า · ['h',หัวข้อย่อย] · ['ul',[รายการ]] · ['note',ข้อความ] กล่องหมายเหตุ */
 const IDC_COLORS=[
@@ -419,7 +419,7 @@ const IDC_SVG={card:'<rect x="3" y="5" width="18" height="14" rx="2.5"/><circle 
 function idcHtml(){
  const sv=(k,w)=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"${w?` class="${w}"`:''}>${IDC_SVG[k]}</svg>`,
  ph=(k,t)=>`<div class="idc-ph" aria-hidden="true">${sv(k)}<span>${E(t)}</span></div>`,
- pic=(u,alt,k,t)=>okU(u)?`<img src="${E(u)}" alt="${E(alt)}" loading="lazy" decoding="async">`:ph(k,t),
+ pic=(u,alt,k,t)=>okU(u)?`<img src="${E(u)}" alt="${E(alt)}" loading="lazy" decoding="async">`:/^assets\/id-card\/[\w.-]+$/.test(u||'')?`<img src="${E(u)}" alt="${E(alt)}" data-zoom="${E(location.origin+'/'+u)}" data-zalt="${E(alt)}" style="cursor:zoom-in" loading="lazy" decoding="async" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">${ph(k,t).replace('class="idc-ph"','class="idc-ph" style="display:none"')}`:ph(k,t),
  card=x=>`<article class="idc-card"><div class="idc-im">${pic(x.img,x.t,'card','พื้นที่สำหรับรูปบัตร')}</div><h3>${E(x.t)}</h3>${okU(x.url)?`<a class="btn b" href="${E(x.url)}" target="_blank" rel="noopener noreferrer">เปิดลิงก์ ${ic('ext')}<span class="sr">(เปิดในแท็บใหม่)</span></a>`:`<button type="button" class="btn" disabled aria-disabled="true">เปิดลิงก์</button><p class="idc-un">ยังไม่ได้ตั้งค่าลิงก์</p>`}</article>`,
  blk=b=>b[0]==='p'?`<p>${E(b[1])}</p>`:b[0]==='h'?`<h4 class="idl-h">${E(b[1])}</h4>`:b[0]==='ul'?`<ul>${b[1].map(i=>`<li>${E(i)}</li>`).join('')}</ul>`:b[0]==='note'?`<p class="idl-nt">${E(b[1])}</p>`:'',
  col=x=>{const o=IDC_OPEN===x.id;return `<li class="idl-i${o?' on':''}" data-id="${E(x.id)}" style="--lc:${x.c}"><button type="button" class="idl-b" id="idb-${E(x.id)}" aria-expanded="${o}" aria-controls="idp-${E(x.id)}" onclick="idcTog('${E(x.id)}')"><span class="idl-t"><span class="idl-c">${E(x.n)}</span><span class="idl-n">${E(x.t)}</span></span>${sv('arr','idl-ar')}</button><div class="idl-p" id="idp-${E(x.id)}" role="region" aria-labelledby="idb-${E(x.id)}"${o?'':' hidden'}>${x.body.map(blk).join('')}</div></li>`},
