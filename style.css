@@ -1804,35 +1804,3 @@ html:has(.sch-pg){overflow-x:clip}
 .sca-rc p{margin:0;font-size:.95rem;line-height:1.8;color:var(--muted);overflow-wrap:anywhere}
 [data-theme="dark"] .sca-r{--sca:#E0A0A8}
 @media(max-width:700px){.sca-rg{grid-template-columns:minmax(0,1fr);gap:16px}.sca-rc{min-height:0;padding:22px 20px}.sca-rn{font-size:1.7rem}}
-
-/* ===== หน้า class-schedule-kds: ตารางเรียนสไตล์ Academic Blue (น้ำเงินเทา) · ขอบเขต .acb .ttp เท่านั้น (คลาส .acb ใส่เฉพาะหน้านี้) =====
-   พื้นขาว · หัวตาราง #34495E · เส้นแบ่ง #E2E6EA · ตัวอักษรเทาเข้ม · เลือดหมู #7A1A22 เฉพาะจุดเน้น (แถบหัวข้อ/โฟกัส) · คาบว่างพื้นเทาอ่อน */
-.acb{--ac-h:#34495E;--ac-l:#E2E6EA;--ac-t:#2F3640;--ac-m:#5F6B7A;--ac-bg:#fff;--ac-e:#F2F4F6;--ac-r:#7A1A22;--ac-hv:#EEF2F6}
-[data-theme="dark"] .acb{--ac-t:var(--fg);--ac-m:var(--muted);--ac-bg:var(--surface);--ac-e:color-mix(in srgb,var(--fg) 7%,var(--surface));--ac-l:color-mix(in srgb,var(--fg) 18%,transparent);--ac-r:#E0A0A8;--ac-hv:color-mix(in srgb,var(--fg) 10%,var(--surface))}
-.acb .ttp .ttbar{background:var(--ac-bg);border:1px solid var(--ac-l);box-shadow:0 1px 6px #1F24300F}
-.acb .ttp .ttf+.ttf{border-top-color:var(--ac-l)}
-.acb .ttp .ttl{color:var(--ac-h);font-weight:700}
-[data-theme="dark"] .acb .ttp .ttl{color:var(--ac-t)}
-.acb .ttp .ttbar .btn.s{background:var(--ac-bg);color:var(--ac-t);border:1px solid #CBD2D9;border-radius:10px;box-shadow:none;transform:none;font-weight:600}
-.acb .ttp .ttbar .btn.s:hover{background:var(--ac-hv);transform:none;box-shadow:none}
-.acb .ttp .ttbar .btn.s.b,.acb .ttp .ttbar .btn.s[aria-pressed="true"]{background:var(--ac-h);border-color:var(--ac-h);color:#fff}
-.acb .ttp .ttbar .btn.s:focus-visible{outline:3px solid var(--ac-r);outline-offset:2px}
-.acb .ttp .tth{color:var(--ac-t);border-left:4px solid var(--ac-r)}
-.acb .ttp .ttw{background:var(--ac-bg);border:1px solid var(--ac-l);box-shadow:0 1px 6px #1F24300F}
-.acb .ttp .ttt th,.acb .ttp .ttt td{border-right-color:var(--ac-l);border-bottom-color:var(--ac-l)}
-.acb .ttp .ttt thead th{background:var(--ac-h);color:#fff;border-bottom:0;border-right-color:#ffffff29;font-weight:600}
-.acb .ttp .ttt thead th small{color:#ffffffC7}
-.acb .ttp .ttt thead th:first-child{background:var(--ac-h);color:#fff}
-.acb .ttp .ttt tbody th{background:var(--ac-e);color:var(--ac-h);font-weight:700}
-[data-theme="dark"] .acb .ttp .ttt tbody th{color:var(--ac-t)}
-.acb .ttp .ttt td{background:var(--ac-bg)}
-.acb .ttp .ttt td.ttx{background:var(--ac-e)}
-.acb .ttp .ttc{color:var(--ac-t)}
-.acb .ttp .ttc:hover{background:var(--ac-hv)}
-.acb .ttp .ttc:focus-visible{outline:3px solid var(--ac-r);outline-offset:-3px}
-.acb .ttp .ttc .tn{color:var(--ac-h)}
-[data-theme="dark"] .acb .ttp .ttc .tn{color:var(--ac-t)}
-.acb .ttp .ttc .tn.tnn{color:var(--ac-t)}
-.acb .ttp .tnm{color:var(--ac-m);font-size:.78rem}
-@media(max-width:1023px){.acb .ttp .ttt{min-width:calc(80px + var(--n,8)*124px)}.acb .ttp .ttt thead th:first-child,.acb .ttp .ttt tbody th{width:80px}}
-@media(max-width:760px){.acb .ttp .tnm{font-size:.74rem}}
