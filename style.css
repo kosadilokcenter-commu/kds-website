@@ -1711,3 +1711,23 @@ html:has(.sch-pg){overflow-x:clip}
 .cu .cumc{max-width:none}
 .cu .cupg{grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:14px}
 }
+
+/* ===== หน้าคณะครูและบุคลากร (#/p/people-kds) · เฉพาะ .ppl-pg (เพิ่มโดย pageView เมื่อ slug = people-kds) · ไม่กระทบหน้าอื่น
+   ลำดับชั้น: หัวข้อหน้า (h1 + เส้น + คำอธิบาย) → ประเภท (h2) → ฝ่ายงาน (.ppl-dept ใหญ่ มีแถบ+เส้นเลือดหมู) → กลุ่มสาระ (.ppl-g การ์ดหัวข้อเล็ก มีไอคอน) → การ์ดบุคลากร
+   ขนาด/การจัดแนวหัวข้อฝ่าย-กลุ่มสาระยังมาจากค่าที่ผู้ดูแลตั้ง (inline) ===== */
+.ppl-pg{--pp:var(--gold,#7A1A22);--pp-t:var(--kds-primary-text,#7A1A22)}
+.ppl-pg>h1{font-size:clamp(1.9rem,4.6vw,2.7rem);font-weight:800;line-height:1.25;letter-spacing:0;color:var(--pp-t);margin:0 0 .3em;overflow-wrap:anywhere}
+.ppl-pg>h1::after{width:100%;height:3px;margin-top:.45em;border-radius:2px;background:linear-gradient(90deg,var(--pp) 0,var(--pp) 84px,var(--line) 84px)}
+.ppl-pg .ppl-lead{margin:14px 0 10px;max-width:62ch;color:var(--muted);font-size:1.05rem;line-height:1.75}
+.ppl-pg #pplb>h2{color:var(--pp-t);font-weight:800;line-height:1.3;overflow-wrap:anywhere}
+.ppl-pg .ppl-dept{position:relative;margin:44px 0 18px;padding:0 0 12px 16px;border-bottom:1px solid var(--line);color:var(--pp-t);font-weight:800;line-height:1.3;overflow-wrap:anywhere}
+.ppl-pg .ppl-dept::before{content:"";position:absolute;left:0;top:.1em;bottom:calc(12px + .1em);width:5px;border-radius:3px;background:var(--pp)}
+.ppl-pg .ppl-dept::after{content:"";position:absolute;left:0;bottom:-2px;width:88px;height:3px;border-radius:2px;background:var(--pp)}
+.ppl-pg .ppl-g{margin:0 0 30px;min-width:0}
+.ppl-pg .ppl-gh{display:flex;align-items:center;gap:12px;margin:0 0 14px;padding:9px 14px 9px 10px;background:var(--surface);color:var(--fg);border:1px solid var(--line);border-radius:12px;box-shadow:0 1px 4px #1F243014;font-weight:700;line-height:1.35}
+.ppl-pg .ppl-gi{display:inline-flex;align-items:center;justify-content:center;flex:none;width:36px;height:36px;border-radius:10px;background:color-mix(in srgb,var(--pp) 10%,var(--surface));color:var(--pp-t)}
+.ppl-pg .ppl-gi svg{display:block;width:20px;height:20px}
+.ppl-pg .ppl-gt{flex:1 1 auto;min-width:0;text-align:inherit;overflow-wrap:anywhere}
+.ppl-pg .ppl-gn{flex:none;padding:2px 10px;border-radius:99px;background:color-mix(in srgb,var(--pp) 8%,var(--surface));color:var(--pp-t);font-size:.78rem;font-weight:600;line-height:1.6;white-space:nowrap}
+@media(max-width:1023px){.ppl-pg .ppl-dept{margin-top:38px}.ppl-pg .ppl-lead{max-width:none}}
+@media(max-width:600px){.ppl-pg .ppl-dept{margin:32px 0 14px;padding-left:12px}.ppl-pg .ppl-dept::before{width:4px}.ppl-pg .ppl-g{margin-bottom:24px}.ppl-pg .ppl-gh{gap:10px;padding:8px 10px 8px 8px}.ppl-pg .ppl-gi{width:32px;height:32px}.ppl-pg .ppl-gn{padding:1px 8px;font-size:.74rem}.ppl-pg .ppl-lead{font-size:1rem}}
