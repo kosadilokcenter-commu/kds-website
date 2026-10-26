@@ -1746,32 +1746,67 @@ html:has(.sch-pg){overflow-x:clip}
 @media(max-width:1023px){.ppl-pg .ppl-dept{margin-top:38px}.ppl-pg .ppl-lead{max-width:none}}
 @media(max-width:600px){.ppl-pg .ppl-dept{margin:32px 0 14px;padding-left:12px}.ppl-pg .ppl-dept::before{width:4px}.ppl-pg .ppl-g{margin-bottom:24px}.ppl-pg .ppl-gh{gap:10px;padding:8px 10px 8px 8px}.ppl-pg .ppl-gi{width:32px;height:32px}.ppl-pg .ppl-gn{padding:1px 8px;font-size:.74rem}.ppl-pg .ppl-lead{font-size:1rem}}
 
-/* ===== หน้าเครื่องแบบ (uniform-kds): แค็ตตาล็อก 6 หมวด · ใช้ตัวแปรสีเดิมของเว็บไซต์ · คลาส .unf / .unf-* ใช้เฉพาะหน้านี้ ===== */
-.unf{--ua:#7A1A22;--ub:#8D99AE}
-.unf-s{padding:28px 0;border-top:1px solid var(--line)}
+/* ===== หน้าเครื่องแบบ (uniform-kds): แค็ตตาล็อก 6 หมวด · รูปชุดเป็นจุดเด่น (ไม่ตัดภาพ) · พื้นที่โลโก้และรหัสสีแยกจากรูปชุด · ใช้ตัวแปรสี/ฟอนต์เดิมของเว็บไซต์ · คลาส .unf / .unf-* ใช้เฉพาะหน้านี้ ===== */
+.unf{--ua:var(--gold);--ub:var(--silver)}
+.unf-s{padding:32px 0;border-top:1px solid var(--line)}
 .unf-main>.unf-s:first-child{border-top:0;padding-top:0}
 .unf-more{margin-top:12px;padding-top:12px;border-top:3px solid var(--ub)}
-.unf-h{margin:0 0 16px;font-size:1.25rem;padding-left:12px;border-left:4px solid var(--ua)}
-.unf-g{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:20px}
+.unf-h{margin:0 0 18px;font-size:1.35rem;padding-left:12px;border-left:4px solid var(--ua)}
+.unf-g{display:grid;grid-template-columns:minmax(0,1fr);gap:28px}
 .unf-em{margin:0;padding:18px;border:1px dashed var(--line);border-radius:12px;color:var(--muted);text-align:center;font-size:.95rem}
-.unf-c{min-width:0;display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:0 2px 10px #1F243014;overflow:hidden}
-.unf-im{aspect-ratio:4/3;display:flex;gap:2px;background:color-mix(in srgb,var(--fg) 5%,var(--surface));border-bottom:1px solid var(--line)}
-.unf-im figure{flex:1 1 0;min-width:0;margin:0;position:relative;display:flex}
-.unf-im img{display:block;width:100%;height:100%;object-fit:contain;padding:6px}
-.unf-im figcaption{position:absolute;left:6px;bottom:6px;padding:1px 9px;border-radius:99px;background:var(--surface);border:1px solid var(--ub);color:var(--fg);font-size:.75rem}
-.unf-ph{margin:auto;color:var(--muted);font-size:.85rem}
-.unf-b{display:flex;flex-direction:column;gap:10px;padding:16px;min-width:0}
+.unf-c{min-width:0;display:grid;grid-template-columns:minmax(0,1fr);background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:0 2px 10px #1F243014;overflow:hidden}
+.unf-st{min-width:0;display:flex;align-items:center;justify-content:center;gap:12px;padding:16px;background:color-mix(in srgb,var(--fg) 5%,var(--surface));border-bottom:1px solid var(--line)}
+.unf-st.noim{min-height:120px}
+.unf-f{flex:1 1 0;min-width:0;margin:0;display:flex;flex-direction:column;align-items:center;gap:8px}
+.unf-zb{position:relative;display:block;width:100%;margin:0;padding:0;border:0;background:none;color:inherit;font:inherit;cursor:zoom-in;border-radius:10px}
+.unf-zb:focus-visible,.unf-cp:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+.unf-zb img{display:block;width:100%;height:auto;max-height:min(80vh,780px);object-fit:contain}
+.unf-zh{position:absolute;right:8px;bottom:8px;padding:2px 10px;border-radius:99px;background:var(--surface);border:1px solid var(--ub);color:var(--fg);font-size:.78rem;pointer-events:none}
+.unf-f figcaption{padding:2px 14px;border-radius:99px;background:var(--surface);border:1px solid var(--ub);color:var(--fg);font-size:.85rem}
+.unf-ph{margin:auto;color:var(--muted);font-size:.9rem}
+.unf-b{display:flex;flex-direction:column;gap:16px;padding:20px;min-width:0}
+.unf-t{display:flex;flex-direction:column;gap:12px;min-width:0}
 .unf-pill{align-self:flex-start;padding:2px 12px;border-radius:99px;background:var(--ua);color:#fff;font-size:.8rem;font-weight:600}
-.unf-b h4{margin:0;font-size:1.1rem;line-height:1.5;overflow-wrap:anywhere}
-.unf-d p{margin:0 0 6px;color:var(--muted);font-size:.92rem;line-height:1.7;overflow-wrap:anywhere}
-.unf-cl{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
-.unf-cl li{display:inline-flex;align-items:center;gap:8px;padding:3px 10px 3px 4px;border:1px solid var(--line);border-radius:99px;font-size:.85rem}
-.unf-cl li:not(:has(.unf-sw)){padding-left:10px}
-.unf-sw{width:20px;height:20px;border-radius:50%;border:1px solid var(--ub);flex:none}
-.unf-lg{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding-top:10px;border-top:1px solid var(--line)}
-.unf-lg img{width:56px;height:56px;object-fit:contain;border-radius:8px;background:#fff;border:1px solid var(--line);padding:3px}
-.unf-lg .btn{padding:5px 14px;font-size:.9rem}
-@media(max-width:600px){.unf-g{grid-template-columns:minmax(0,1fr)}.unf-s{padding:22px 0}}
+.unf-b h4{margin:0;font-size:1.4rem;line-height:1.4;overflow-wrap:anywhere}
+.unf-d p{margin:0 0 8px;color:var(--muted);font-size:1rem;line-height:1.75;overflow-wrap:anywhere}
+.unf-sh{margin:0 0 8px;font-weight:600;font-size:.95rem}
+.unf-cs,.unf-lg{padding-top:16px;border-top:1px solid var(--line)}
+.unf-cl{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,230px),1fr));gap:10px}
+.unf-ci{min-width:0;display:flex;align-items:center;gap:10px;padding:8px;border:1px solid var(--line);border-radius:12px}
+.unf-sw{width:44px;height:44px;border-radius:10px;border:1px solid var(--ub);flex:none}
+.unf-ct{flex:1 1 auto;min-width:0;display:flex;flex-direction:column}
+.unf-hx{font-size:.98rem;font-variant-numeric:tabular-nums;letter-spacing:.02em}
+.unf-cn{font-size:.88rem;color:var(--muted);overflow-wrap:anywhere}
+.unf-cp{flex:none;padding:2px 10px;border:1px solid var(--line);border-radius:99px;background:var(--btn-bg);color:var(--fg);font:inherit;font-size:.8rem;cursor:pointer}
+.unf-cp:hover{border-color:var(--gold)}
+.unf-lg{display:flex;flex-direction:column;align-items:flex-start;gap:10px}
+.unf-lg .unf-sh{margin:0}
+.unf-lb{position:relative;display:block;box-sizing:border-box;width:min(100%,240px);aspect-ratio:1/1;margin:0;padding:12px;border:1px solid var(--line);border-radius:14px;background:#fff;cursor:zoom-in}
+.unf-lb:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+.unf-lb img{display:block;width:100%;height:100%;object-fit:contain}
+.unf-lg .btn{padding:6px 16px;font-size:.92rem}
+@media(min-width:960px){.unf-c:not(.noim):not(.two){grid-template-columns:minmax(0,2fr) minmax(300px,1fr)}.unf-c:not(.noim):not(.two) .unf-st{border-bottom:0;border-right:1px solid var(--line)}.unf-b{padding:26px}.unf-st{padding:20px;gap:20px}.unf-c.two .unf-b{flex-direction:row;flex-wrap:wrap;align-items:flex-start;gap:22px 32px}.unf-c.two .unf-t{flex:2 1 300px}.unf-c.two .unf-cs{flex:1.4 1 280px;border-top:0;padding-top:0}.unf-c.two .unf-lg{flex:0 1 240px;border-top:0;padding-top:0}}
+@media(max-width:640px){.unf-s{padding:24px 0}.unf-st{padding:10px}.unf-st.two{flex-direction:column;gap:16px}.unf-st.two .unf-f{flex:none;width:100%}.unf-b{padding:16px}.unf-b h4{font-size:1.25rem}}
+/* ตัวดูภาพขยาย (เฉพาะหน้านี้) */
+.modal.unf-zm{background:#08080af7}
+.modal.unf-zm>div{max-width:none;width:100%;height:100%;padding:0;border:0;border-radius:0;background:transparent;box-shadow:none;display:flex;flex-direction:column;position:relative;color:#fff}
+.modal.unf-zm .mx{top:max(10px,env(safe-area-inset-top,0px));right:10px;z-index:2;width:40px;height:40px}
+.unf-zs{flex:1 1 auto;min-height:0;display:flex;overflow:auto;padding:56px 12px 8px}
+.unf-zi{display:block;box-sizing:border-box;margin:auto;max-width:100%;max-height:calc(100vh - 140px);max-height:calc(100dvh - 140px);object-fit:contain;border-radius:6px;cursor:zoom-in}
+.unf-zi.lg{background:#fff;padding:16px}
+.unf-zs.full .unf-zi{max-width:none;max-height:none;cursor:zoom-out}
+.unf-zbar{flex:none;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:8px 12px;padding:8px 12px 14px;font-size:.95rem}
+.unf-zc{text-align:center;overflow-wrap:anywhere}
+.unf-zbar .btn{background:#ffffff1f;color:#fff;border-color:#ffffff66}
+.unf-zbar .btn:hover{background:#ffffff33;border-color:#fff;box-shadow:none}
+/* ช่องจัดการรหัสสีในหน้าแอดมิน */
+.unf-ce{margin-bottom:12px}
+.unf-cel{display:flex;flex-direction:column;gap:8px;margin:6px 0 8px}
+.unf-cer{display:grid;grid-template-columns:48px minmax(0,130px) minmax(0,1fr) auto;gap:8px;align-items:center}
+.unf-cer input{width:100%;min-width:0;margin:0}
+.unf-cer input.unf-cep{width:48px;height:42px;padding:2px;cursor:pointer}
+.unf-cer input.bad{border-color:var(--red);outline:2px solid var(--red)}
+@media(max-width:560px){.unf-cer{grid-template-columns:48px minmax(0,1fr) auto}.unf-cer .btn{order:3}.unf-cer .unf-cen{grid-column:1/-1;order:5}}
 
 /* ===== หน้าสภานักเรียน: ส่วน "เกี่ยวกับสภานักเรียน" (.sca · จำกัดเฉพาะส่วนนี้) · สีแดงเลือดหมู #7A1A22 ===== */
 .sca{--sca:#7A1A22;margin:0 0 40px}
