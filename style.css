@@ -1674,6 +1674,9 @@ html:has(.sch-pg){overflow-x:clip}
 .sgv .sgt thead th:first-child,.sgv .sgt tbody th{position:sticky;left:0;z-index:1;width:88px;padding-left:4px;padding-right:4px;white-space:nowrap;font-weight:700;color:var(--kds-primary-text);background:color-mix(in srgb,var(--kds-primary) 7%,var(--surface))}
 .sgv .sgt td{background:color-mix(in srgb,var(--kds-primary) 3%,var(--surface))}
 .sgv .sgt td.ttx{background:var(--surface)}
+/* ความกว้างคอลัมน์คาบเท่ากันทุกคอลัมน์ + ความสูงขั้นต่ำของแถววันเท่ากันทุกวัน (วันที่ไม่มีคาบคงขนาดเดียวกับวันอื่น ไม่หดตามข้อมูล) · เฉพาะ .sgv */
+.sgv .sgt thead th:not(:first-child){width:calc((100% - 88px)/var(--n,8))}
+.sgv .sgt tbody tr{height:120px}
 .sgv .sgt small{display:block;margin-top:2px;color:var(--muted);font-size:.76rem;line-height:1.4;overflow-wrap:anywhere}
 .sgv .sgt thead small{font-size:.72rem;font-weight:400}
 .sgv .tn{display:block;font-size:.9rem;font-weight:700;line-height:1.4;overflow-wrap:anywhere}
@@ -1689,6 +1692,7 @@ html:has(.sch-pg){overflow-x:clip}
 .sgv .sgvh{font-size:1.1rem}
 .sgv .sgt{min-width:calc(76px + var(--n,8)*112px)}
 .sgv .sgt thead th:first-child,.sgv .sgt tbody th{width:76px}
+.sgv .sgt thead th:not(:first-child){width:calc((100% - 76px)/var(--n,8))}
 }
 
 /* ===== หน้าโครงสร้างหลักสูตร (.cu): จัดช่วงชั้นเป็นสองคอลัมน์บนคอมพิวเตอร์ — มัธยมศึกษาตอนต้นซ้าย · ตอนปลายขวา
