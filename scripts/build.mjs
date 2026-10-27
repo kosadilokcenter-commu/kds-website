@@ -39,9 +39,14 @@ const logos = ['logo-kds-256.png', 'logo_head_website.png'];
 const missingLogos = logos.filter((f) => !existsSync(resolve(root, f)));
 if (missingLogos.length) fail('ไม่พบไฟล์โลโก้ที่รากโปรเจกต์: ' + missingLogos.join(', '));
 
+// รูปบัตรประจำตัว (หน้า id-card-kds): app.js อ้างถึงไฟล์เหล่านี้ด้วยชื่อตรง ๆ (ต้องอยู่ที่รากโปรเจกต์ ข้าง index.html)
+const idCards = ['id-card-student.webp', 'id-card-teacher.webp', 'id-card-staff.webp'];
+const missingIdCards = idCards.filter((f) => !existsSync(resolve(root, f)));
+if (missingIdCards.length) fail('ไม่พบไฟล์รูปบัตรประจำตัวที่รากโปรเจกต์: ' + missingIdCards.join(', '));
+
 rmSync(dist, { recursive: true, force: true });
 mkdirSync(dist, { recursive: true });
-for (const f of ['index.html', 'style.css', 'app.js', ...logos]) copyFileSync(resolve(root, f), resolve(dist, f));
+for (const f of ['index.html', 'style.css', 'app.js', ...logos, ...idCards]) copyFileSync(resolve(root, f), resolve(dist, f));
 writeFileSync(
   resolve(dist, 'config.js'),
   'window.KIT_CONFIG=' + JSON.stringify({ supabaseUrl: url, supabaseAnonKey: key }) + ';\n'
@@ -63,4 +68,4 @@ if (existsSync(assetsSrc)) {
 } else {
   console.warn('[build] คำเตือน: ไม่พบโฟลเดอร์ assets/ — ตัวแก้ไขผัง Isometric จะโหลดคลัง Asset ไม่ได้ (HTTP 404)');
 }
-console.log('[build] สำเร็จ -> dist/ (index.html, style.css, app.js, config.js, โลโก้ ' + logos.length + ' ไฟล์' + assetNote + ')');
+console.log('[build] สำเร็จ -> dist/ (index.html, style.css, app.js, config.js, โลโก้ ' + logos.length + ' ไฟล์, รูปบัตร ' + idCards.length + ' ไฟล์' + assetNote + ')');
