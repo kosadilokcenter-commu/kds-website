@@ -981,6 +981,8 @@ html.kld-on{overflow:hidden}
 .stu-b{padding:10px 12px 12px}
 .stu-b h3{margin:0 0 4px;font-size:1.02rem;line-height:1.35;overflow-wrap:anywhere}
 .stu-b p{margin:3px 0;font-size:.92rem;color:var(--muted)}
+.stu-b .stu-cd{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 8px;margin:2px 0 6px;font-size:.85rem}
+.stu-cd b{color:var(--fg);font-weight:700;font-size:1.05rem;letter-spacing:.02em;font-variant-numeric:tabular-nums;overflow-wrap:anywhere;user-select:all;-webkit-user-select:all}
 .stu-mr,.stu-pg{text-align:center;margin:18px 0}
 .stu-pg span{margin:0 8px}
 .stu-pg .btn[disabled],.stu-mr .btn[disabled]{opacity:.5;cursor:default;transform:none;box-shadow:none}

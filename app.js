@@ -1809,11 +1809,11 @@ function sndPrev(){sndWake();sndPlay('tick')}
  setTimeout(()=>{SND.nav=true},0);
 }catch(e){}})();
 /* ===== รายชื่อนักเรียน (ตาราง public.students — ตารางเดียว ไม่มีตารางรูปแยก) =====
-   หน้าบ้าน #/students: ทุกคนค้นหาได้ ใช้ client แบบ anon ที่ไม่ผูก session (เห็นเฉพาะคอลัมน์สาธารณะ ไม่เห็น student_code)
+   หน้าบ้าน #/students: ทุกคนค้นหาได้ ใช้ client แบบ anon ที่ไม่ผูก session (เห็นเฉพาะคอลัมน์สาธารณะ; student_code แสดงได้เมื่อฐานข้อมูลเปิดสิทธิ์ให้ anon อ่านคอลัมน์นี้ ดู sql/proposal_students_public_code.sql — ถ้ายังไม่เปิดสิทธิ์ ระบบจะ fallback ไปดึงโดยไม่มีรหัส)
    หลังบ้าน #/admin/students: ใช้ DBH (ทีมงานที่ผ่าน is_staff เดิม) เพิ่ม/แก้ไข/ลบ/นำเข้า CSV
    รูป: ใช้ mdUpload(file,'students') + bucket 'media' เดิม เก็บ URL ลงคอลัมน์ photo_url (ไม่ลบไฟล์เก่าใน Storage เหมือนระบบเดิม) */
 const STU_COLS='id,prefix,first_name,last_name,level,room,plan,photo_url',STU_PG=24,STA_PG=50,STU_MAX=5000;
-const STU={q:'',lv:'',rm:'',rows:[],n:0,busy:false,err:'',did:false,boot:false,opts:null,seq:0,tm:null};
+const STU={q:'',lv:'',rm:'',rows:[],n:0,busy:false,err:'',did:false,boot:false,opts:null,seq:0,tm:null,code:true};
 const STA={q:'',pg:0,rows:[],n:0,busy:false,err:'',did:false,bt:false,seq:0,tm:null,ed:'',cur:'',orig:'',file:null,blob:'',rm:false,imp:null};
 let SBA=null;
 const stuPub=()=>{if(SBA)return SBA;if(!(CFG.supabaseUrl&&CFG.supabaseAnonKey&&window.supabase))return null;try{SBA=window.supabase.createClient(CFG.supabaseUrl,CFG.supabaseAnonKey,{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}})}catch(e){SBA=null}return SBA};
@@ -1821,6 +1821,7 @@ const stuCl=s=>STRIP(String(s==null?'':s)).trim();
 const stuQ=s=>stuCl(s).replace(/[%_\\*,()"]/g,'').replace(/\s+/g,' ').trim();
 const stuName=s=>(stuCl(s.prefix)+stuCl(s.first_name)+' '+stuCl(s.last_name)).trim();
 const stuRead=(m,e)=>{const c=(e&&(e.code||e.status))||'error';if(c==='42P01'||c==='PGRST205')return m+': ยังไม่มีตารางนักเรียนในฐานข้อมูล (ต้องรัน migration_students_final.sql ใน Supabase ของ KDS ก่อน)';return m+': '+((e&&e.message)||'เกิดข้อผิดพลาดที่ไม่ทราบสาเหตุ')+' ('+c+')'};
+const stuPerm=e=>{const c=e&&(e.code||e.status);return c==="42501"||c===401||c===403||/permission denied/i.test((e&&e.message)||"")};
 const stuWrite=e=>{const c=(e&&(e.code||e.status||e.statusCode))||'error';if(c==='23505')return 'รหัสนักเรียนนี้มีอยู่แล้ว';if(c==='23514')return 'ข้อมูลไม่ผ่านเงื่อนไขของตาราง (ตรวจความยาวและรูปแบบของแต่ละช่อง)';return (ERR[c]||(e&&e.message)||'เกิดข้อผิดพลาดที่ไม่ทราบสาเหตุ')+' ('+c+')'};
 const STU_RULES=[['student_code',20,'รหัสนักเรียน',1],['prefix',30,'คำนำหน้า',0],['first_name',100,'ชื่อ',1],['last_name',100,'นามสกุล',1],['level',20,'ระดับชั้น',1],['room',20,'ห้อง',0],['plan',100,'แผนการเรียน',0]];
 /* ตรวจแถวข้อมูล (ใช้ทั้งฟอร์มและ CSV) — ตรวจเฉพาะคีย์ที่มีในอ็อบเจ็กต์ คืนข้อความผิดพลาดหรือ '' */
@@ -1833,16 +1834,16 @@ async function stuOptsLoad(){if(STU.opts)return;const db=stuPub();if(!db)return;
 function stuFlt(){const o=STU.opts,lv=o?o.lv:[],rms=(o&&STU.lv&&o.rm[STU.lv])||[],op=(a,c,all)=>`<option value="">${all}</option>`+a.map(v=>`<option value="${E(v)}"${v===c?' selected':''}>${E(v)}</option>`).join('');
   return `<label class="sr" for="stu-lv">ระดับชั้น</label><select id="stu-lv" onchange="stuSet('lv',this.value)"${lv.length?'':' disabled'}>${op(lv,STU.lv,'ทุกระดับชั้น')}</select><label class="sr" for="stu-rm">ห้อง</label><select id="stu-rm" onchange="stuSet('rm',this.value)"${rms.length?'':' disabled'}>${op(rms,STU.rm,'ทุกห้อง')}</select>`}
 function stuCard(s){const nm=stuName(s),u=okU(s.photo_url)?s.photo_url:'',cl=[stuCl(s.level)?'ชั้น '+stuCl(s.level):'',stuCl(s.room)?'ห้อง '+stuCl(s.room):''].filter(Boolean).join(' · ');
-  return `<article class="stu-c"><div class="stu-pm"><span class="stu-ph" aria-hidden="true">${ic('user')}</span>${u?`<img src="${E(u)}" alt="${E(nm)}" loading="lazy" decoding="async" referrerpolicy="no-referrer" data-zoom="${E(u)}" data-zalt="${E(nm)}" onerror="this.remove()">`:''}</div><div class="stu-b"><h3>${E(nm)}</h3>${cl?`<p>${E(cl)}</p>`:''}${stuCl(s.plan)?`<p><span class="tag">${E(stuCl(s.plan))}</span></p>`:''}</div></article>`}
+  return `<article class="stu-c"><div class="stu-pm"><span class="stu-ph" aria-hidden="true">${ic('user')}</span>${u?`<img src="${E(u)}" alt="${E(nm)}" loading="lazy" decoding="async" referrerpolicy="no-referrer" data-zoom="${E(u)}" data-zalt="${E(nm)}" onerror="this.remove()">`:''}</div><div class="stu-b"><h3>${E(nm)}</h3>${stuCl(s.student_code)?`<p class="stu-cd"><span>รหัสนักเรียน</span><b>${E(stuCl(s.student_code))}</b></p>`:""}${cl?`<p>${E(cl)}</p>`:''}${stuCl(s.plan)?`<p><span class="tag">${E(stuCl(s.plan))}</span></p>`:''}</div></article>`}
 function stuRes(){if(STU.err)return `<div class="msg er">${E(STU.err)}</div>`;if(!STU.did)return '<p class="stu-st">กำลังโหลดรายชื่อ…</p>';if(!STU.rows.length)return `<p class="stu-st">${STU.busy?'กำลังค้นหา…':'ไม่พบนักเรียนที่ตรงกับการค้นหา'}</p>`;
   return `<p class="stu-cnt" role="status">พบ ${STU.n.toLocaleString('th-TH')} คน${STU.busy?' · กำลังอัปเดต…':''}</p><div class="stu-g">${STU.rows.map(stuCard).join('')}</div>${STU.rows.length<STU.n?`<p class="stu-mr"><button type="button" class="btn" onclick="stuLoad(true)"${STU.busy?' disabled':''}>แสดงเพิ่มเติม (${STU.rows.length}/${STU.n.toLocaleString('th-TH')})</button></p>`:''}`}
 function stuPaint(){const r=$('stu-res');if(r)r.innerHTML=stuRes()}
 async function stuLoad(more){const db=stuPub();if(!db){STU.err='ยังไม่ได้ตั้งค่า Supabase จึงค้นหาไม่ได้';STU.did=true;stuPaint();return}
   const my=++STU.seq,from=more?STU.rows.length:0;STU.busy=true;STU.err='';stuPaint();
-  try{let q=db.from('students').select(STU_COLS,{count:'exact'});const t=stuQ(STU.q);if(t)q=q.ilike('full_name','%'+t+'%');if(STU.lv)q=q.eq('level',STU.lv);if(STU.rm)q=q.eq('room',STU.rm);
+  try{let q=db.from('students').select(STU.code?STU_COLS+',student_code':STU_COLS,{count:'exact'});const t=stuQ(STU.q);if(t)q=q.ilike('full_name','%'+t+'%');if(STU.lv)q=q.eq('level',STU.lv);if(STU.rm)q=q.eq('room',STU.rm);
     const {data,error,count}=await q.order('level').order('room').order('first_name').order('last_name').range(from,from+STU_PG-1);
     if(my!==STU.seq)return;if(error)throw error;STU.rows=more?STU.rows.concat(data||[]):(data||[]);STU.n=count==null?STU.rows.length:count}
-  catch(e){if(my!==STU.seq)return;if(!more){STU.rows=[];STU.n=0}STU.err=stuRead('ค้นหาไม่สำเร็จ',e)}
+  catch(e){if(my!==STU.seq)return;if(STU.code&&stuPerm(e)){STU.code=false;stuLoad(more);return}if(!more){STU.rows=[];STU.n=0}STU.err=stuRead('ค้นหาไม่สำเร็จ',e)}
   finally{if(my===STU.seq){STU.busy=false;STU.did=true;STU.boot=false;stuPaint()}}}
 function stuIn(v){STU.q=v;clearTimeout(STU.tm);STU.tm=setTimeout(()=>stuLoad(false),350)}
 function stuGo(){clearTimeout(STU.tm);stuLoad(false)}
