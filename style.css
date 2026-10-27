@@ -1918,3 +1918,12 @@ html:has(.sch-pg){overflow-x:clip}
 .idl-x li{position:relative;padding-left:22px;line-height:1.8}
 .idl-x li::before{content:"";position:absolute;left:4px;top:.8em;width:8px;height:8px;border-radius:50%;background:var(--lc);box-shadow:0 0 0 1px var(--line)}
 @media(max-width:800px){.idl-b{min-height:64px;padding:12px 14px 12px 22px;gap:12px}.idl-sw{width:34px;height:34px;border-radius:10px}.idl-p,.idl-p.noim{grid-template-columns:minmax(0,1fr);gap:18px;padding:16px 16px 20px 22px}.idl-ar{width:34px;height:34px}.idl-f{width:100%;max-width:520px;margin:0 auto}}
+/* ===== ปุ่ม "ดาวน์โหลด" ตารางเรียนเป็นรูป PNG · แสดงเฉพาะหน้า class-schedule-kds (.acb .ttp) หน้าอื่นที่ใช้ ctView ซ่อนไว้ ===== */
+.ttp .ttdl{display:none}
+.acb .ttp .tthd{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 16px}
+.acb .ttp .tthd .tth{flex:1 1 220px;min-width:0}
+.acb .ttp .ttdl{display:inline-flex;align-items:center;justify-content:center;gap:6px;flex:0 0 auto;min-height:40px;padding:7px 16px;background:var(--ac-h);border:1px solid var(--ac-h);border-radius:10px;color:#fff;font-weight:600;box-shadow:none;transform:none}
+.acb .ttp .ttdl:hover{transform:none;box-shadow:none;filter:brightness(1.15)}
+.acb .ttp .ttdl:focus-visible{outline:3px solid var(--ac-r);outline-offset:2px}
+.acb .ttp .ttdl:disabled{opacity:.65;cursor:progress;filter:none}
+@media(max-width:600px){.acb .ttp .ttdl{flex:1 1 100%}}

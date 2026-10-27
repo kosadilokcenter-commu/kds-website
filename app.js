@@ -896,6 +896,30 @@ function ctvOpen(el){const d=el&&el.dataset;if(!d)return;ctvLast=el;const r=(l,v
  $('md').innerHTML=`<div class=\"modal wide ctvm\" role=\"dialog\" aria-modal=\"true\" aria-labelledby=\"ctvt\" onclick=\"if(event.target===this)ctvClose()\"><div><button type=\"button\" class=\"mx\" aria-label=\"ปิดรายละเอียดวิชา\" onclick=\"ctvClose()\">${ic('close')}</button><h3 id=\"ctvt\">${E(d.nm)}</h3><dl class=\"ctvl\">${r('รหัสวิชา',d.cd)}${r('วัน/คาบ',d.d+' คาบ '+d.p+(d.tm?' ('+d.tm+')':''))}${r('ห้องเรียน',d.rm)}${r('ครูผู้สอน',d.tc)}</dl></div></div>`;
  const b=document.querySelector('#md .mx');if(b)b.focus()}
 function ctvClose(){calClose();const e=ctvLast;ctvLast=null;if(e&&document.contains(e))e.focus()}
+/* ดาวน์โหลดตารางเรียนที่เลือกอยู่เป็น PNG (ปุ่ม .ttdl เห็นเฉพาะหน้า class-schedule-kds): วาดลง canvas จากตาราง .ttt บนหน้า โดยอ่านข้อความ/สี/ฟอนต์จริงด้วย getComputedStyle · ไม่พึ่งไลบรารีภายนอก ไม่ถูกตัดด้วยกรอบเลื่อน ไม่แตะข้อมูลตาราง/ฐานข้อมูล */
+async function ttDl(btn){const root=btn.closest('.ttp'),tbl=root&&root.querySelector('table.ttt');if(!tbl||btn.disabled)return;btn.disabled=true;
+ try{if(document.fonts&&document.fonts.ready)await document.fonts.ready;
+  const cs=e=>getComputedStyle(e),clear=c=>!c||c==='transparent'||/^rgba\(.*,\s*0\)$/.test(c)||/\/\s*0\)$/.test(c),
+  seg=window.Intl&&Intl.Segmenter?new Intl.Segmenter('th',{granularity:'word'}):null,cv=document.createElement('canvas'),x=cv.getContext('2d'),
+  fnt=st=>(st.fontStyle||'normal')+' '+st.fontWeight+' '+st.fontSize+' '+st.fontFamily,
+  leaves=(el,o)=>{el.childNodes.forEach(n=>{if(n.nodeType===3){const t=n.textContent.replace(/\s+/g,' ').trim();if(t){const st=cs(el);o.push({t,f:fnt(st),c:st.color,sz:parseFloat(st.fontSize)||14})}}else if(n.nodeType===1&&cs(n).display!=='none')leaves(n,o)});return o},
+  wrap=(t,f,w)=>{x.font=f;const P=seg?Array.from(seg.segment(t),q=>q.segment):Array.from(t),L=[];let cur='';P.forEach(p=>{if(cur&&x.measureText(cur+p).width>w){L.push(cur.trim());cur=p.trimStart()}else cur+=p});if(cur.trim())L.push(cur.trim());return L.length?L:['']},
+  PAD=10,CW=150,FW=96,TP=28,rows=[...tbl.rows].map((r,ri)=>[...r.cells].map((c,ci)=>{const st=cs(c),w=ci?CW:FW,ls=[];leaves(c,[]).forEach(l=>wrap(l.t,l.f,w-PAD*2).forEach(t=>ls.push({t,f:l.f,c:l.c,h:Math.ceil(l.sz*1.45)})));
+   return {ls,bg:clear(st.backgroundColor)?null:st.backgroundColor,br:st.borderRightColor,bb:st.borderBottomColor,bw:parseFloat(st.borderBottomWidth)||0,rw:parseFloat(st.borderRightWidth)||0,h:ls.reduce((a,l)=>a+l.h,0)+PAD*2}})),
+  RH=rows.map((r,ri)=>Math.max(ri?64:0,...r.map(c=>c.h))),nc=rows[0].length,TW=FW+CW*(nc-1),th=root.querySelector('.tth'),ts=cs(th),tsz=parseFloat(ts.fontSize)||20,
+  tl=wrap(th.textContent.trim(),fnt(ts),TW-16),TH=tl.length*Math.ceil(tsz*1.5)+14,M=24,W=TW+M*2,H=M+TH+14+RH.reduce((a,b)=>a+b,0)+M;
+  let S=2;while(W*S*H*S>14e6&&S>1)S-=.25;cv.width=Math.round(W*S);cv.height=Math.round(H*S);x.scale(S,S);
+  const pg=[root.querySelector('.ttw'),root,document.body].map(e=>e&&cs(e).backgroundColor).find(c=>!clear(c))||'#fff';
+  x.fillStyle=pg;x.fillRect(0,0,W,H);x.textBaseline='middle';x.textAlign='left';
+  x.fillStyle=cs(th).borderLeftColor;x.fillRect(M,M,4,TH);x.fillStyle=ts.color;x.font=fnt(ts);tl.forEach((t,i)=>x.fillText(t,M+16,M+7+(i+.5)*Math.ceil(tsz*1.5)));
+  let y=M+TH+14;const X0=M;
+  rows.forEach((r,ri)=>{let cx=X0;r.forEach((c,ci)=>{const w=ci?CW:FW,h=RH[ri];if(c.bg){x.fillStyle=c.bg;x.fillRect(cx,y,w,h)}
+    x.textAlign='center';const tot=c.ls.reduce((a,l)=>a+l.h,0);let ty=y+(h-tot)/2;c.ls.forEach(l=>{x.font=l.f;x.fillStyle=l.c;x.fillText(l.t,cx+w/2,ty+l.h/2);ty+=l.h});
+    if(c.rw&&ci<nc-1){x.fillStyle=c.br;x.fillRect(cx+w-c.rw,y,c.rw,h)}if(c.bw&&ri<rows.length-1){x.fillStyle=c.bb;x.fillRect(cx,y+h-c.bw,w,c.bw)}cx+=w});y+=RH[ri]});
+  const bs=cs(root.querySelector('.ttw'));x.strokeStyle=clear(bs.borderTopColor)?'#ccd':bs.borderTopColor;x.lineWidth=1;x.strokeRect(X0+.5,M+TH+14+.5,TW-1,y-(M+TH+14)-1);
+  const blob=await new Promise(r=>cv.toBlob(r,'image/png'));if(!blob)throw new Error('toBlob');
+  const nm=((btn.dataset.fn||'ตารางเรียน').replace(/[\\/:*?"<>|\s]+/g,'-').replace(/-+/g,'-'))+'.png',u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download=nm;a.rel='noopener';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),8000)
+ }catch(e){console.error(e);say('สร้างรูปตารางไม่สำเร็จ ลองใหม่อีกครั้ง',false)}finally{btn.disabled=false}}
 function ctView(){const g=CTV.g=ctOkG(CTV.g),t=CTV.t=ctOkT(CTV.t),adm=Auth.canAccessAdmin(),cfg=ctCfg(),P=g>=4?ctPlans():[];if(g>=4&&!P.some(m=>m.id===CTV.p))CTV.p=P[0]?P[0].id:'';const pid=g>=4?CTV.p:'',it=g>=4&&!pid?null:ctTab(g,t,pid),lbl=g>=4&&!pid?'':ctRoomLbl(g,pid),
  gb=CT_G.map(n=>`<button type="button" class="btn s${n===g?' b':''}" aria-pressed="${n===g}" onclick="ctvSel('g',${n})">ม.${n}</button>`).join(''),tb=CT_T.map(n=>`<button type="button" class="btn s${n===t?' b':''}" aria-pressed="${n===t}" onclick="ctvSel('t',${n})">ภาคเรียนที่ ${n}</button>`).join(''),
  pb=g>=4&&P.length?`<div class="cuh pl" role="group" aria-label="เลือกห้องเรียน/แผนการเรียน">${P.map(m=>`<button type="button" class="btn s${m.id===pid?' b':''}" aria-pressed="${m.id===pid}" data-id="${E(m.id)}" onclick="ctvSel('p',this.dataset.id)">${E('ม.'+g+'/'+m.code+' — '+m.name)}</button>`).join('')}</div>`:'',
@@ -906,8 +930,8 @@ function ctView(){const g=CTV.g=ctOkG(CTV.g),t=CTV.t=ctOkT(CTV.t),adm=Auth.canAc
  cell=(dk,p)=>{const c=cells[dk+'_'+p];if(!c)return null;const x=c.cid&&crs.find(k=>k.id===c.cid);return {nm:x?x.name:c.name,cd:x?x.code:c.code,rm:c.room||it.home||'',tc:c.teacher||''}},
   head=Array.from({length:cfg.n},(_,p)=>`<th scope="col">คาบ ${p+1}${tm(p)?'<small>'+E(tm(p))+'</small>':''}</th>`).join(''),
  rows=CT_D.map(([dk,dn])=>`<tr><th scope="row">${dn}</th>${Array.from({length:cfg.n},(_,p)=>{const c=cell(dk,p);if(!c)return '<td class="ttx"></td>';const tt=tm(p);return `<td><button type="button" class="ttc" aria-haspopup="dialog" title="${E(c.nm)}" aria-label="${E((c.cd?c.cd+' ':'')+c.nm+' '+dn+' คาบ '+(p+1)+' แตะเพื่อดูรายละเอียด')}" data-nm="${E(c.nm)}" data-cd="${E(c.cd||'')}" data-rm="${E(c.rm)}" data-tc="${E(c.tc)}" data-d="${E(dn)}" data-p="${p+1}" data-tm="${E(tt)}" onclick="ctvOpen(this)">${c.cd?`<b class="tn">${E(c.cd)}</b><span class="tnm">${E(c.nm)}</span>`:`<b class="tn tnn">${E(c.nm)}</b>`}${c.rm?`<span class="tnr">${E(c.rm)}</span>`:''}</button></td>`}).join('')}</tr>`).join(''),
- ttl='ตารางเรียน '+lbl+' ภาคเรียนที่ '+t;
- return `<div class="fq ttp">${bar}${it.pub?'':'<div class="msg er">ฉบับร่าง — ผู้เข้าชมทั่วไปยังไม่เห็นตารางนี้ (เปิดเผยแพร่ได้ที่หลังบ้าน)</div>'}<div class="tthd"><h2 class="tth">${E(ttl)}</h2></div><div class="ttw"><table class="ttt" style="--n:${cfg.n}"><caption class="sr">${E(ttl)}</caption><thead><tr><th scope="col">วัน</th>${head}</tr></thead><tbody>${rows}</tbody></table></div></div>`}
+ ttl='ตารางเรียน '+lbl+' ภาคเรียนที่ '+t,fn='ตารางเรียน-'+ctRoom(g,pid)+'-ภาคเรียนที่'+t;
+ return `<div class="fq ttp">${bar}${it.pub?'':'<div class="msg er">ฉบับร่าง — ผู้เข้าชมทั่วไปยังไม่เห็นตารางนี้ (เปิดเผยแพร่ได้ที่หลังบ้าน)</div>'}<div class="tthd"><h2 class="tth">${E(ttl)}</h2><button type="button" class="btn s ttdl" data-fn="${E(fn)}" onclick="ttDl(this)" aria-label="ดาวน์โหลดตารางเรียนที่เลือกเป็นรูป PNG"><svg viewBox="0 0 24 24" width="1.1em" height="1.1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m0 0l-4.5-4.5M12 15l4.5-4.5M4 20h16"/></svg>ดาวน์โหลด</button></div><div class="ttw"><table class="ttt" style="--n:${cfg.n}"><caption class="sr">${E(ttl)}</caption><thead><tr><th scope="col">วัน</th>${head}</tr></thead><tbody>${rows}</tbody></table></div></div>`}
 PUB.timetable=(a,b)=>{if(a)CTV.g=ctOkG(a);if(b)CTV.t=ctOkT(b);return `<div class="w sec"><p><a class="bk" href="#/">← กลับหน้าแรก</a></p><h1>ตารางเรียน</h1>${ctView()}</div>`};
 /* ---------- หน้าเว็บ (ผู้เข้าชม): โครงสร้างหลักสูตร #/curriculum/<ม.1–6>/<id แผน> หรือส่วน "โครงสร้างหลักสูตร" ในหน้า CMS
    อ่านจาก settings.ctcourses (ชุดเดียวกับหลังบ้าน) · ยอดรวมคำนวณจากรายวิชาจริงตอนแสดงผล (ctSum) · รายวิชาที่ไม่มี ty แสดงเป็น "ไม่ระบุประเภท" ไม่เดาให้ ---------- */
