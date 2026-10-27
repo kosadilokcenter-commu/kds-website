@@ -1871,3 +1871,4 @@ html:has(.sch-pg){overflow-x:clip}
 .acb .ttp .tnr{display:block;max-width:100%;font-size:.85rem;line-height:1.4;color:var(--ac-m);overflow-wrap:anywhere}
 @media(max-width:1023px){.acb .ttp .ttt{min-width:calc(80px + var(--n,8)*112px)}.acb .ttp .ttt thead th:first-child,.acb .ttp .ttt tbody th{width:80px}}
 @media(max-width:760px){.acb .ttp .tnr{font-size:.8rem}.acb .ttp .ttc .tn{font-size:.95rem}.acb .ttp .ttc{min-height:56px}}
+.idc-ly{aspect-ratio:4/5;width:100%;max-width:560px}
