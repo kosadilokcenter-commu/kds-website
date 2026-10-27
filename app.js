@@ -383,7 +383,7 @@ const IDC_TYPES=[
  {id:'student',t:'บัตรประจำตัวนักเรียน',img:'id-card-student.webp',url:'https://canva.link/utvyhz37a1uq8q8'},
  {id:'teacher',t:'บัตรประจำตัวอาจารย์',img:'id-card-teacher.webp',url:'https://canva.link/jl4hg7mlqxapobu'},
  {id:'staff',t:'บัตรประจำตัวบุคลากร',img:'id-card-staff.webp',url:'https://canva.link/jl4hg7mlqxapobu'}];
-const IDC_LANYARD={h:'สายคล้องบัตรประจำตัว',tx:'โรงเรียนสาธิตโกศาดิลก กำหนดสายคล้องบัตรประจำตัว (ID Card Lanyard) เพื่อใช้ในการแสดงตัวตน ระดับชั้น ช่วยให้การยืนยันตัวตนภายในโรงเรียนเป็นไปอย่างรวดเร็วและปลอดภัย',img:'',url:'https://canva.link/8f0g3uyhzuc15dm'};
+const IDC_LANYARD={h:'สายคล้องบัตรประจำตัว',tx:'โรงเรียนสาธิตโกศาดิลก กำหนดสายคล้องบัตรประจำตัว (ID Card Lanyard) เพื่อใช้ในการแสดงตัวตน ระดับชั้น ช่วยให้การยืนยันตัวตนภายในโรงเรียนเป็นไปอย่างรวดเร็วและปลอดภัย',img:'id-card-lanyard.webp',url:'https://canva.link/8f0g3uyhzuc15dm'};
 /* body: ['p',ข้อความ] ย่อหน้า · ['h',หัวข้อย่อย] · ['ul',[รายการ]] · ['note',ข้อความ] กล่องหมายเหตุ */
 const IDC_COLORS=[
  {id:'green',c:'#2E9E5B',n:'สีเขียว',t:'นักเรียนระดับมัธยมศึกษาตอนต้น (ม.1–ม.3)',body:[
