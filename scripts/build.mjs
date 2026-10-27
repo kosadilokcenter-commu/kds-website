@@ -40,7 +40,7 @@ const missingLogos = logos.filter((f) => !existsSync(resolve(root, f)));
 if (missingLogos.length) fail('ไม่พบไฟล์โลโก้ที่รากโปรเจกต์: ' + missingLogos.join(', '));
 
 // รูปบัตรประจำตัว (หน้า id-card-kds): app.js อ้างถึงไฟล์เหล่านี้ด้วยชื่อตรง ๆ (ต้องอยู่ที่รากโปรเจกต์ ข้าง index.html)
-const idCards = ['id-card-student.webp', 'id-card-teacher.webp', 'id-card-staff.webp'];
+const idCards = ['id-card-student.webp', 'id-card-teacher.webp', 'id-card-staff.webp', 'id-card-lanyard.webp'];
 const missingIdCards = idCards.filter((f) => !existsSync(resolve(root, f)));
 if (missingIdCards.length) fail('ไม่พบไฟล์รูปบัตรประจำตัวที่รากโปรเจกต์: ' + missingIdCards.join(', '));
 
