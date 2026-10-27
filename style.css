@@ -1073,27 +1073,6 @@ html.kld-on{overflow:hidden}
 .bdlb img.full{max-width:none;max-height:none;cursor:zoom-out}
 .bdlb p{margin:8px 0 0;text-align:center}
 
-/* ===== สมาคมศิษย์เก่า (เพิ่มใหม่ ใช้เฉพาะ .al*) · สี #7A1A22 / #8D99AE ===== */
-.al{display:grid;gap:46px;margin:8px 0 36px}.alsec>h2{margin-bottom:.7em}
-.alh{position:relative;overflow:hidden;border-radius:24px;min-height:300px;display:flex;align-items:flex-end;color:#fff;background:linear-gradient(135deg,#7A1A22,#4F1016)}
-.alh-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-.alh::before{content:"";position:absolute;inset:0;z-index:1;background:linear-gradient(180deg,#4F101626 0%,#4F1016E8 100%)}
-.alh-in{position:relative;z-index:2;padding:clamp(22px,5vw,48px);max-width:780px}.alh-in h2{color:#fff;margin:.15em 0 .4em}
-.alh-eb{margin:0;font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;color:#C9D0DC;overflow-wrap:anywhere}
-.alb{display:inline-block;margin-top:8px;background:#8D99AE;color:#1F2430;border-radius:99px;padding:9px 22px;font-weight:700;text-decoration:none}.alb:hover{background:#A3ADBF}
-.alg{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:26px 14px;text-align:center}
-.alg li{display:flex;flex-direction:column;align-items:center;gap:5px}
-.alav{width:96px;height:96px;border-radius:50%;object-fit:cover;border:3px solid #8D99AE;background:var(--surface);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1.9rem;color:var(--gold-text)}
-.alt{font-size:.78rem;background:color-mix(in srgb,#8D99AE 30%,transparent);color:var(--fg);border-radius:99px;padding:1px 11px}.alro{font-size:.86rem;color:var(--muted)}
-.alr{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:10px}
-.alr li{display:flex;flex-direction:column;gap:1px;padding:8px 18px;background:var(--surface);border:1px solid var(--line);border-left:5px solid var(--act);border-radius:6px 16px 16px 6px}.alr span{font-size:.85rem;color:var(--muted)}
-.alst{display:grid;gap:32px}.als{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:26px;align-items:center}
-.als:nth-child(even) .alsp{order:2}.alsp img,.alsph{display:block;width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:20px}
-.alsph{background:linear-gradient(135deg,#8D99AE,#7A1A22);opacity:.85}.als h3{margin-bottom:.35em}.alsw{font-size:.88rem;color:var(--kds-secondary-text,var(--muted));font-weight:600}
-.alc{background:var(--nav-bg,#7A1A22);color:#fff;border-radius:24px;padding:clamp(22px,5vw,40px)}.alc h2{color:#fff}
-.alc dl{display:grid;grid-template-columns:auto 1fr;gap:10px 22px;margin:0}.alc dt{color:#C9D0DC;font-weight:600}.alc dd{margin:0;overflow-wrap:anywhere}.alc a{color:#fff;text-decoration:underline}.alcn{margin:16px 0 0;color:#E4E8EF}
-@media(max-width:700px){.als{grid-template-columns:1fr}.als:nth-child(even) .alsp{order:0}.alh{min-height:260px}.alc dl{grid-template-columns:1fr;gap:2px}.alc dd{margin-bottom:10px}.alg{grid-template-columns:repeat(auto-fill,minmax(130px,1fr))}}
-
 /* ===== หน้า "ข้อมูลจำเพาะโรงเรียน" (.spec-pg): จัดวางตามต้นแบบ — ข้อมูลพื้นฐาน · ตราสัญลักษณ์ · พันธกิจ · ค่านิยม KDS · สีประจำโรงเรียน · ดอกไม้ประจำโรงเรียน
    ใช้เฉพาะหน้าที่ isSpecPg() ใน app.js ระบุ · ปรับเฉพาะการแสดงผลของส่วนเนื้อหา CMS เดิม (heading/text/image/button/cards) ไม่เปลี่ยนข้อมูล · ขนาดตัวอักษรที่ผู้ดูแลตั้งรายหน้า (.pgs) ยังมีผลตามเดิม ===== */
 .w.sec.spec-pg{display:flex;flex-wrap:wrap;justify-content:center;align-content:flex-start;align-items:center;column-gap:24px;padding-bottom:56px}
