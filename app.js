@@ -127,10 +127,21 @@ function evStatus(e,now){now=now||thNow();if(!e||!okD(e.startDate))return null;i
  const s=e.startDate+' '+(e.startTime||'00:00'),en=(e.endDate||e.startDate)+' '+(e.endTime||'23:59');if(en<s)return null;return now<s?'up':now<=en?'on':'past'}
 const evOn=(d,L)=>L.filter(e=>e.startDate<=d&&d<=(e.endDate||e.startDate));
 function calView(){const now=new Date();if(CAL.y==null){CAL.y=now.getFullYear();CAL.m=now.getMonth()}const L=evVis(),y=CAL.y,m=CAL.m,first=new Date(y,m,1).getDay(),n=new Date(y,m+1,0).getDate(),td=todayS(),tail=(7-(first+n)%7)%7;
- let cells=TH_D.map(d=>`<div class="cw" aria-hidden="true">${d}</div>`).join('');for(let i=0;i<first;i++)cells+='<div class="cd off" aria-hidden="true"></div>';
- for(let d=1;d<=n;d++){const s=ymd(y,m,d),ev=evOn(s,L),ch=ev.slice(0,2).map(e=>`<span class="chip" role="button" tabindex="0" onclick="event.stopPropagation();calEv('${e.id}')" onkeydown="if(event.key==='Enter'){event.stopPropagation();calEv('${e.id}')}">${E(e.title)}</span>`).join(''),more=ev.length>2?`<span class="more">+${ev.length-2} กิจกรรม</span>`:'';
-  cells+=`<button type="button" class="cd${s===td?' td':''}${CAL.sel===s?' sel':''}${ev.length?' has':''}" data-d="${s}" onclick="calSel('${s}')" aria-label="${d} ${TH_M[m]} ${y+543}${ev.length?' มี '+ev.length+' กิจกรรม':''}"${s===td?' aria-current="date"':''}><span class="dn">${d}</span><span class="ce">${ch}${more}</span>${ev.length?`<span class="cdots">${'<i></i>'.repeat(Math.min(ev.length,3))}</span>`:''}</button>`}
- for(let i=0;i<tail;i++)cells+='<div class="cd off" aria-hidden="true"></div>';
+ /* ปฏิทินรายเดือนแบบแถบต่อเนื่อง: คำนวณช่วงวันของแต่ละกิจกรรมเป็นส่วน (segment) ต่อแถวสัปดาห์ แล้วจัดเลน (lane) ไม่ให้ทับกัน */
+ const MAXL=3,mS=ymd(y,m,1),mE=ymd(y,m,n),wk=Math.ceil((first+n)/7),segs=[];
+ L.forEach(e=>{const en=e.endDate&&okD(e.endDate)?e.endDate:e.startDate;if(en<e.startDate||en<mS||e.startDate>mE)return;const sd=e.startDate<mS?1:+e.startDate.slice(8,10),ed=en>mE?n:+en.slice(8,10),mu=en!==e.startDate;
+  for(let w=Math.floor((first+sd-1)/7);w<=Math.floor((first+ed-1)/7);w++){const a=Math.max(sd,w*7-first+1),b=Math.min(ed,w*7-first+7);segs.push({e,w,c:(first+a-1)%7,sp:b-a+1,cl:a>sd||e.startDate<mS,cr:b<ed||en>mE,mu})}});
+ let cells=`<div class="cgh">${TH_D.map(d=>`<div class="cw" aria-hidden="true">${d}</div>`).join('')}</div>`;
+ for(let w=0;w<wk;w++){const S=segs.filter(s=>s.w===w).sort((p,q)=>p.c-q.c||q.sp-p.sp),busy=[],hid=[0,0,0,0,0,0,0];
+  S.forEach(s=>{let l=0;while(busy[l]>s.c)l++;busy[l]=s.c+s.sp;s.l=l});
+  const LN=Math.max(1,Math.min(busy.length,MAXL));let h='';
+  for(let c=0;c<7;c++){const d=w*7+c-first+1;if(d<1||d>n){h+=`<div class="cd off" aria-hidden="true" style="grid-column:${c+1}"></div>`;continue}
+   const s=ymd(y,m,d),cnt=evOn(s,L).length;
+   h+=`<button type="button" class="cd${s===td?' td':''}${CAL.sel===s?' sel':''}${cnt?' has':''}" data-d="${s}" style="grid-column:${c+1}" onclick="calSel('${s}')" aria-label="${d} ${TH_M[m]} ${y+543}${cnt?' มี '+cnt+' กิจกรรม':''}"${s===td?' aria-current="date"':''}><span class="dn">${d}</span></button>`}
+  S.forEach(s=>{if(s.l>=MAXL){for(let k=0;k<s.sp;k++)hid[s.c+k]++;return}const e=s.e;
+   h+=`<button type="button" class="chip bar${s.mu?' mu':''}${s.cl?' cl':''}${s.cr?' cr':''}" style="grid-column:${s.c+1}/span ${s.sp};grid-row:${s.l+2}" onclick="calEv('${e.id}')" aria-label="${E(e.title)} ${E(fmtRange(e))}" title="${E(e.title)}">${E(e.title)}</button>`});
+  hid.forEach((k,c)=>{if(k)h+=`<button type="button" class="more mb" style="grid-column:${c+1};grid-row:${LN+2}" onclick="calSel('${ymd(y,m,w*7+c-first+1)}')" aria-label="อีก ${k} กิจกรรม">+${k}<span class="mt"> กิจกรรม</span></button>`});
+  cells+=`<div class="cwk" style="--l:${LN}">${h}</div>`}
  const f=EV_FL.some(x=>x[0]===CAL.f)?CAL.f:'all',tn=thNow(),ST=new Map(L.map(e=>[e.id,evStatus(e,tn)])),cnt={all:L.length,up:0,on:0,past:0};ST.forEach(s=>{if(s)cnt[s]++});
  const rk={on:0,up:1,past:3},rkOf=e=>{const r=rk[ST.get(e.id)];return r===undefined?2:r},kf=e=>e.startDate+(e.startTime||''),
  ord=a=>a.slice().sort((a,b)=>{const ra=rkOf(a),rb=rkOf(b);if(ra!==rb)return ra-rb;const c=kf(a).localeCompare(kf(b));return ra===3?-c:c}),
