@@ -386,31 +386,31 @@ const IDC_TYPES=[
 const IDC_LANYARD={h:'สายคล้องบัตรประจำตัว',tx:'โรงเรียนสาธิตโกศาดิลก กำหนดสายคล้องบัตรประจำตัว (ID Card Lanyard) เพื่อใช้ในการแสดงตัวตน ระดับชั้น ช่วยให้การยืนยันตัวตนภายในโรงเรียนเป็นไปอย่างรวดเร็วและปลอดภัย',img:'id-card-lanyard.webp',url:'https://canva.link/8f0g3uyhzuc15dm'};
 /* body: ['p',ข้อความ] ย่อหน้า · ['h',หัวข้อย่อย] · ['ul',[รายการ]] · ['note',ข้อความ] กล่องหมายเหตุ */
 const IDC_COLORS=[
- {id:'green',c:'#2E9E5B',n:'สีเขียว',t:'นักเรียนระดับมัธยมศึกษาตอนต้น (ม.1–ม.3)',body:[
+ {id:'green',c:'#163528',c2:'#1e4835',img:'id-card-lanyard-junior.webp',n:'สีเขียว',t:'นักเรียนระดับมัธยมศึกษาตอนต้น (ม.1–ม.3)',body:[
   ['p','ใช้สำหรับนักเรียนในระดับมัธยมศึกษาตอนต้น เพื่อแสดงสถานะสมาชิกในขณะที่อยู่ภายในบริเวณโรงเรียน'],
   ['h','สิทธิ์การเข้าถึง'],
   ['ul',['พื้นที่การเรียนรู้ตามตารางเรียน','ห้องเรียนประจำระดับชั้น','พื้นที่ส่วนกลางสำหรับนักเรียนทั่วไป']]]},
- {id:'blue',c:'#2563C9',n:'สีน้ำเงิน',t:'นักเรียนระดับมัธยมศึกษาตอนปลาย (ม.4–ม.6)',body:[
+ {id:'blue',c:'#152c4d',c2:'#0d1b2f',img:'id-card-lanyard-senior.webp',n:'สีน้ำเงิน',t:'นักเรียนระดับมัธยมศึกษาตอนปลาย (ม.4–ม.6)',body:[
   ['p','ใช้สำหรับนักเรียนระดับมัธยมศึกษาตอนปลาย ซึ่งมีความรับผิดชอบและสิทธิ์การใช้งานพื้นที่เฉพาะตามแผนการเรียนมากขึ้น'],
   ['h','สิทธิ์การเข้าถึง'],
   ['ul',['ห้องเรียนเฉพาะสายการเรียน','ห้องปฏิบัติการตามหลักสูตร','พื้นที่กิจกรรมระดับมัธยมศึกษาตอนปลาย']]]},
- {id:'red',c:'#D13438',n:'สีแดง',t:'สมาชิกสภานักเรียนและผู้นำกิจกรรมนักเรียน',body:[
+ {id:'red',c:'#3d0e0e',c2:'#7a0103',img:'id-card-lanyard-council.webp',n:'สีแดง',t:'สมาชิกสภานักเรียนและผู้นำกิจกรรมนักเรียน',body:[
   ['p','ใช้สำหรับนักเรียนที่ได้รับแต่งตั้งให้ดำรงตำแหน่งผู้นำภายในโรงเรียน เช่น'],
   ['ul',['คณะกรรมการสภานักเรียน','ประธานชมรม','คณะกรรมการกิจกรรมนักเรียน']],
   ['h','สิทธิ์การเข้าถึงเพิ่มเติม'],
   ['ul',['สิทธิ์เข้าถึงห้องกิจกรรมและพื้นที่ชมรมตามหน้าที่รับผิดชอบ','สิทธิ์ใช้งานพื้นที่ส่วนกลางนอกเวลาเรียนตามระเบียบโรงเรียน','ได้รับมอบหมายหน้าที่ดูแลและประสานงานกิจกรรม']],
   ['note','หมายเหตุ: การเข้าถึงพื้นที่พิเศษยังคงอยู่ภายใต้การอนุมัติและระบบควบคุมของโรงเรียน']]},
- {id:'yellow',c:'#F2B705',n:'สีเหลือง',t:'นักเรียนทุนการศึกษา',body:[
+ {id:'yellow',c:'#ac8b4d',c2:'#ac8b4d',img:'id-card-lanyard-scholars.webp',n:'สีเหลือง',t:'นักเรียนทุนการศึกษา',body:[
   ['p','ใช้สำหรับนักเรียนที่ได้รับทุนสนับสนุนจากโรงเรียน เพื่อแสดงถึงความเป็นเลิศ ความสามารถ หรือศักยภาพที่ได้รับการสนับสนุนจาก KDS'],
   ['h','ครอบคลุม'],
   ['ul',['ทุนเรียนดีเด่น','ทุนความสามารถพิเศษ','ทุนสนับสนุนผู้ขาดแคลนทุนทรัพย์']],
   ['h','สิทธิ์การเข้าถึงเพิ่มเติม'],
   ['ul',['สิทธิ์เข้าร่วมโครงการพัฒนาศักยภาพนักเรียนทุน','การสนับสนุนด้านวิชาการหรือกิจกรรมเฉพาะตามประเภททุน','สิทธิ์เข้าถึงทรัพยากรสนับสนุนตามเงื่อนไขของทุน']]]},
- {id:'gray',c:'#8C95A3',n:'สีเทา',t:'เจ้าหน้าที่และบุคลากรในโรงเรียน',body:[
+ {id:'gray',c:'#aeaeae',c2:'#7a7a7a',img:'id-card-lanyard-staff.webp',n:'สีเทา',t:'เจ้าหน้าที่และบุคลากรในโรงเรียน',body:[
   ['p','ใช้สำหรับบุคลากรของโรงเรียนและสถาบันเทคโนโลยีโกศาดิลก'],
   ['h','สิทธิ์การเข้าถึง'],
   ['ul',['พื้นที่ปฏิบัติงานตามตำแหน่ง','ห้องพักครูและสำนักงาน','พื้นที่ควบคุมสำหรับบุคลากร']]]},
- {id:'black',c:'#1A1A1A',n:'สีดำ',t:'คณะครู อาจารย์',body:[
+ {id:'black',c:'#2b2b2b',c2:'#1f1f1f',img:'id-card-lanyard-teacher.webp',n:'สีดำ',t:'คณะครู อาจารย์',body:[
   ['p','ใช้สำหรับบุคลากรของโรงเรียนและสถาบันเทคโนโลยีโกศาดิลก'],
   ['h','สิทธิ์การเข้าถึง'],
   ['ul',['พื้นที่ปฏิบัติงานตามตำแหน่ง','ห้องพักครูและสำนักงาน','พื้นที่ควบคุมสำหรับบุคลากร']]]}];
@@ -422,7 +422,7 @@ function idcHtml(){
  pic=(u,alt,k,t)=>okU(u)?`<img src="${E(u)}" alt="${E(alt)}" loading="lazy" decoding="async">`:/^id-card-[\w-]+\.webp$/.test(u||'')?`<img src="${E(u)}" alt="${E(alt)}" data-zoom="${E(location.origin+'/'+u)}" data-zalt="${E(alt)}" style="cursor:zoom-in" loading="lazy" decoding="async" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">${ph(k,t).replace('class="idc-ph"','class="idc-ph" style="display:none"')}`:ph(k,t),
  card=x=>`<article class="idc-card"><div class="idc-im">${pic(x.img,x.t,'card','พื้นที่สำหรับรูปบัตร')}</div><h3>${E(x.t)}</h3>${okU(x.url)?`<a class="btn b" href="${E(x.url)}" target="_blank" rel="noopener noreferrer">เปิดลิงก์ ${ic('ext')}<span class="sr">(เปิดในแท็บใหม่)</span></a>`:`<button type="button" class="btn" disabled aria-disabled="true">เปิดลิงก์</button><p class="idc-un">ยังไม่ได้ตั้งค่าลิงก์</p>`}</article>`,
  blk=b=>b[0]==='p'?`<p>${E(b[1])}</p>`:b[0]==='h'?`<h4 class="idl-h">${E(b[1])}</h4>`:b[0]==='ul'?`<ul>${b[1].map(i=>`<li>${E(i)}</li>`).join('')}</ul>`:b[0]==='note'?`<p class="idl-nt">${E(b[1])}</p>`:'',
- col=x=>{const o=IDC_OPEN===x.id,im=x.img||L.img,fg=im&&(okU(im)||/^id-card-[\w-]+\.webp$/.test(im))?`<figure class="idl-f"><div class="idl-m">${pic(im,'สายคล้องบัตรประจำตัวทั้ง 6 สีของโรงเรียนสาธิตโกศาดิลก','lan','พื้นที่สำหรับรูปสายคล้องบัตร')}</div><figcaption>ภาพสายคล้องบัตรทั้ง 6 สี</figcaption></figure>`:'';return `<li class="idl-i${o?' on':''}" data-id="${E(x.id)}" style="--lc:${x.c}"><button type="button" class="idl-b" id="idb-${E(x.id)}" aria-expanded="${o}" aria-controls="idp-${E(x.id)}" onclick="idcTog('${E(x.id)}')"><span class="idl-sw" aria-hidden="true"></span><span class="idl-t"><span class="idl-c">${E(x.n)}</span><span class="idl-n">${E(x.t)}</span></span>${sv('arr','idl-ar')}</button><div class="idl-p${fg?'':' noim'}" id="idp-${E(x.id)}" role="region" aria-labelledby="idb-${E(x.id)}"${o?'':' hidden'}>${fg}<div class="idl-x"><div class="idl-hx"><span class="idl-sw" aria-hidden="true"></span>รหัสสี ${E(x.c)}</div>${x.body.map(blk).join('')}</div></div></li>`},
+ col=x=>{const o=IDC_OPEN===x.id,H=h=>/^#[0-9a-f]{6}$/i.test(h||'')?h:'',c1=H(x.c)||'#8C95A3',c2=H(x.c2)||c1,im=x.img||L.img,own=!!x.img,fg=im&&(okU(im)||/^id-card-[\w-]+\.webp$/.test(im))?`<figure class="idl-f"><div class="idl-m">${pic(im,own?`สายคล้องบัตรประจำตัว ${x.t}`:'สายคล้องบัตรประจำตัวทั้ง 6 สีของโรงเรียนสาธิตโกศาดิลก','lan','พื้นที่สำหรับรูปสายคล้องบัตร')}</div><figcaption>${own?E(x.t):'ภาพสายคล้องบัตรทั้ง 6 สี'}</figcaption></figure>`:'',hx=[x.c,x.c2].filter(h=>H(h)).map(h=>`<span class="idl-hx"><span class="idl-sw" style="background:${h}" aria-hidden="true"></span>${E(h.toUpperCase())}</span>`).join('');return `<li class="idl-i${o?' on':''}" data-id="${E(x.id)}" style="--lc:${c1};--lc2:${c2}"><button type="button" class="idl-b" id="idb-${E(x.id)}" aria-expanded="${o}" aria-controls="idp-${E(x.id)}" onclick="idcTog('${E(x.id)}')"><span class="idl-sw" aria-hidden="true"></span><span class="idl-t"><span class="idl-c">${E(x.n)}</span><span class="idl-n">${E(x.t)}</span></span>${sv('arr','idl-ar')}</button><div class="idl-p${fg?'':' noim'}" id="idp-${E(x.id)}" role="region" aria-labelledby="idb-${E(x.id)}"${o?'':' hidden'}>${fg}<div class="idl-x">${hx?`<div class="idl-hxs" role="group" aria-label="รหัสสีของสายคล้อง">${hx}</div>`:''}${x.body.map(blk).join('')}</div></div></li>`},
  L=IDC_LANYARD;
  return `<div class="idc"><section class="idc-s" aria-labelledby="idc-h1"><h2 id="idc-h1">ประเภทบัตรประจำตัว</h2><div class="idc-g">${IDC_TYPES.map(card).join('')}</div></section>`
  +`<section class="idc-s" aria-labelledby="idc-h2"><h2 id="idc-h2">${E(L.h)}</h2><p class="idc-lead">${E(L.tx)}</p><div class="idc-ly">${pic(L.img,'สายคล้องบัตรประจำตัว (ID Card Lanyard) ของโรงเรียนสาธิตโกศาดิลก','lan','พื้นที่สำหรับรูปสายคล้องบัตร')}</div>${okU(L.url)?`<div class="idc-lyb"><a class="btn b" href="${E(L.url)}" target="_blank" rel="noopener noreferrer">เปิดลิงก์ ${ic('ext')}<span class="sr">(เปิดในแท็บใหม่)</span></a></div>`:''}</section>`
