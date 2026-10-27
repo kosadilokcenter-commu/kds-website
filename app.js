@@ -829,35 +829,43 @@ ${skipFree||noGrp?`<p class="sgxn">ไม่นับ: ช่องที่พ�
 const FL_LANG=[['อ','ภาษาอังกฤษ'],['จ','ภาษาจีน'],['ญ','ภาษาญี่ปุ่น'],['ฝ','ภาษาฝรั่งเศส']];
 const flLang=code=>{const ch=[...String(code==null?'':code).trim()][0];return FL_LANG.some(x=>x[0]===ch)?ch:''};
 const flName=k=>{const f=FL_LANG.find(x=>x[0]===k);return f?f[1]:''};
+/* กลุ่มกิจกรรมพัฒนาผู้เรียน: แยก 4 รายการด้วยวิธีเดียวกับภาษาต่างประเทศ (กรอง rows ของ sgxCalc) แต่จำแนกจาก "ชื่อรายวิชา" (ctcourses[].name) เพราะรหัสกิจกรรมไม่มีรูปแบบตายตัวเหมือน อ จ ญ ฝ · วิชาที่ชื่อตรงมากกว่า 1 รายการ หรือไม่ตรงรายการใดเลย = ไม่จับคู่ (ไม่เดา) จึงไม่โผล่ในปุ่มรายการใด แต่ยังเห็นใน "ทุกกิจกรรม" */
+const AC_SUB=[['sc','กิจกรรมลูกเสือ - เนตรนารี',/ลูกเสือ|เนตรนารี/],['gd','กิจกรรมแนะแนว',/แนะแนว/],['cl','กิจกรรมชมรม',/ชมรม|ชุมนุม/],['sv','กิจกรรมเพื่อสังคมและสาธารณประโยชน์',/สาธารณประโยชน์|เพื่อสังคม/]];
+const acOf=c=>{const n=String(c&&c.name!=null?c.name:'').normalize('NFC').replace(/[\s\u200b]+/g,''),m=AC_SUB.filter(x=>x[2].test(n));return m.length===1?m[0][0]:''};
+const acName=k=>{const f=AC_SUB.find(x=>x[0]===k);return f?f[1]:''};
+const sgxIsAc=g=>!!g&&(g.kind==='activity'||g.id==='pg_ac'||/กิจกรรมพัฒนาผู้เรียน/.test(g.name||''));
+const acBtns=(cur,pre,ac)=>{const A=[['','ทุกกิจกรรม',null],...AC_SUB.map(([k,n])=>[k,n,ac[k]||0])];
+ return `<div class="cuh" role="group" aria-label="เลือกกิจกรรม">${A.map(([v,n,c])=>`<button type="button" class="btn s${v===cur?' b':''}" aria-pressed="${v===cur}" data-v="${E(v)}" onclick="${pre}this.dataset.v)">${E(n)}${c==null?'':' ('+c+' คาบ)'}</button>`).join('')}</div>`};
 const flOk=(v,adm)=>{v=String(v==null?'':v);return FL_LANG.some(x=>x[0]===v)||(adm&&v==='__other')?v:''};
 const sgxIsFl=g=>!!g&&(g.id==='pg_fl'||pgNm(g.name)==='ภาษาต่างประเทศ');
 const flBtns=(cur,pre,fl,unkN)=>{const A=[['','ทุกภาษา',null],...FL_LANG.map(([k,n])=>[k,n,fl[k]||0])];if(unkN)A.push(['__other','รหัสที่จำแนกไม่ได้ ('+unkN+' วิชา)',null]);
  return `<div class="cuh" role="group" aria-label="เลือกภาษา">${A.map(([v,n,c])=>`<button type="button" class="btn s${v===cur?' b':''}" aria-pressed="${v===cur}" data-v="${E(v)}" onclick="${pre}this.dataset.v)">${E(n)}${c==null?'':' ('+c+' คาบ)'}</button>`).join('')}</div>`};
 const flUnkBox=u=>`<div class="msg er"><b>รหัสวิชาที่จำแนกภาษาไม่ได้ ${u.length} รายการ</b> · รหัสไม่ขึ้นต้นด้วย อ จ ญ ฝ (หรือไม่มีรหัส) จึงไม่ถูกจัดเข้าภาษาใด ระบบไม่ได้แก้รหัสวิชา กรุณาตรวจสอบที่ <a href="#/admin/curriculum">โครงสร้างหลักสูตรและตารางเรียน</a></div><div class="cqw"><table class="cqt"><thead><tr><th>ชั้น/ห้อง</th><th>ภาค</th><th>รหัสวิชา</th><th>ชื่อรายวิชา</th></tr></thead><tbody>${u.map(c=>`<tr><td data-l="ชั้น/ห้อง">${E(sgxCls(c.g,c.p))}</td><td data-l="ภาคเรียน">${E(c.t)}</td><td data-l="รหัสวิชา">${E(c.code||'(ไม่มีรหัส)')}</td><td data-l="ชื่อรายวิชา">${E(c.name)}</td></tr>`).join('')}</tbody></table></div>`;
 /* คำนวณคาบสอนของกลุ่มสาระ (ใช้ร่วมกันหลังบ้านและหน้าบ้าน) · pubOnly → นับเฉพาะตารางที่ pub === true · ข้ามช่องที่ไม่มี cid */
-function sgxCalc(gid,t,gr,pubOnly,lang){const G=sgxGrps(),gm=new Set(G.map(x=>x.id)),all=ctCrs(),cm=new Map(all.map(c=>[c.id,c])),cfg=ctCfg(),rows=[];let skipFree=0,noGrp=0,nt=0;
+function sgxCalc(gid,t,gr,pubOnly,lang,act){const G=sgxGrps(),gm=new Set(G.map(x=>x.id)),all=ctCrs(),cm=new Map(all.map(c=>[c.id,c])),cfg=ctCfg(),rows=[];let skipFree=0,noGrp=0,nt=0;
  ctTabs().forEach(tb=>{if(!tb||tb.id==='cfg'||!tb.cells||typeof tb.cells!=='object'||+tb.t!==t||!CT_G.includes(+tb.g)||(gr&&+tb.g!==gr)||(pubOnly&&tb.pub!==true))return;nt++;
   CT_D.forEach(([dk,dn],di)=>{for(let p=0;p<cfg.n;p++){const c=tb.cells[dk+'_'+p];if(!c)continue;if(!c.cid){skipFree++;continue}const x=cm.get(c.cid);if(!x){skipFree++;continue}if(!(x.sg&&gm.has(x.sg))){noGrp++;continue}if(x.sg!==gid)continue;rows.push({di,dn,p,tb,x,c})}})});
  rows.sort((a,b)=>a.di-b.di||a.p-b.p||a.tb.g-b.tb.g||sgxPlanIx(a.tb.p)-sgxPlanIx(b.tb.p)||String(a.x.code||'').localeCompare(String(b.x.code||''),'th'));
- const gcs=all.filter(c=>c.sg===gid),isFl=sgxIsFl(G.find(x=>x.id===gid)),fl={};
+ const gcs=all.filter(c=>c.sg===gid),isFl=sgxIsFl(G.find(x=>x.id===gid)),fl={},isAc=sgxIsAc(G.find(x=>x.id===gid)),ac={},acN={};
  if(isFl)rows.forEach(r=>{const k=flLang(r.x.code);fl[k]=(fl[k]||0)+1});
  const unk=isFl?gcs.filter(c=>!flLang(c.code)).sort((a,b)=>a.g-b.g||a.t-b.t||sgxPlanIx(a.p)-sgxPlanIx(b.p)||String(a.code||'').localeCompare(String(b.code||''),'th')):[];
- const out=isFl&&lang?rows.filter(r=>lang==='__other'?!flLang(r.x.code):flLang(r.x.code)===lang):rows;
- return {rows:out,cfg,nt,skipFree,noGrp,nCrs:gcs.length,isFl,fl,unk}}
+ if(isAc){rows.forEach(r=>{const k=acOf(r.x);ac[k]=(ac[k]||0)+1});gcs.forEach(c=>{const k=acOf(c);acN[k]=(acN[k]||0)+1})}
+ const out=isFl&&lang?rows.filter(r=>lang==='__other'?!flLang(r.x.code):flLang(r.x.code)===lang):isAc&&act&&acName(act)?rows.filter(r=>acOf(r.x)===act):rows;
+ return {rows:out,cfg,nt,skipFree,noGrp,nCrs:gcs.length,isFl,fl,unk,isAc,ac,acN}}
 const sgxMakePage=()=>secPageMake('sgsched','ตารางสอนกลุ่มสาระการเรียนรู้','sgsched');
 /* ===== หน้าบ้าน: ส่วน CMS "ตารางสอนกลุ่มสาระการเรียนรู้" (type 'sgsched') ที่ #/p/<slug> · ตารางรายสัปดาห์ใช้ .ttw/.ttt ของตารางเรียนเดิม (คอลัมน์=วัน แถว=คาบ/เวลา) ช่องที่ไม่มีคาบปล่อยว่าง (.ttx) ไม่สร้างข้อมูล
    ผู้เข้าชมเห็นเฉพาะกลุ่มสาระที่เผยแพร่ + ตารางเรียนที่ pub === true (แม้เป็นทีมงานก็แสดงเท่านี้ — ดูฉบับร่างได้ที่หลังบ้าน) · ไม่แสดงชื่อครู ===== */
-const SGV={gid:'',t:1,g:0,l:''};
-function sgvSel(k,v){SGV[k]=k==='l'?flOk(v):k==='gid'?String(v):k==='t'?ctOkT(v):(CT_G.includes(+v)?+v:0);render()}
+const SGV={gid:'',t:1,g:0,l:'',a:''};
+function sgvSel(k,v){SGV[k]=k==='l'?flOk(v):k==='a'?(acName(v)?v:''):k==='gid'?String(v):k==='t'?ctOkT(v):(CT_G.includes(+v)?+v:0);render()}
 /* ===== ทะเบียนรหัสวิชาและสาระการเรียนรู้ (ท้ายหน้าตารางสอน #/p/<slug>) · อ่านจาก settings.ctcourses ชุดเดิม (ไม่สร้างข้อมูลใหม่) · กรองเฉพาะรายวิชาที่ sg ตรงกับกลุ่มสาระที่เลือกในหน้า (SGV.gid) · มีช่องค้นหา + ตัวกรองระดับ/ชั้นปี (sgrQ/sgrSet/sgrReset) · วิชาที่ไม่มี sg ไม่แสดงในทะเบียนของกลุ่มใด (ไม่เดา) · ระดับ/ชั้นปีได้จากชั้น g (ม.1–3 = ตอนต้น · ม.4–6 = ตอนปลาย) · สาระการเรียนรู้ = ชื่อกลุ่มสาระที่เผยแพร่ตาม sg (ไม่มี/ไม่พบ = "ยังไม่ระบุ" ไม่เดา) · รหัสเดียวกันในหลายภาคเรียน/แผนรวมเป็นแถวเดียวต่อชั้น · วิชาที่ไม่มีรหัสไม่อยู่ในทะเบียน ===== */
-const SGR={q:'',lv:'',y:0,key:'',gid:''},SGR_LN={l:'มัธยมศึกษาตอนต้น',u:'มัธยมศึกษาตอนปลาย'},sgrLv=g=>g?(g<4?'l':'u'):'',sgrNm=s=>String(s==null?'':s).normalize('NFC').toLowerCase().replace(/\s+/g,'');
+const SGR={q:'',lv:'',y:0,key:'',gid:'',a:''},SGR_LN={l:'มัธยมศึกษาตอนต้น',u:'มัธยมศึกษาตอนปลาย'},sgrLv=g=>g?(g<4?'l':'u'):'',sgrNm=s=>String(s==null?'':s).normalize('NFC').toLowerCase().replace(/\s+/g,'');
 /* ข้อมูลทะเบียนของกลุ่มสาระ gid (เฉพาะรายวิชาที่ sg ตรงกลุ่ม · ไม่เดากลุ่ม) · ตัวกรอง SGR: q = ค้นหาจากรหัสวิชา/ชื่อสาระการเรียนรู้ · lv = ระดับ (l ตอนต้น/u ตอนปลาย) · y = ชั้นปี (1–6) · ตัวเลือกระดับ/ชั้นปีสร้างจากข้อมูลจริงของกลุ่มนั้น · ตัวกรองเป็นแบบ AND · อัปเดตเฉพาะ #sgrb/#sgrn ไม่เรนเดอร์ทั้งหน้าใหม่ (ช่องค้นหาไม่เสียโฟกัส) */
 function sgrData(gid){const gm=new Map(sgxGrps().filter(fqIsPub).map(x=>[x.id,x.name])),M=new Map();
- ctCrs().forEach(c=>{const code=String(c.code==null?'':c.code).trim();if(!code||c.sg!==gid)return;const g=CT_G.includes(+c.g)?+c.g:0,k=g+'|'+code,n=c.sg&&gm.get(c.sg)||'';let r=M.get(k);if(!r){r={g,code,n:[]};M.set(k,r)}if(n&&!r.n.includes(n))r.n.push(n)});
+ ctCrs().forEach(c=>{const code=String(c.code==null?'':c.code).trim();if(!code||c.sg!==gid||(SGR.a&&acOf(c)!==SGR.a))return;const g=CT_G.includes(+c.g)?+c.g:0,k=g+'|'+code,n=c.sg&&gm.get(c.sg)||'';let r=M.get(k);if(!r){r={g,code,n:[]};M.set(k,r)}if(n&&!r.n.includes(n))r.n.push(n)});
  return [...M.values()].sort((a,b)=>(a.g||99)-(b.g||99)||a.code.localeCompare(b.code,'th'))}
 function sgrRows(L){const q=sgrNm(SGR.q);return L.filter(r=>(!SGR.lv||sgrLv(r.g)===SGR.lv)&&(!SGR.y||r.g===SGR.y)&&(!q||sgrNm(r.code).includes(q)||r.n.some(x=>sgrNm(x).includes(q))))}
 const sgrCnt=(R,L)=>R.length===L.length?L.length+' รหัสวิชา':R.length+' จาก '+L.length+' รหัสวิชา';
-function sgrBody(L,R){if(!L.length)return '<p class="empty-ev">ยังไม่มีรหัสวิชาในกลุ่มสาระนี้</p>';
+function sgrBody(L,R){if(!L.length)return '<p class="empty-ev">'+(SGR.a&&acName(SGR.a)?'ไม่มีข้อมูลรหัสวิชาของ'+E(acName(SGR.a)):'ยังไม่มีรหัสวิชาในกลุ่มสาระนี้')+'</p>';
  if(!R.length)return '<p class="empty-ev">ไม่พบรหัสวิชาที่ตรงกับเงื่อนไข <button type="button" class="btn s" onclick="sgrReset()">ล้างตัวกรอง</button></p>';
  const body=R.map(r=>`<tr><td data-l="ระดับ">${r.g?SGR_LN[sgrLv(r.g)]:'-'}</td><td data-l="ชั้นปี">${r.g?'ม.'+r.g:'-'}</td><td data-l="รหัสวิชา">${E(r.code)}</td><td data-l="สาระการเรียนรู้">${r.n.length?E(r.n.join(', ')):'ยังไม่ระบุ'}</td></tr>`).join('');
  return `<div class="cqw"><table class="cqt sgr"><caption class="sr">ทะเบียนรหัสวิชาและสาระการเรียนรู้</caption><thead><tr><th scope="col">ระดับ</th><th scope="col">ชั้นปี</th><th scope="col">รหัสวิชา</th><th scope="col">สาระการเรียนรู้</th></tr></thead><tbody>${body}</tbody></table></div>`}
@@ -866,7 +874,7 @@ function sgrRefresh(){const L=sgrData(SGR.gid),R=sgrRows(L),b=$('sgrb'),n=$('sgr
 function sgrQ(v){SGR.q=String(v==null?'':v);sgrRefresh()}
 function sgrSet(k,v){if(k==='lv')SGR.lv=v==='l'||v==='u'?v:'';else SGR.y=CT_G.includes(+v)?+v:0;sgrRefresh()}
 function sgrReset(){SGR.q='';SGR.lv='';SGR.y=0;const i=$('sgrq');if(i)i.value='';sgrRefresh()}
-function sgvReg(gid){const key=location.hash+'|'+gid;if(SGR.key!==key){SGR.key=key;SGR.q='';SGR.lv='';SGR.y=0}SGR.gid=gid;
+function sgvReg(gid){SGR.a=sgxIsAc(sgxGrps().find(x=>x.id===gid))&&acName(SGV.a)?SGV.a:'';const key=location.hash+'|'+gid+'|'+SGR.a;if(SGR.key!==key){SGR.key=key;SGR.q='';SGR.lv='';SGR.y=0}SGR.gid=gid;
  const L=sgrData(gid),lvs=['l','u'].filter(v=>L.some(r=>sgrLv(r.g)===v)),ys=CT_G.filter(y=>L.some(r=>r.g===y));
  if(SGR.lv&&!lvs.includes(SGR.lv))SGR.lv='';if(SGR.y&&!ys.includes(SGR.y))SGR.y=0;
  const R=sgrRows(L),
@@ -877,7 +885,7 @@ function sgvReg(gid){const key=location.hash+'|'+gid;if(SGR.key!==key){SGR.key=k
 function sgvView(){const G=sgxGrps().filter(fqIsPub);
  if(!G.length)return '<div class="sgv"><p class="empty-ev">ยังไม่มีข้อมูลกลุ่มสาระการเรียนรู้</p></div>';
  if(!G.some(x=>x.id===SGV.gid))SGV.gid=G[0].id;SGV.t=ctOkT(SGV.t);if(!CT_G.includes(SGV.g))SGV.g=0;
- const grp=G.find(x=>x.id===SGV.gid),{rows,cfg,nCrs,isFl,fl}=sgxCalc(SGV.gid,SGV.t,SGV.g,true,SGV.l),lt=isFl&&SGV.l&&flName(SGV.l)?' · '+flName(SGV.l):'',
+ const grp=G.find(x=>x.id===SGV.gid),{rows,cfg,nCrs,isFl,fl,isAc,ac,acN}=sgxCalc(SGV.gid,SGV.t,SGV.g,true,SGV.l,SGV.a),lt=isFl&&SGV.l&&flName(SGV.l)?' · '+flName(SGV.l):isAc&&SGV.a&&acName(SGV.a)?' · '+acName(SGV.a):'',
  bt=(arr,cur,pre,lab,cl)=>`<div class="cuh ${cl}" role="group" aria-label="${E(lab)}">${arr.map(([v,t])=>`<button type="button" class="btn s${v===cur?' b':''}" aria-pressed="${v===cur}" onclick="${pre}${v})">${E(t)}</button>`).join('')}</div>`,
  fld=(l,h)=>`<div class="ttf"><span class="ttl" aria-hidden="true">${l}</span>${h}</div>`,
  by=rows.reduce((o,r)=>{(o[r.di+'_'+r.p]=o[r.di+'_'+r.p]||[]).push(r);return o},{}),
@@ -885,9 +893,9 @@ function sgvView(){const G=sgxGrps().filter(fqIsPub);
  item=r=>`<div class="ttk"><b class="tn">${E(r.x.name)}</b>${r.x.code?`<small>${E(r.x.code)}</small>`:''}<small class="kc">${E(sgxCls(+r.tb.g,r.tb.p))}</small>${r.c.room?`<small>ห้อง ${E(r.c.room)}</small>`:''}</div>`,
  body=CT_D.map(([dk,dn],di)=>`<tr><th scope="row">${E(dn)}</th>${Array.from({length:cfg.n},(_,p)=>{const L=by[di+'_'+p];return L?`<td>${L.map(item).join('')}</td>`:'<td class="ttx"></td>'}).join('')}</tr>`).join(''),
  ttl=sgxGName(grp)+' · ภาคเรียนที่ '+SGV.t+(SGV.g?' · ม.'+SGV.g:'')+lt;
- return `<div class="sgv"><div class="sgvbar">${fld('<label for="sgvg">กลุ่มสาระการเรียนรู้</label>',`<select id="sgvg" onchange="sgvSel('gid',this.value)">${G.map(x=>`<option value="${E(x.id)}"${x.id===SGV.gid?' selected':''}>${E(sgxGName(x))}</option>`).join('')}</select>`)}${fld('ภาคเรียน',bt(CT_T.map(n=>[n,'ภาคเรียนที่ '+n]),SGV.t,"sgvSel('t',",'ภาคเรียน','tg'))}${fld('ระดับชั้น',bt([[0,'ทุกชั้น'],...CT_G.map(n=>[n,'ม.'+n])],SGV.g,"sgvSel('g',",'ระดับชั้น','gg'))}${isFl?fld('ภาษา',flBtns(SGV.l,"sgvSel('l',",fl,0)):''}</div>
+ return `<div class="sgv"><div class="sgvbar">${fld('<label for="sgvg">กลุ่มสาระการเรียนรู้</label>',`<select id="sgvg" onchange="sgvSel('gid',this.value)">${G.map(x=>`<option value="${E(x.id)}"${x.id===SGV.gid?' selected':''}>${E(sgxGName(x))}</option>`).join('')}</select>`)}${fld('ภาคเรียน',bt(CT_T.map(n=>[n,'ภาคเรียนที่ '+n]),SGV.t,"sgvSel('t',",'ภาคเรียน','tg'))}${fld('ระดับชั้น',bt([[0,'ทุกชั้น'],...CT_G.map(n=>[n,'ม.'+n])],SGV.g,"sgvSel('g',",'ระดับชั้น','gg'))}${isFl?fld('ภาษา',flBtns(SGV.l,"sgvSel('l',",fl,0)):''}${isAc?fld('กิจกรรม',acBtns(SGV.a,"sgvSel('a',",ac)):''}</div>
 <div class="sgvhd"><h2 class="sgvh">${E(ttl)}</h2>${rows.length?`<p class="sgvs">${rows.length} คาบสอน (รวมทุกห้อง)</p>`:''}</div>
-${rows.length?`<div class="ttw"><table class="ttt sgt" style="--n:${cfg.n}"><caption class="sr">${E('ตารางสอน '+ttl)}</caption><thead><tr><th scope="col">วัน</th>${head}</tr></thead><tbody>${body}</tbody></table></div>`:`<p class="empty-ev">${nCrs?'ยังไม่มีตารางสอนของกลุ่มสาระนี้ในภาคเรียนที่ '+SGV.t+(SGV.g?' ม.'+SGV.g:'')+(lt?' ('+flName(SGV.l)+')':''):'ยังไม่มีข้อมูลรายวิชาของกลุ่มสาระนี้'}</p>`}${sgvReg(SGV.gid)}</div>`}
+${rows.length?`<div class="ttw"><table class="ttt sgt" style="--n:${cfg.n}"><caption class="sr">${E('ตารางสอน '+ttl)}</caption><thead><tr><th scope="col">วัน</th>${head}</tr></thead><tbody>${body}</tbody></table></div>`:`<p class="empty-ev">${isAc&&SGV.a&&acName(SGV.a)?(acN[SGV.a]?'ไม่มีข้อมูลตารางสอนของ'+E(acName(SGV.a))+'ในภาคเรียนที่ '+SGV.t+(SGV.g?' ม.'+SGV.g:''):'ไม่มีข้อมูลรายวิชาของ'+E(acName(SGV.a))+'ในระบบ'):nCrs?'ยังไม่มีตารางสอนของกลุ่มสาระนี้ในภาคเรียนที่ '+SGV.t+(SGV.g?' ม.'+SGV.g:'')+(lt?' ('+flName(SGV.l)+')':''):'ยังไม่มีข้อมูลรายวิชาของกลุ่มสาระนี้'}</p>`}${sgvReg(SGV.gid)}</div>`}
 function sgxAdmin(){const T=SGX.tab;return `<h1>กลุ่มสาระ: กำหนดวิชาและตารางสอน</h1>${dbBanner()}${secPageBox('sgsched','ตารางสอนกลุ่มสาระการเรียนรู้','sgsched','sgxMakePage')}<nav class="cuh" aria-label="ส่วนของระบบ"><button type="button" class="btn s${T==='assign'?' b':''}" aria-pressed="${T==='assign'}" onclick="sgxTab('assign')">1. กำหนดกลุ่มสาระให้รายวิชา</button><button type="button" class="btn s${T==='sched'?' b':''}" aria-pressed="${T==='sched'}" onclick="sgxTab('sched')">2. ตารางสอนกลุ่มสาระ</button></nav>${T==='sched'?sgxSched():sgxAssign()}`}
 /* ---------- หน้าเว็บ (ผู้เข้าชม): #/timetable/<ม.1–6>/<ภาค> หรือส่วน "ตารางเรียน" ในหน้า CMS · เห็นเฉพาะตารางที่เผยแพร่ ทีมงานเห็นฉบับร่างพร้อมป้าย ---------- */
 /* ช่องวิชาในตารางเรียน: แตะ/กดเพื่อดูชื่อวิชาเต็ม + รหัส วัน/คาบ ห้อง ครู (อ่านจาก data-* ของปุ่ม .ttc ไม่แตะข้อมูลตารางหรือทะเบียนวิชา) · ใช้ #md/.modal เดิม ปิดด้วยปุ่ม ✕ / คลิกพื้นหลัง / Esc */
