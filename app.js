@@ -1407,9 +1407,11 @@ const fqBlkOk=b=>b&&(b.type==='divider'||(b.type==='heading'&&b.text)||(b.type==
 
 /* ===== คอมมูนิตี้ในเครือ: เก็บเป็นอาร์เรย์ settings.affcomms (กลไก PVK เดิม ไม่เพิ่มคีย์/ตาราง/RPC) · ลำดับในอาร์เรย์ = ลำดับแสดงผล · status published/draft = เปิด/ซ่อน · รูปโลโก้อัปโหลดเข้า bucket 'media' โฟลเดอร์ affiliates ด้วย mdUpload เดิม · จัดการผ่านตัวจัดการกลาง FQE (#/admin/affcomms) ===== */
 const affAll=()=>fqAF().filter(fqIsPub),affMakePage=()=>secPageMake('affiliates','คอมมูนิตี้ในเครือ','affiliated-communities');
-function affClean(it){it.name=String(it.name||'').trim();if(!it.name)return 'กรุณากรอกชื่อคอมมูนิตี้';if([...it.name].length>80)return 'ชื่อคอมมูนิตี้ต้องไม่เกิน 80 ตัวอักษร';it.brief=String(it.brief||'').trim();if([...it.brief].length>200)return 'คำอธิบายสั้นต้องไม่เกิน 200 ตัวอักษร';it.url=String(it.url||'').trim();if(!okU(it.url))return 'URL เพจต้องขึ้นต้นด้วย https://';if(it.url.length>500)return 'URL ยาวเกินไป (ไม่เกิน 500 ตัวอักษร)';return ''}
-function affCard(c){const nm=E(c.name),lg=okU(c.logo)?`<img class="aff-lg" src="${E(c.logo)}" alt="" loading="lazy" decoding="async" onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'aff-ph',textContent:this.dataset.i}))" data-i="${E([...String(c.name||'?')][0]||'?')}">`:`<span class="aff-ph" aria-hidden="true">${E([...String(c.name||'?')][0]||'?')}</span>`;
- return `<li class="aff-c"><div class="aff-lw">${lg}</div><h3>${nm}</h3>${String(c.brief||'').trim()?`<p class="aff-d">${E(c.brief)}</p>`:''}${okU(c.url)?`<a class="aff-b" href="${E(c.url)}" target="_blank" rel="noopener noreferrer" aria-label="เยี่ยมชม ${nm} (เปิดในแท็บใหม่)">เยี่ยมชม <span aria-hidden="true">&#8599;&#xFE0E;</span></a>`:''}</li>`}
+const AFF_HEX=/^#[0-9a-fA-F]{6}$/;
+function affClean(it){it.name=String(it.name||'').trim();if(!it.name)return 'กรุณากรอกชื่อคอมมูนิตี้';if([...it.name].length>80)return 'ชื่อคอมมูนิตี้ต้องไม่เกิน 80 ตัวอักษร';it.brief=String(it.brief||'').trim();if([...it.brief].length>200)return 'คำอธิบายสั้นต้องไม่เกิน 200 ตัวอักษร';it.url=String(it.url||'').trim();if(!okU(it.url))return 'URL เพจต้องขึ้นต้นด้วย https://';if(it.url.length>500)return 'URL ยาวเกินไป (ไม่เกิน 500 ตัวอักษร)';it.coverColor=String(it.coverColor||'').trim();if(it.coverColor&&!AFF_HEX.test(it.coverColor))return 'สีพื้นหลังภาพปกต้องเป็นรหัส HEX เช่น #7A1A22 (หรือเว้นว่างเพื่อใช้สีมาตรฐาน)';it.coverColor=it.coverColor.toUpperCase();if(!it.cover)delete it.cover;if(!it.coverColor)delete it.coverColor;return ''}
+function affCard(c){const nm=E(c.name),ini=E([...String(c.name||'?')][0]||'?'),cv=okU(c.cover)?`<img class="aff-cvi" src="${E(c.cover)}" alt="" loading="lazy" decoding="async" onerror="this.remove()">`:'',bg=AFF_HEX.test(c.coverColor||'')?` style="background:${E(c.coverColor)}"`:'',
+ lg=okU(c.logo)?`<img class="aff-lg" src="${E(c.logo)}" alt="" loading="lazy" decoding="async" onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'aff-ph',textContent:this.dataset.i}))" data-i="${ini}">`:`<span class="aff-ph" aria-hidden="true">${ini}</span>`;
+ return `<li class="aff-c"><div class="aff-cv"${bg}>${cv}</div><div class="aff-lw">${lg}</div><div class="aff-bd"><h3>${nm}</h3>${String(c.brief||'').trim()?`<p class="aff-d">${E(c.brief)}</p>`:''}${okU(c.url)?`<a class="aff-b" href="${E(c.url)}" target="_blank" rel="noopener noreferrer" aria-label="ติดตาม ${nm} (เปิดในแท็บใหม่)">ติดตาม</a>`:''}</div></li>`}
 function affView(s){const L=affAll(),t=String(s&&s.text||'').trim();
  return `<div class="aff">${t?`<p class="aff-in">${E(t)}</p>`:''}${L.length?`<ul class="aff-g">${L.map(affCard).join('')}</ul>`:`<div class="empty-ev"><b>ยังไม่มีคอมมูนิตี้ในเครือ</b><br>${Auth.canAccessAdmin()?'<a href="#/admin/affcomms">เพิ่มข้อมูลที่หลังบ้าน</a>':'กรุณากลับมาใหม่ภายหลัง'}</div>`}</div>`}
 /* ===== ชมรมนักศึกษา: site_docs 'clubcats' (หมวดหมู่) และ 'clubs' (ชมรม) เชื่อมกันด้วย clubs[].catId — ไม่มีตารางใหม่ แก้หมวดหมู่ได้จากหลังบ้านโดยไม่แก้โค้ด
@@ -1509,8 +1511,8 @@ const FQE={
   filter:c=>!AFV.club||(AFV.club==='-'?!fqCC().some(x=>x.id===c.catId):c.catId===AFV.club),
   label:c=>c.name,sub:c=>fqName(fqCC(),c.catId,'name')||'ไม่ระบุหมวดหมู่',kids:()=>[],kidName:''},
  affcomms:{one:'คอมมูนิตี้',title:'จัดการคอมมูนิตี้ในเครือ',pre:'af',get:fqAF,store:'affcomms',
-  blank:()=>({name:'',logo:'',brief:'',url:'',status:'draft'}),
-  fields:[['name','ชื่อคอมมูนิตี้','text',1],['logo','โลโก้ (อัปโหลดรูป)','img'],['brief','คำอธิบายสั้น (ไม่บังคับ · ไม่เกิน 200 ตัวอักษร)','area'],['url','URL เพจของคอมมูนิตี้ (https://)','text',1]],
+  blank:()=>({name:'',logo:'',cover:'',coverColor:'',brief:'',url:'',status:'draft'}),
+  fields:[['name','ชื่อคอมมูนิตี้','text',1],['logo','โลโก้ (อัปโหลดรูป · แสดงซ้อนที่ขอบล่างของภาพปก)','img'],['cover','ภาพปก (อัปโหลดรูป · ไม่บังคับ · ถ้ามีจะแสดงแทนสีพื้นหลัง · แนะนำอัตราส่วนกว้าง เช่น 1200×400)','img'],['coverColor','สีพื้นหลังภาพปก (ใช้เมื่อไม่มีภาพปก)','color'],['brief','คำอธิบายสั้น (ไม่บังคับ · ไม่เกิน 200 ตัวอักษร)','area'],['url','URL เพจของคอมมูนิตี้ (https://)','text',1]],
   label:c=>c.name,sub:c=>c.url||'ยังไม่ระบุ URL',kids:()=>[],kidName:''},
  cposts:{one:'โพสต์',title:'จัดการโพสต์',pre:'cp',get:fqCP,
   blank:()=>({platform:'mixi2',url:'',author:'',text:'',image:'',date:'',cat:'',pages:['home','community'],status:'draft'}),
@@ -1609,6 +1611,7 @@ function fqEditor(ent,id){const C=FQE[ent],isNew=id==='new';
   if(t==='sel'){const o=opt();let g=null,h='';o.forEach(([a,b,gr])=>{if(gr!==undefined&&gr!==g){if(g!==null)h+='</optgroup>';h+=`<optgroup label="${E(gr)}">`;g=gr}h+=`<option value="${E(a)}"${v===a?' selected':''}>${E(b)}</option>`});if(g!==null)h+='</optgroup>';const hx=hint?hint():'';return `${lb}<select id="${nm}" name="${nm}"${chg?` onchange="${chg}"`:''}><option value="">— เลือก —</option>${h}</select>${hx?`<small>${hx}</small>`:''}`}
   if(t==='cpg'){const cur=Array.isArray(v)?v:(dflt?dflt():['home','community']),L=opt?opt():cpPgList(),ex=cur.filter(id=>!L.some(x=>x[0]===id));return `<fieldset><legend>${l}</legend><input type="hidden" name="${nm}_x" value="1">${L.concat(ex.map(id=>[id,'(หน้านี้ถูกลบแล้ว — ติ๊กออกเพื่อนำออก)'])).map(([a,b])=>`<label class="ck"><input type="checkbox" name="${nm}" value="${E(a)}"${cur.includes(a)?' checked':''}> ${E(b)}</label>`).join('')}<small>เลือกได้หลายหน้า โพสต์เดียวแสดงได้หลายหน้าโดยไม่ต้องสร้างซ้ำ ติ๊กออก = นำโพสต์ออกจากหน้านั้น (ไม่ลบโพสต์) โพสต์ที่ซ่อนหรือยังเป็นฉบับร่างจะไม่แสดงบนหน้าเว็บ</small></fieldset>`}
   if(t==='img')return fqImg(k,l,it,nm);
+  if(t==='color')return `${lb}<div class="aff-cp"><input type="color" value="${AFF_HEX.test(v||'')?E(v):'#7A1A22'}" oninput="this.nextElementSibling.value=this.value.toUpperCase()" aria-label="เลือกสี"><input id="${nm}" name="${nm}" value="${E(v)}" maxlength="7" placeholder="#7A1A22" autocomplete="off"></div><small>เลือกสีจากช่องสีหรือพิมพ์รหัส HEX · เว้นว่าง = ใช้สีมาตรฐานของเว็บ (แดงเลือดหมู → เทาน้ำเงิน)</small>`;
   if(t==='date')return `${lb}<input id="${nm}" name="${nm}" type="date" value="${E(v)}">`;
   return ''};
  const noPar=C.parent&&!C.parent().length;
@@ -1639,6 +1642,7 @@ async function fqSave(ent){const C=FQE[ent],it=fqSync(ent);if(!it)return;
   
    if(isPpl(ent)&&it.photo&&!okU(it.photo))return say('ลิงก์รูปต้องขึ้นต้นด้วย https://',false);
   if((ent==='clubs'||ent==='affcomms')&&it.logo&&!okU(it.logo))return say('ลิงก์โลโก้ต้องขึ้นต้นด้วย https://',false);
+  if(ent==='affcomms'&&it.cover&&!okU(it.cover))return say('ลิงก์ภาพปกต้องขึ้นต้นด้วย https://',false);
   for(const b of it.blocks||[])if(b.type==='image'&&b.url&&!okU(b.url))return say('ลิงก์รูปในเนื้อหาเพิ่มเติมต้องขึ้นต้นด้วย https://',false);
   it.blocks=(it.blocks||[]).filter(fqBlkOk);
   
