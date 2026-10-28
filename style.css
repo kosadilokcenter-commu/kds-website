@@ -1930,3 +1930,23 @@ html:has(.sch-pg){overflow-x:clip}
 .aff-b:focus-visible{outline:3px solid var(--kds-secondary);outline-offset:2px}
 @media(max-width:480px){.aff-lw{width:72px;height:72px;margin-top:-36px;margin-left:14px}.aff-bd{padding:8px 14px 14px}.aff-c h3{font-size:1.1rem}}
 .aff-cp{display:flex;gap:8px;align-items:center}.aff-cp input[type=color]{width:44px;height:38px;padding:2px;flex:none;cursor:pointer}.aff-cp input:not([type=color]){flex:1;max-width:160px}
+.aff-c[data-aff]{cursor:pointer}
+.aff-ob{display:inline;margin:0;padding:0;border:0;background:none;color:inherit;font:inherit;text-align:inherit;cursor:pointer;overflow-wrap:anywhere}
+.aff-ob:focus-visible{outline:3px solid var(--kds-secondary);outline-offset:2px}
+/* ป๊อปอัพรายละเอียดคอมมูนิตี้ (.aff-m): ใช้โครงสร้างและสีเดียวกับการ์ด */
+.modal.aff-m>div{padding:0;max-width:560px;overflow:auto}
+.aff-m .mx{z-index:2}
+.aff-m h3{margin:0;font-size:1.3rem;line-height:1.35;font-weight:700;color:var(--fg);overflow-wrap:anywhere}
+.aff-m .aff-bd{padding:10px 22px 22px;gap:12px}
+.aff-m .aff-d{display:block;overflow:visible;-webkit-line-clamp:unset;white-space:pre-line;font-size:1rem;line-height:1.75}
+.aff-m a.aff-b{color:#fff;margin-top:6px}
+.aff-ct h4{margin:0 0 8px;font-size:.9rem;font-weight:600;color:var(--muted)}
+.aff-ct ul{list-style:none;display:flex;flex-wrap:wrap;gap:10px;margin:0;padding:0}
+.aff-ct li{margin:0;padding:0}
+.aff-ci{display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;width:44px;height:44px;border:1px solid var(--kds-secondary);border-radius:50%;color:var(--kds-primary-text);text-decoration:none;transition:background-color .18s,color .18s,border-color .18s}
+.aff-ci svg{width:22px;height:22px;fill:currentColor;display:block}
+.aff-ci .soc-t{font:700 11px/1 system-ui,Arial,sans-serif;letter-spacing:-.2px}
+.aff-ci:focus-visible{outline:3px solid var(--kds-secondary);outline-offset:3px}
+@media(hover:hover){.aff-ci:hover{background:var(--kds-primary);border-color:var(--kds-primary);color:#fff}}
+@media(prefers-reduced-motion:reduce){.aff-ci{transition:none}}
+@media(max-width:480px){.aff-m .aff-bd{padding:8px 16px 18px}.aff-m h3{font-size:1.2rem}}
