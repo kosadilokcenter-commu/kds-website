@@ -1250,7 +1250,8 @@ a.lgb:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
 /* ===== หน้ากฎระเบียบ: หัวข้อ "หมวดที่", คำสำคัญ, กล่องหมายเหตุ (ทั้งหมดอยู่ใต้ .rules-pg เท่านั้น) ===== */
 .w.sec.rules-pg{--rp-hd:#F8EEEF;--rp-ok:#15803D;--rp-no:#C62828;--rp-nbg:#FFF9E5;--rp-nbd:#EBCF6B;--rp-nic:#8A6500}
 :root[data-theme="dark"] .w.sec.rules-pg{--rp-hd:#8D99AE24;--rp-ok:#4ADE80;--rp-no:#FF8A80;--rp-nbg:#FACC1514;--rp-nbd:#FACC1573;--rp-nic:#FACC15}
-.w.sec.rules-pg h2.rl-ch{margin:0 0 20px;padding:14px 18px;background:var(--rp-hd);border:0;border-left:6px solid var(--rp-title);border-radius:10px;font-size:clamp(1.4rem,4.6vw,1.95rem);font-weight:900;letter-spacing:.01em;line-height:1.35;overflow-wrap:anywhere}
+.w.sec.rules-pg h2.rl-ch{margin:0 0 20px;padding:14px 18px;background:var(--rp-hd);border:0;border-left:6px solid var(--rp-title);border-radius:10px;font-size:clamp(1.4rem,4.6vw,1.95rem);font-weight:900;letter-spacing:.01em;line-height:1.45;overflow-wrap:anywhere}
+.w.sec.rules-pg h2.rl-ch small.en{margin-top:4px;font-size:.85rem;font-weight:500}
 .rules-pg .rl-ok{color:var(--rp-ok);font-weight:700}
 .rules-pg .rl-no{color:var(--rp-no);font-weight:700}
 .rules-pg .rl-note{display:flex;align-items:flex-start;gap:14px;margin:6px 0 1.2em;padding:16px 18px;background:var(--rp-nbg);border:1px solid var(--rp-nbd);border-radius:12px;color:var(--rp-ink)}
