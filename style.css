@@ -1250,8 +1250,9 @@ a.lgb:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
 /* ===== หน้ากฎระเบียบ: หัวข้อ "หมวดที่", คำสำคัญ, กล่องหมายเหตุ (ทั้งหมดอยู่ใต้ .rules-pg เท่านั้น) ===== */
 .w.sec.rules-pg{--rp-hd:#F8EEEF;--rp-ok:#15803D;--rp-no:#C62828;--rp-nbg:#FFF9E5;--rp-nbd:#EBCF6B;--rp-nic:#8A6500}
 :root[data-theme="dark"] .w.sec.rules-pg{--rp-hd:#8D99AE24;--rp-ok:#4ADE80;--rp-no:#FF8A80;--rp-nbg:#FACC1514;--rp-nbd:#FACC1573;--rp-nic:#FACC15}
-.w.sec.rules-pg h2.rl-ch{margin:0 0 18px;padding:12px 16px;background:var(--rp-hd);border:0;border-left:5px solid var(--rp-title);border-radius:10px;font-size:clamp(1.15rem,2.6vw,1.3rem);font-weight:800;letter-spacing:0;line-height:1.45;overflow-wrap:anywhere}
-.w.sec.rules-pg h2.rl-ch small.en{margin-top:3px;font-size:.8rem;font-weight:500}
+.w.sec.rules-pg h2.rl-ch{margin:6px 0 .5em;padding:0;background:none;border:0;border-radius:0;color:var(--rp-title);font-size:1.15rem;font-weight:800;letter-spacing:0;line-height:1.5;text-align:left;overflow-wrap:anywhere}
+.w.sec.rules-pg>h2.rl-ch{max-width:var(--rp-col);margin:6px auto .5em}
+.w.sec.rules-pg h2.rl-ch small.en{margin-top:2px;font-size:.8rem;font-weight:500}
 .rules-pg .rl-ok{color:var(--rp-ok);font-weight:700}
 .rules-pg .rl-no{color:var(--rp-no);font-weight:700}
 .rules-pg .rl-note{display:flex;align-items:flex-start;gap:14px;margin:6px 0 1.2em;padding:16px 18px;background:var(--rp-nbg);border:1px solid var(--rp-nbd);border-radius:12px;color:var(--rp-ink)}
@@ -1262,7 +1263,7 @@ a.lgb:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
 .rules-pg .rl-nb ol.rl{margin:0;padding-left:1.4em}
 .rules-pg .rl-nb ol.rl>li{margin:0 0 .5em}
 .rules-pg .rl-nb>:last-child{margin-bottom:0}
-@media(max-width:600px){.w.sec.rules-pg h2.rl-ch{margin-bottom:14px;padding:10px 12px;font-size:1.12rem}.rules-pg .rl-note{gap:10px;padding:14px}}
+@media(max-width:600px){.w.sec.rules-pg h2.rl-ch{font-size:1.08rem}.rules-pg .rl-note{gap:10px;padding:14px}}
 .rules-pg .rl-foot{box-sizing:border-box;max-width:520px;margin:28px auto 8px;padding:18px 24px;background:#fff;border:1px solid #1F2430;color:#000;text-align:center;font-weight:700;line-height:1.7;overflow-wrap:break-word}
 .rules-pg .rl-foot p{margin:0;color:inherit}
 .rules-pg .rl-foot .rl-fr{color:#6E1114;font-size:1.3em;line-height:1.5;overflow-wrap:anywhere}
