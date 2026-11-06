@@ -346,7 +346,37 @@ const ALU={
 function aluHtml(){const A=ALU;
  return `<div class="alu"><section class="alu-s" aria-labelledby="alu-h1"><div class="alu-intro"><div class="alu-lg"><img class="alu-logo" src="${ALU_LOGO}" width="300" height="300" alt="โลโก้สมาคมศิษย์เก่า โรงเรียนสาธิตโกศาดิลก" decoding="async"></div><div class="alu-tx"><h2 id="alu-h1">${E(A.h1)}</h2><p class="alu-lead">${E(A.intro)}</p></div></div><dl class="alu-dl">${A.facts.map(f=>`<div><dt>${E(f[0])}</dt><dd>${E(f[1])}</dd></div>`).join('')}</dl></section>`
  +`<section class="alu-s" aria-labelledby="alu-h2"><h2 id="alu-h2">${E(A.h2)}</h2><ul class="alu-g">${A.support.map(f=>`<li><h3>${E(f[0])}</h3><p>${E(f[1])}</p><button type="button" class="btn b als-go" onclick="alsOpen('${f[2]}',this)">${E(f[3])}</button></li>`).join('')}</ul></section>`
+ +alhHtml()
  +`<section class="alu-s alu-n" aria-label="หมายเหตุและข้อจำกัด"><div class="alu-nb"><h3>${E(A.noteT)}</h3><p>${E(A.note)}</p></div><div class="alu-nb"><h3>${E(A.limT)}</h3><ul>${A.lim.map(f=>`<li><b>${E(f[0])}</b> ${E(f[1])}</li>`).join('')}</ul></div></section></div>`}
+/* ===== ทำเนียบผู้ร่วมสนับสนุนโรงเรียน (หน้า alumni-kds) · ระยะแรก: แสดงผลจากข้อมูลตัวอย่างเท่านั้น =====
+   ไม่อ่าน/เขียนฐานข้อมูล ไม่เชื่อมกับแบบฟอร์มสนับสนุน (ALS) และไม่มีระบบจัดการสำหรับผู้ดูแล
+   ระยะถัดไป: ให้ alhRows() คืนรายการจากแหล่งข้อมูลจริง (รูปแบบเดียวกับ ALH_DATA) แล้วตั้ง ALH_SAMPLE=false · ส่วนแสดงผลไม่ต้องแก้
+   รูปแบบรายการ: {id, cat:'donate'|'sponsor'|'project', name:'' (ว่าง=ผู้ไม่ประสงค์ออกนาม), kind:'money'|'item'|'act', amount:ตัวเลข(เฉพาะ money), detail:ข้อความ(item/act), date:'YYYY-MM-DD'} */
+const ALH_SAMPLE=true;
+const ALH_ANON='ผู้ไม่ประสงค์ออกนาม';
+const ALH_CATS=[['donate','บริจาคทุนการศึกษา'],['sponsor','สมัครเป็นผู้สนับสนุน'],['project','สนับสนุนโครงการโรงเรียน']];
+const ALH_KD={item:'สิ่งของ/อุปกรณ์',act:'กิจกรรม/บริการ'};
+const ALH_DATA=[
+ {id:'s01',cat:'donate',name:'ศิษย์เก่ารุ่นที่ 12',kind:'money',amount:5000,date:'2026-10-28'},
+ {id:'s02',cat:'donate',name:'',kind:'money',amount:1000,date:'2026-10-21'},
+ {id:'s03',cat:'donate',name:'คุณนภัสสร ก.',kind:'money',amount:2500.5,date:'2026-10-09'},
+ {id:'s04',cat:'donate',name:'ศิษย์เก่ารุ่นที่ 8',kind:'money',amount:10000,date:'2026-09-30'},
+ {id:'s05',cat:'sponsor',name:'ร้านบ้านสวนกาแฟ (ตัวอย่าง)',kind:'item',detail:'เครื่องดื่มสำหรับกิจกรรมวันพบปะศิษย์เก่า จำนวน 100 แก้ว',date:'2026-10-30'},
+ {id:'s06',cat:'sponsor',name:'',kind:'money',amount:3000,date:'2026-10-17'},
+ {id:'s07',cat:'sponsor',name:'คุณธนกร ว.',kind:'act',detail:'ถ่ายภาพและตัดต่อวิดีโอกิจกรรมโรงเรียน ช่วงเดือนพฤศจิกายน',date:'2026-10-05'},
+ {id:'s08',cat:'project',name:'ศิษย์เก่ารุ่นที่ 15',kind:'item',detail:'หนังสือห้องสมุด 40 เล่ม และชั้นวางหนังสือ 2 ชุด',date:'2026-10-26'},
+ {id:'s09',cat:'project',name:'คุณปวีณา ม.',kind:'act',detail:'จัดอบรมการเขียนแนะนำตัวสมัครเรียนต่อ แก่นักเรียน ม.ปลาย 1 รอบ',date:'2026-10-14'},
+ {id:'s10',cat:'project',name:'',kind:'money',amount:1500,date:'2026-10-02'}
+];
+function alhRows(){return ALH_DATA}
+const alhTs=r=>{const t=Date.parse(String(r.date||'')+'T00:00:00+07:00');return isNaN(t)?0:t};
+const alhDate=r=>{const t=alhTs(r);return t?new Date(t).toLocaleDateString('th-TH',{timeZone:'Asia/Bangkok',day:'numeric',month:'short',year:'numeric'}):''};
+const alhMoney=n=>n.toLocaleString('en-US',{minimumFractionDigits:Number.isInteger(n)?0:2,maximumFractionDigits:2});
+function alhItemHtml(r){const nm=String(r.name==null?'':r.name).trim(),dt=alhDate(r),amt=+r.amount;
+ const val=r.kind==='money'&&amt>0?`<span class="alh-amt">${E(alhMoney(amt))} บาท</span>`:`<span class="alh-kd">${E(ALH_KD[r.kind]||'รายละเอียด')}</span><span class="alh-ds">${E(r.detail||'-')}</span>`;
+ return `<li><div class="alh-nm${nm?'':' anon'}">${E(nm||ALH_ANON)}</div><div class="alh-vl">${val}</div>${dt?`<div class="alh-d">${E(dt)}</div>`:''}</li>`}
+function alhHtml(){const rows=alhRows().slice().sort((a,b)=>alhTs(b)-alhTs(a)||String(b.id).localeCompare(String(a.id)));
+ return `<section class="alu-s alh" aria-labelledby="alh-h"><h2 id="alh-h">ทำเนียบผู้ร่วมสนับสนุนโรงเรียน</h2><p class="alh-sub">ขอบคุณผู้ร่วมสนับสนุนโรงเรียนสาธิตโกศาดิลก เรียงจากรายการล่าสุดไปเก่าสุด</p>${ALH_SAMPLE?'<p class="alh-smp">ข้อมูลที่แสดงเป็นข้อมูลตัวอย่างสำหรับทดสอบการแสดงผล</p>':''}<div class="alh-g">${ALH_CATS.map(c=>{const L=rows.filter(r=>r.cat===c[0]);return `<div class="alh-c"><div class="alh-ch"><h3>${E(c[1])}</h3><span class="alh-n">${L.length} รายการ</span></div>${L.length?`<ul class="alh-l">${L.map(alhItemHtml).join('')}</ul>`:'<p class="alh-em">ยังไม่มีรายการในหมวดนี้</p>'}</div>`}).join('')}</div></section>`}
 /* ===== ระบบสนับสนุนในหน้าสมาคมศิษย์เก่า (alumni-kds): ฟอร์ม → ตรวจสอบ → สลิป KOSA BANK (PNG) =====
    ทำงานในเบราว์เซอร์ล้วน: ข้อมูลที่กรอกเก็บในตัวแปร ALS ชั่วคราว ไม่อ่าน/เขียนฐานข้อมูล ไม่ส่งข้อมูลออกนอกเครื่อง และหายเมื่อปิดหน้าต่าง
    KOSA BANK เป็นธนาคารสมมติสำหรับระบบ Roleplay · สลิปเป็นสลิปโอนเงินในเรื่อง ไม่มีการรับ-โอนเงินจริง และไม่ใช้ชื่อ/โลโก้ธนาคารจริง

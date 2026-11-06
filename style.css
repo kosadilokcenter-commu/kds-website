@@ -1524,6 +1524,28 @@ html:has(.sch-pg){overflow-x:clip}
 .alu-g li{display:flex;flex-direction:column;align-items:flex-start}
 .alu-g li p{flex:1 1 auto}
 .alu-g li .als-go{margin-top:18px;max-width:100%}
+/* ทำเนียบผู้ร่วมสนับสนุนโรงเรียน (หน้า alumni-kds) · ใช้ตัวแปรสีเดิม */
+.alh-sub{margin:-6px 0 6px;max-width:68ch;line-height:1.8}
+.alh-smp{margin:0 0 16px;font-size:.88rem;color:var(--muted)}
+.alh-sub+.alh-g{margin-top:16px}
+.alh-g{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px clamp(18px,3vw,32px);align-items:start}
+.alh-c{min-width:0;padding:18px 20px 8px;border:1px solid var(--line);border-top:3px solid var(--gold);border-radius:12px;background:var(--surface)}
+.alh-ch{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin:0 0 6px}
+.alh-ch h3{margin:0;font-size:1.1rem;line-height:1.5;color:var(--kds-primary-text)}
+.alh-n{flex:none;font-size:.85rem;color:var(--muted)}
+.alh-l{list-style:none;margin:0;padding:0}
+.alh-l li{min-width:0;padding:12px 0;border-top:1px solid var(--line)}
+.alh-l li:first-child{border-top:0}
+.alh-nm{font-weight:700;line-height:1.6;overflow-wrap:anywhere}
+.alh-nm.anon{font-weight:600;color:var(--muted)}
+.alh-vl{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;margin-top:4px;min-width:0}
+.alh-amt{display:inline-block;padding:2px 12px;border-radius:999px;font-weight:700;line-height:1.6;color:var(--kds-primary-text);background:color-mix(in srgb,var(--gold) 12%,var(--surface))}
+.alh-kd{display:inline-block;padding:1px 10px;border:1px solid var(--line);border-radius:999px;font-size:.82rem;line-height:1.6;color:var(--muted)}
+.alh-ds{flex:1 1 100%;min-width:0;line-height:1.75;overflow-wrap:anywhere}
+.alh-d{margin-top:4px;font-size:.84rem;color:var(--muted)}
+.alh-em{margin:0;padding:10px 0 16px;color:var(--muted)}
+@media(max-width:900px){.alh-g{grid-template-columns:minmax(0,1fr)}
+.alh-c{padding:16px 16px 6px}}
 .modal.als>div{box-sizing:border-box;width:calc(100% - 28px);max-width:760px;max-height:90vh;max-height:90dvh;overflow:auto;padding:30px 36px 34px;text-align:left;font-size:1.05rem}
 .modal.als.als-slip>div{max-width:720px}
 .als-st{margin:0 44px 6px 0;font-size:.92rem;color:var(--muted)}
