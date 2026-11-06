@@ -373,20 +373,25 @@ const alhTs=r=>{const t=Date.parse(String(r.date||'')+'T00:00:00+07:00');return 
 const alhDate=r=>{const t=alhTs(r);return t?new Date(t).toLocaleDateString('th-TH',{timeZone:'Asia/Bangkok',day:'numeric',month:'short',year:'numeric'}):''};
 const alhMoney=n=>n.toLocaleString('en-US',{minimumFractionDigits:Number.isInteger(n)?0:2,maximumFractionDigits:2});
 let ALH_SEL=ALH_CATS[0][0];
-const ALH_ICON='<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8.5" r="3.6"/><path d="M4.8 20c.9-3.6 3.7-5.6 7.2-5.6s6.3 2 7.2 5.6"/></svg>';
-const alhInit=n=>{const c=Array.from(String(n).trim().replace(/^คุณ\s*/,'').replace(/^[เแโใไ]+/,''));return c.length?c[0]:'?'};
+/* ไอคอน Lucide (outline) แบบ inline ไม่โหลดจากภายนอก */
+const alhSvg=(p,s)=>`<svg viewBox="0 0 24 24" width="${s}" height="${s}" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">${p}</svg>`;
+const ALH_ICO={
+ donate:'<path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"/><path d="M22 10v6"/><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"/>',
+ sponsor:'<path d="M11 14h2a2 2 0 1 0 0-4h-3c-.6 0-1.1.2-1.4.6L3 16"/><path d="m7 20 1.6-1.4c.3-.4.8-.6 1.4-.6h4c1.1 0 2.1-.4 2.8-1.2l4.6-4.4a2 2 0 0 0-2.75-2.91l-4.2 3.9"/><path d="m2 15 6 6"/><path d="M19.5 8.5c.7-.7 1.5-1.6 1.5-2.7A2.73 2.73 0 0 0 16 4a2.78 2.78 0 0 0-5 1.8c0 1.2.8 2 1.5 2.8L16 12Z"/>',
+ project:'<path d="M14 21v-3a2 2 0 0 0-4 0v3"/><path d="M18 5v16"/><path d="m4 6 7.6-3.8a2 2 0 0 1 .8 0L20 6"/><path d="m6 11-3.52 2.147a1 1 0 0 0-.48.854V19a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-5a1 1 0 0 0-.48-.853L18 11"/><path d="M6 5v16"/><circle cx="12" cy="9" r="2"/>'};
+const ALH_USER='<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>';
 function alhItemHtml(r){const nm=String(r.name==null?'':r.name).trim(),dt=alhDate(r),amt=+r.amount,mn=r.kind==='money'&&amt>0;
  const sub=mn?'':`<div class="alh-ds"><span class="alh-kd">${E(ALH_KD[r.kind]||'รายละเอียด')}</span> ${E(r.detail||'-')}</div>`;
- return `<li><div class="alh-av" aria-hidden="true">${nm?E(alhInit(nm)):ALH_ICON}</div><div class="alh-mn"><div class="alh-nm${nm?'':' anon'}">${E(nm||ALH_ANON)}</div>${dt?`<div class="alh-d">${E(dt)}</div>`:''}${sub}</div>${mn?`<div class="alh-amt">${E(alhMoney(amt))}<span class="alh-u">บาท</span></div>`:''}</li>`}
+ return `<li><div class="alh-av" aria-hidden="true">${alhSvg(ALH_USER,22)}</div><div class="alh-mn"><div class="alh-nm${nm?'':' anon'}">${E(nm||ALH_ANON)}</div>${dt?`<div class="alh-d">${E(dt)}</div>`:''}${sub}</div>${mn?`<div class="alh-amt">${E(alhMoney(amt))}<span class="alh-u">บาท</span></div>`:''}</li>`}
 function alhBoardHtml(){const rows=alhRows().slice().sort((a,b)=>alhTs(b)-alhTs(a)||String(b.id).localeCompare(String(a.id)));
- const tabs=ALH_CATS.map(c=>{const n=rows.filter(r=>r.cat===c[0]).length,on=c[0]===ALH_SEL;return `<button type="button" role="tab" class="alh-tb" id="alh-t-${c[0]}" aria-selected="${on}" aria-controls="alh-pn" tabindex="${on?0:-1}" onclick="alhPick('${c[0]}')"><span class="alh-tl">${E(c[1])}</span><span class="alh-ct" aria-label="${n} รายการ">${n}</span></button>`}).join('');
+ const tabs=ALH_CATS.map(c=>{const n=rows.filter(r=>r.cat===c[0]).length,on=c[0]===ALH_SEL;return `<button type="button" role="tab" class="alh-tb" id="alh-t-${c[0]}" aria-selected="${on}" aria-controls="alh-pn" tabindex="${on?0:-1}" onclick="alhPick('${c[0]}')"><span class="alh-ti">${alhSvg(ALH_ICO[c[0]]||ALH_USER,24)}</span><span class="alh-tx"><span class="alh-tl">${E(c[1])}</span><span class="alh-ct">${n} รายการ</span></span></button>`}).join('');
  const L=rows.filter(r=>r.cat===ALH_SEL);
  return `<div class="alh-bd" id="alh-bd"><div class="alh-tabs" role="tablist" aria-label="หมวดหมู่ผู้ร่วมสนับสนุน" onkeydown="return alhKey(event)">${tabs}</div><div class="alh-pn" id="alh-pn" role="tabpanel" aria-labelledby="alh-t-${ALH_SEL}">${L.length?`<ul class="alh-l">${L.map(alhItemHtml).join('')}</ul>`:'<p class="alh-em">ยังไม่มีรายการในหมวดนี้</p>'}</div></div>`}
 function alhPick(id,keep){if(!ALH_CATS.some(c=>c[0]===id))return;ALH_SEL=id;const b=$('alh-bd');if(!b)return;b.outerHTML=alhBoardHtml();const t=$('alh-t-'+id);if(t&&keep)t.focus()}
 function alhKey(e){const k=e.key,i=ALH_CATS.findIndex(c=>c[0]===ALH_SEL),n=ALH_CATS.length;let j=-1;
  if(k==='ArrowRight'||k==='ArrowDown')j=(i+1)%n;else if(k==='ArrowLeft'||k==='ArrowUp')j=(i-1+n)%n;else if(k==='Home')j=0;else if(k==='End')j=n-1;
  if(j<0)return true;e.preventDefault();alhPick(ALH_CATS[j][0],true);return false}
-function alhHtml(){return `<section class="alu-s alh" aria-labelledby="alh-h"><h2 id="alh-h">ทำเนียบผู้ร่วมสนับสนุนโรงเรียน</h2><p class="alh-sub">ขอบคุณผู้ร่วมสนับสนุนโรงเรียนสาธิตโกศาดิลก เรียงจากรายการล่าสุดไปเก่าสุด</p>${ALH_SAMPLE?'<p class="alh-smp">ข้อมูลที่แสดงเป็นข้อมูลตัวอย่างสำหรับทดสอบการแสดงผล</p>':''}${alhBoardHtml()}</section>`}
+function alhHtml(){return `<section class="alu-s alh" aria-labelledby="alh-h"><h2 id="alh-h">ทำเนียบผู้ร่วมสนับสนุน</h2><p class="alh-sub">ขอบคุณทุกการสนับสนุนที่ช่วยส่งต่อโอกาสให้นักเรียนโรงเรียนสาธิตโกศาดิลก</p>${ALH_SAMPLE?'<p class="alh-smp">ข้อมูลที่แสดงเป็นข้อมูลตัวอย่างสำหรับทดสอบการแสดงผล</p>':''}${alhBoardHtml()}</section>`}
 /* ===== ระบบสนับสนุนในหน้าสมาคมศิษย์เก่า (alumni-kds): ฟอร์ม → ตรวจสอบ → สลิป KOSA BANK (PNG) =====
    ทำงานในเบราว์เซอร์ล้วน: ข้อมูลที่กรอกเก็บในตัวแปร ALS ชั่วคราว ไม่อ่าน/เขียนฐานข้อมูล ไม่ส่งข้อมูลออกนอกเครื่อง และหายเมื่อปิดหน้าต่าง
    KOSA BANK เป็นธนาคารสมมติสำหรับระบบ Roleplay · สลิปเป็นสลิปโอนเงินในเรื่อง ไม่มีการรับ-โอนเงินจริง และไม่ใช้ชื่อ/โลโก้ธนาคารจริง
