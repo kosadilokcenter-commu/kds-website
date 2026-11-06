@@ -338,15 +338,117 @@ const ALU={
  intro:'สมาคมศิษย์เก่า จัดตั้งขึ้นเพื่อเป็นศูนย์กลางในการสร้างความสัมพันธ์อันดีระหว่างอดีตนักเรียน คณาจารย์ และนักเรียนปัจจุบัน โดยมุ่งเน้นการสร้างเครือข่ายคอนเนกชัน (Networking) ที่เข้มแข็งเพื่อสนับสนุนซึ่งกันและกันในอนาคต',
  facts:[['วิสัยทัศน์','เป็นเครือข่ายศิษย์เก่าที่เข้มแข็ง ร่วมพัฒนาโรงเรียน'],['พันธกิจ','เชื่อมโยงศิษย์เก่า สนับสนุนการศึกษา และส่งต่อโอกาสอย่างต่อเนื่อง'],['วัตถุประสงค์','ส่งเสริมความสัมพันธ์อันดีระหว่างศิษย์เก่า และเป็นพลังในการร่วมพัฒนาโรงเรียน'],['ค่านิยม','สามัคคี เสียสละ พัฒนา ซื่อสัตย์ และรับผิดชอบ']],
  h2:'สมาคมศิษย์เก่าร่วมสนับสนุนโรงเรียน',
- support:[['บริจาคทุนการศึกษา','ร่วมสนับสนุนทุนการศึกษาให้กับนักเรียนรุ่นน้อง'],['สมัครเป็นผู้สนับสนุน','ร่วมเป็นผู้สนับสนุนกิจกรรมของสมาคมและโรงเรียน'],['สนับสนุนโครงการโรงเรียน','ร่วมเป็นส่วนหนึ่งในการพัฒนาโรงเรียนให้ดียิ่งขึ้น']],
+ support:[['บริจาคทุนการศึกษา','ร่วมสนับสนุนทุนการศึกษาให้กับนักเรียนรุ่นน้อง','donate','ร่วมบริจาค'],['สมัครเป็นผู้สนับสนุน','ร่วมเป็นผู้สนับสนุนกิจกรรมของสมาคมและโรงเรียน','sponsor','สมัครเป็นผู้สนับสนุน'],['สนับสนุนโครงการโรงเรียน','ร่วมเป็นส่วนหนึ่งในการพัฒนาโรงเรียนให้ดียิ่งขึ้น','project','ร่วมสนับสนุนโครงการ']],
  noteT:'หมายเหตุ',
  note:'ผู้เล่นที่ลงทะเบียนตัวละครทั่วไป (NPC) สามารถระบุให้ตัวละครมีสถานะเป็น “ศิษย์เก่า” ที่สำเร็จการศึกษาจากโรงเรียนสาธิตโกศาดิลก ได้ตามความประสงค์',
  limT:'ข้อจำกัดและข้อควรระวัง',
  lim:[['ไม่อนุญาต','ให้ผู้เล่นกำหนดให้ตัวละครดำรงตำแหน่งในอดีตที่มีผลผูกพันต่อโครงสร้างหรือประวัติของโรงเรียน เช่น อดีตประธานสภานักเรียน หรืออดีตสมาชิกในคณะกรรมการสภานักเรียนรุ่นก่อน ๆ'],['อนุญาต','ให้ผู้เล่นกำหนดให้ตัวละครดำรงตำแหน่งในระดับภายในชมรมหรือกิจกรรมย่อยในอดีตได้ตามความเหมาะสม ยกตัวอย่างเช่น อดีตประธานชมรมหมากรุกสากล หรืออดีตหัวหน้าทีมชมรมฟุตบอล'],['ข้อจำกัด:','ในกรณีที่ผู้เล่นระบุตำแหน่งในอดีต เช่น ประธานชมรมหมากรุก ทางทีมงานจะไม่รับประกันความซ้ำซ้อนของเนื้อเรื่อง หากมีกรณีที่ไทม์ไลน์หรือตำแหน่งดังกล่าวไปชนกับประวัติตัวละครของผู้เล่นท่านอื่นที่ลงทะเบียนไว้ก่อนหน้า หรือผู้เล่นที่ลงทะเบียนตามมาในภายหลัง ทั้งนี้ ขอความร่วมมือในการเจรจา ปรับแต่ง หรือตกลงเนื้อเรื่องร่วมกันระหว่างผู้เล่นอย่างประนีประนอม']]};
 function aluHtml(){const A=ALU;
  return `<div class="alu"><section class="alu-s" aria-labelledby="alu-h1"><div class="alu-intro"><div class="alu-lg"><img class="alu-logo" src="${ALU_LOGO}" width="300" height="300" alt="โลโก้สมาคมศิษย์เก่า โรงเรียนสาธิตโกศาดิลก" decoding="async"></div><div class="alu-tx"><h2 id="alu-h1">${E(A.h1)}</h2><p class="alu-lead">${E(A.intro)}</p></div></div><dl class="alu-dl">${A.facts.map(f=>`<div><dt>${E(f[0])}</dt><dd>${E(f[1])}</dd></div>`).join('')}</dl></section>`
- +`<section class="alu-s" aria-labelledby="alu-h2"><h2 id="alu-h2">${E(A.h2)}</h2><ul class="alu-g">${A.support.map(f=>`<li><h3>${E(f[0])}</h3><p>${E(f[1])}</p></li>`).join('')}</ul></section>`
+ +`<section class="alu-s" aria-labelledby="alu-h2"><h2 id="alu-h2">${E(A.h2)}</h2><ul class="alu-g">${A.support.map(f=>`<li><h3>${E(f[0])}</h3><p>${E(f[1])}</p><button type="button" class="btn b als-go" onclick="alsOpen('${f[2]}',this)">${E(f[3])}</button></li>`).join('')}</ul></section>`
  +`<section class="alu-s alu-n" aria-label="หมายเหตุและข้อจำกัด"><div class="alu-nb"><h3>${E(A.noteT)}</h3><p>${E(A.note)}</p></div><div class="alu-nb"><h3>${E(A.limT)}</h3><ul>${A.lim.map(f=>`<li><b>${E(f[0])}</b> ${E(f[1])}</li>`).join('')}</ul></div></section></div>`}
+/* ===== ระบบสนับสนุนในหน้าสมาคมศิษย์เก่า (alumni-kds): ฟอร์ม → ตรวจสอบ → สลิป KOSA BANK (PNG) =====
+   ทำงานในเบราว์เซอร์ล้วน: ข้อมูลที่กรอกเก็บในตัวแปร ALS ชั่วคราว ไม่อ่าน/เขียนฐานข้อมูล ไม่ส่งข้อมูลออกนอกเครื่อง และหายเมื่อปิดหน้าต่าง
+   KOSA BANK เป็นธนาคารสมมติ · สลิปคือ "ใบแจ้งความประสงค์สนับสนุน" ไม่ใช่หลักฐานการโอนเงินหรือใบเสร็จรับเงิน · ยอดเงินเรียกว่า "ยอดที่แจ้ง"
+   ใช้ #md/.modal.wide เดิม ปิดด้วยปุ่ม ✕ / คลิกพื้นหลัง / Esc · เมื่อมีฐานข้อมูลจริง ให้ต่อการบันทึกที่ alsConfirm() (ยังไม่ทำ รอได้รับอนุญาต)
+   ยอดแนะนำแก้ที่ ALS_PRESETS · ข้อความแจ้งผู้ใช้แก้ที่ ALS_NOTE / ALS_DISC */
+const ALS_TYPES={
+ donate:{t:'บริจาคทุนการศึกษา',ph:'ระบุวัตถุประสงค์ของการบริจาค (ถ้ามี)'},
+ sponsor:{t:'สมัครเป็นผู้สนับสนุน',ph:'ระบุวัตถุประสงค์หรือข้อความถึงสมาคม (ถ้ามี)'},
+ project:{t:'สนับสนุนโครงการโรงเรียน',ph:'ระบุโครงการหรือวัตถุประสงค์ที่ต้องการสนับสนุน (ถ้ามี)'}};
+const ALS_KS={money:'เงิน',item:'สิ่งของ/อุปกรณ์',act:'กิจกรรม/บริการ'};
+const ALS_PRESETS=[100,500,1000,2000,5000];
+const ALS_MAX=10000000;
+const ALS_RCV='โรงเรียนสาธิตโกศาดิลก';
+const ALS_NOTE='ขณะนี้ระบบยังไม่ส่งข้อมูลไปยังสมาคม ยังไม่รับเงินผ่านเว็บไซต์ และยังไม่บันทึกรายการลงฐานข้อมูล สลิปที่สร้างเป็นใบแจ้งความประสงค์สำหรับเก็บไว้เอง';
+const ALS_DISC='เอกสารนี้เป็นใบแจ้งความประสงค์สนับสนุนที่สร้างจากหน้าเว็บไซต์ ไม่ใช่หลักฐานการโอนเงินหรือใบเสร็จรับเงิน';
+let ALS=null;
+const alsClean=s=>String(s==null?'':s).replace(/[\p{Extended_Pictographic}\uFE0F\u200D]/gu,'').replace(/[\u0000-\u001F\u007F]+/g,' ').replace(/\s+/g,' ').trim();
+const alsAmt=v=>{const s=String(v==null?'':v).replace(/[,\s฿]/g,'');return /^\d{1,8}(\.\d{1,2})?$/.test(s)&&+s>0?+s:null};
+const alsMoney=n=>n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+const alsDl=k=>k==='item'?'รายละเอียดสิ่งของ/อุปกรณ์ เช่น ชนิดและจำนวน (จำเป็น)':k==='act'?'รายละเอียดกิจกรรม/บริการ เช่น รูปแบบและช่วงเวลา (จำเป็น)':'รายละเอียดเพิ่มเติม (ไม่บังคับ)';
+const alsDT=d=>{const o={timeZone:'Asia/Bangkok'};return d.toLocaleDateString('th-TH',{...o,day:'numeric',month:'short',year:'numeric'})+' เวลา '+d.toLocaleTimeString('th-TH',{...o,hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false})+' น.'};
+/* เลขอ้างอิงสร้างในเบราว์เซอร์ (วันที่ + รหัสสุ่ม 6 ตัว) ยังไม่ได้ตรวจความซ้ำกับระบบใด */
+function alsRef(d){const p=new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Bangkok',year:'numeric',month:'2-digit',day:'2-digit'}).format(d).replace(/-/g,''),a='ABCDEFGHJKLMNPQRSTUVWXYZ23456789',r=new Uint32Array(6);if(window.crypto&&crypto.getRandomValues)crypto.getRandomValues(r);else for(let i=0;i<6;i++)r[i]=Math.floor(Math.random()*4294967296);return 'KB'+p+'-'+Array.from(r,v=>a[v%a.length]).join('')}
+function alsRows(r,slip){const mn=r.amt!=null,o=[[slip?'ผู้สนับสนุน':'ชื่อผู้สนับสนุน',r.name],['ผู้รับ',ALS_RCV],['ประเภทการสนับสนุน',ALS_TYPES[r.type].t]];
+ if(r.type==='sponsor'&&!(slip&&!mn))o.push(['รูปแบบการสนับสนุน',ALS_KS[r.kind]]);
+ if(mn&&!slip)o.push(['ยอดที่แจ้ง','฿ '+alsMoney(r.amt)]);
+ if(r.detail)o.push(['รายละเอียด',r.detail]);o.push(['หมายเหตุ',r.note||'-']);
+ if(slip){o.push(['วันที่-เวลา',alsDT(r.ts)]);o.push(['เลขอ้างอิง',r.ref])}return o}
+function alsOpen(type,btn){if(!ALS_TYPES[type])return;ALS={type,step:1,name:'',amtRaw:'',kind:'money',detail:'',note:'',opener:btn||document.activeElement,rec:null,cv:null};alsShow()}
+function alsClose(){const o=ALS&&ALS.opener;ALS=null;$('md').innerHTML='';if(o&&o.isConnected&&o.focus)o.focus()}
+function alsWrap(inner,title,n,lab){return `<div class="modal wide als" role="dialog" aria-modal="true" aria-labelledby="als-t" onpointerdown="this._d=event.target===this" onclick="if(this._d&&event.target===this)alsClose()"><div><button type="button" class="mx" aria-label="ปิดหน้าต่าง" onclick="alsClose()">${ic('close')}</button><p class="als-st">ขั้นตอนที่ ${n} จาก 3 · ${E(lab)}</p><h3 id="als-t">${E(title)}</h3>${inner}</div></div>`}
+function alsShow(){const A=ALS;if(!A)return;const T=ALS_TYPES[A.type],m=$('md');
+ if(A.step===1)m.innerHTML=alsWrap(alsFormHtml(),T.t,1,'กรอกข้อมูล');
+ else if(A.step===2)m.innerHTML=alsWrap(alsReviewHtml(),'ตรวจสอบและยืนยันรายการ',2,'ตรวจสอบ');
+ else{m.innerHTML=alsWrap(alsSlipHtml(),'สลิป KOSA BANK',3,'สลิปแจ้งความประสงค์');alsSlip()}
+ const h=$('als-t');if(h){h.tabIndex=-1;h.focus({preventScroll:true})}}
+function alsFormHtml(){const A=ALS,T=ALS_TYPES[A.type],sp=A.type==='sponsor',mn=!sp||A.kind==='money',a=alsAmt(A.amtRaw);
+ const kd=sp?`<fieldset class="als-fs"><legend>รูปแบบการสนับสนุน</legend><div class="als-kd">${Object.keys(ALS_KS).map(k=>`<label class="als-opt${A.kind===k?' on':''}"><input type="radio" name="als-k" value="${k}"${A.kind===k?' checked':''} onchange="alsKind(this.value)"><span>${E(ALS_KS[k])}</span></label>`).join('')}</div></fieldset>`:'';
+ const am=`<div id="als-ab"${mn?'':' hidden'}><span class="als-lb" id="als-al">เลือกยอดแนะนำ (บาท)</span><div class="als-ch" role="group" aria-labelledby="als-al">${ALS_PRESETS.map(v=>`<button type="button" class="btn s${a===v?' b':''}" data-v="${v}" aria-pressed="${a===v}" onclick="alsPick(${v})">${v.toLocaleString('en-US')}</button>`).join('')}</div><label class="als-lb" for="als-am">หรือกรอกจำนวนเงินเอง (บาท)</label><input id="als-am" type="text" inputmode="decimal" autocomplete="off" placeholder="0.00" value="${E(A.amtRaw)}" oninput="alsIn()"></div>`;
+ const dt=sp?`<label class="als-lb" for="als-dt" id="als-dl">${E(alsDl(A.kind))}</label><textarea id="als-dt" rows="3" maxlength="300" oninput="alsIn()">${E(A.detail)}</textarea>`:'';
+ return `<p class="als-sb">กรอกข้อมูลเพื่อแจ้งความประสงค์สนับสนุน ประเภท “${E(T.t)}” ระบบกำหนดให้โดยอัตโนมัติ</p>${kd}<label class="als-lb" for="als-nm">ชื่อผู้สนับสนุน</label><input id="als-nm" type="text" maxlength="100" autocomplete="name" value="${E(A.name)}" oninput="alsIn()">${am}${dt}<label class="als-lb" for="als-nt">หมายเหตุ / วัตถุประสงค์ (ไม่บังคับ)</label><textarea id="als-nt" rows="3" maxlength="200" placeholder="${E(T.ph)}" oninput="alsIn()">${E(A.note)}</textarea><p id="als-er" class="als-er" role="alert"></p><div class="als-ac"><button type="button" class="btn b" onclick="alsCheck()">ตรวจสอบรายการ</button><button type="button" class="btn" onclick="alsClose()">ยกเลิก</button></div>`}
+function alsReviewHtml(){const r=ALS.rec;return `<p class="als-sb">โปรดตรวจสอบความถูกต้องก่อนยืนยัน</p><dl class="als-rv">${alsRows(r,false).map(x=>`<div><dt>${E(x[0])}</dt><dd>${E(x[1])}</dd></div>`).join('')}</dl><p class="als-nt">${E(ALS_NOTE)}</p><div class="als-ac"><button type="button" class="btn b" onclick="alsConfirm()">ยืนยันและสร้างสลิป</button><button type="button" class="btn" onclick="alsBack()">แก้ไขข้อมูล</button></div>`}
+function alsSlipHtml(){return `<p class="als-sb">สร้างสลิปเรียบร้อยแล้ว กดปุ่มด้านล่างเพื่อบันทึกเป็นรูป PNG</p><div id="als-cvw" class="als-cvw" aria-busy="true"><p class="als-sb">กำลังสร้างสลิป</p></div><p id="als-ms" class="als-ms" role="status" aria-live="polite"></p><p class="als-nt">${E(ALS_NOTE)}</p><div class="als-ac"><button type="button" class="btn b" id="als-sv" disabled onclick="alsSave(this)">บันทึกเป็น PNG</button><button type="button" class="btn" onclick="alsClose()">ปิด</button></div>`}
+function alsRead(){const A=ALS,g=id=>{const e=$(id);return e?e.value:null},n=g('als-nm'),a=g('als-am'),d=g('als-dt'),t=g('als-nt');if(n!==null)A.name=n;if(a!==null)A.amtRaw=a;if(d!==null)A.detail=d;if(t!==null)A.note=t}
+function alsChips(){const v=alsAmt(ALS.amtRaw);document.querySelectorAll('.als-ch .btn').forEach(b=>{const on=+b.dataset.v===v;b.classList.toggle('b',on);b.setAttribute('aria-pressed',on?'true':'false')})}
+function alsErr(t,fid){const e=$('als-er');if(e)e.textContent=t||'';document.querySelectorAll('.als [aria-invalid]').forEach(n=>n.removeAttribute('aria-invalid'));if(t&&fid){const f=$(fid);if(f){f.setAttribute('aria-invalid','true');f.focus()}}}
+function alsIn(){if(!ALS)return;alsRead();alsChips();alsErr('')}
+function alsPick(v){if(!ALS)return;const i=$('als-am');ALS.amtRaw=String(v);if(i)i.value=String(v);alsChips();alsErr('')}
+function alsKind(k){if(!ALS||!ALS_KS[k])return;alsRead();ALS.kind=k;const ab=$('als-ab'),l=$('als-dl');if(ab)ab.hidden=k!=='money';if(l)l.textContent=alsDl(k);document.querySelectorAll('.als-opt').forEach(o=>o.classList.toggle('on',o.querySelector('input').checked));alsErr('')}
+function alsCheck(){const A=ALS;if(!A)return;alsRead();
+ const nm=alsClean(A.name),mn=A.type!=='sponsor'||A.kind==='money',amt=mn?alsAmt(A.amtRaw):null,dt=alsClean(A.detail),nt=alsClean(A.note);
+ if(!nm)return alsErr('กรุณากรอกชื่อผู้สนับสนุน','als-nm');
+ if(mn&&amt===null)return alsErr('กรุณาเลือกยอดแนะนำหรือกรอกจำนวนเงินเป็นตัวเลขมากกว่า 0 (ทศนิยมไม่เกิน 2 ตำแหน่ง)','als-am');
+ if(mn&&amt>ALS_MAX)return alsErr('จำนวนเงินต้องไม่เกิน '+ALS_MAX.toLocaleString('en-US')+' บาท','als-am');
+ if(!mn&&!dt)return alsErr('กรุณาระบุรายละเอียด'+(A.kind==='item'?'สิ่งของ/อุปกรณ์':'กิจกรรม/บริการ')+'ที่ต้องการสนับสนุน','als-dt');
+ A.rec={type:A.type,kind:A.type==='sponsor'?A.kind:null,name:nm,amt:mn?amt:null,detail:dt,note:nt,ts:null,ref:null};A.step=2;alsShow()}
+function alsBack(){if(!ALS)return;ALS.step=1;alsShow()}
+function alsConfirm(){const A=ALS;if(!A||!A.rec)return;if(!A.rec.ref){const d=new Date();A.rec.ts=d;A.rec.ref=alsRef(d)}A.step=3;alsShow()}
+async function alsSlip(){const A=ALS,r=A&&A.rec;if(!r)return;
+ try{const cv=await alsDraw(r),w=$('als-cvw');if(!w||ALS!==A)return;cv.className='als-cv';cv.setAttribute('role','img');cv.setAttribute('aria-label','สลิป KOSA BANK '+alsRows(r,true).map(x=>x[0]+' '+x[1]).join(' · '));w.replaceChildren(cv);w.removeAttribute('aria-busy');A.cv=cv;const b=$('als-sv');if(b)b.disabled=false}
+ catch(e){console.error(e);const w=$('als-cvw');if(w&&ALS===A)w.innerHTML='<p class="als-er">สร้างสลิปไม่สำเร็จ กรุณาปิดแล้วลองใหม่อีกครั้ง</p>'}}
+async function alsSave(btn){const A=ALS;if(!A||!A.cv||!A.rec)return;btn.disabled=true;const ms=$('als-ms');
+ try{const blob=await new Promise(r=>A.cv.toBlob(r,'image/png'));if(!blob)throw new Error('toBlob');const u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download='KOSA-BANK-'+A.rec.ref+'.png';a.rel='noopener';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),8000);if(ms)ms.textContent='ส่งไฟล์ PNG ให้เบราว์เซอร์บันทึกแล้ว'}
+ catch(e){console.error(e);if(ms)ms.textContent='บันทึกรูปไม่สำเร็จ กรุณาลองใหม่อีกครั้ง'}finally{btn.disabled=false}}
+/* วาดสลิปลง canvas (ไม่พึ่งไลบรารีภายนอก) · ใช้ canvas ตัวเดียวกันทั้งแสดงตัวอย่างและบันทึก PNG จึงได้ภาพตรงกับที่เห็น */
+async function alsDraw(r){
+ const FF='Anuphan,"Noto Sans Thai",system-ui,sans-serif',BUR='#7A1A22',INK='#1F2430',MUT='#6B6168',LN='#EFE7E8';
+ try{if(document.fonts&&document.fonts.load){await Promise.all(['400','600','700'].map(w=>document.fonts.load(w+' 16px Anuphan','ก')));await document.fonts.ready}}catch(e){}
+ const W=720,M=28,PX=32,CW=W-M*2,IN=CW-PX*2,LB=150,VW=IN-LB-14,LH=28,
+ cv=document.createElement('canvas'),x=cv.getContext('2d'),
+ seg=window.Intl&&Intl.Segmenter?new Intl.Segmenter('th',{granularity:'word'}):null,
+ fo=(w,s)=>w+' '+s+'px '+FF,
+ wrap=(t,f,w)=>{x.font=f;const P=[];(seg?Array.from(seg.segment(t),q=>q.segment):Array.from(t)).forEach(p=>{if(x.measureText(p).width>w)Array.from(p).forEach(c=>P.push(c));else P.push(p)});const L=[];let cur='';P.forEach(p=>{if(cur&&x.measureText(cur+p).width>w){L.push(cur.trim());cur=p.trimStart()}else cur+=p});if(cur.trim())L.push(cur.trim());return L.length?L:['-']},
+ rows=alsRows(r,true).map(q=>{const b=q[0]==='เลขอ้างอิง',ls=wrap(q[1],fo(b?700:600,17),VW);return {l:q[0],ls,b,h:ls.length*LH+28}}),
+ mn=r.amt!=null,al=mn?['฿ '+alsMoney(r.amt)]:wrap(ALS_KS[r.kind],fo(700,28),IN),
+ yA=216,aEnd=mn?yA+100:yA+50+(al.length-1)*38+30,yR=aEnd+22,rEnd=yR+rows.reduce((a,o)=>a+o.h,0),
+ dl=wrap(ALS_DISC,fo(400,14),IN),yD=rEnd+18,cardB=yD+22+dl.length*22+26,H=cardB+70,S=Math.min(2,Math.sqrt(14e6/(W*H)));
+ cv.width=Math.round(W*S);cv.height=Math.round(H*S);x.scale(S,S);x.textBaseline='middle';
+ const rr=(a,b,w,h,d)=>{x.beginPath();x.moveTo(a+d,b);x.arcTo(a+w,b,a+w,b+h,d);x.arcTo(a+w,b+h,a,b+h,d);x.arcTo(a,b+h,a,b,d);x.arcTo(a,b,a+w,b,d);x.closePath()},
+ T=(t,a,b,f,c,al2)=>{x.font=f;x.fillStyle=c;x.textAlign=al2||'left';x.fillText(t,a,b)},cx=W/2,cT=118;
+ x.fillStyle='#F6F0F1';x.fillRect(0,0,W,H);
+ x.save();x.beginPath();x.rect(0,0,W,190);x.clip();x.fillStyle=BUR;x.fillRect(0,0,W,190);x.fillStyle='rgba(255,255,255,.07)';x.beginPath();x.arc(W-50,30,130,0,7);x.fill();x.beginPath();x.arc(30,190,90,0,7);x.fill();x.restore();
+ rr(M+4,34,44,44,12);x.fillStyle='#fff';x.fill();T('K',M+26,57,fo(700,28),BUR,'center');
+ try{x.letterSpacing='1.5px'}catch(e){}T('KOSA BANK',M+62,56,fo(700,26),'#fff');try{x.letterSpacing='0px'}catch(e){}
+ T('Mobile Banking',W-M-4,56,fo(400,15),'rgba(255,255,255,.88)','right');
+ x.save();x.shadowColor='rgba(60,10,16,.18)';x.shadowBlur=24;x.shadowOffsetY=8;rr(M,cT,CW,cardB-cT,24);x.fillStyle='#fff';x.fill();x.restore();
+ x.beginPath();x.arc(cx,cT,40,0,7);x.fillStyle='#fff';x.fill();x.beginPath();x.arc(cx,cT,33,0,7);x.fillStyle=BUR;x.fill();
+ x.strokeStyle='#fff';x.lineWidth=5;x.lineCap='round';x.lineJoin='round';x.beginPath();x.moveTo(cx-14,cT+1);x.lineTo(cx-4,cT+11);x.lineTo(cx+15,cT-10);x.stroke();
+ T('บันทึกความประสงค์เรียบร้อย',cx,cT+64,fo(700,24),INK,'center');
+ T(mn?'ยอดที่แจ้ง':'รูปแบบการสนับสนุน',cx,yA+10,fo(400,15),MUT,'center');
+ if(mn)T(al[0],cx,yA+60,fo(700,48),BUR,'center');else al.forEach((t,i)=>T(t,cx,yA+50+i*38,fo(700,28),BUR,'center'));
+ x.fillStyle=LN;x.fillRect(M+PX,aEnd+4,IN,1);
+ let y=yR;rows.forEach((o,i)=>{const c=y+14+LH/2;T(o.l,M+PX,c,fo(400,15),MUT,'left');o.ls.forEach((t,j)=>T(t,M+PX+IN,c+j*LH,fo(o.b?700:600,17),INK,'right'));y+=o.h;if(i<rows.length-1){x.fillStyle=LN;x.fillRect(M+PX,y-.5,IN,1)}});
+ x.strokeStyle='#D9CBCD';x.lineWidth=1.5;x.setLineDash([6,6]);x.beginPath();x.moveTo(M+PX,yD);x.lineTo(M+PX+IN,yD);x.stroke();x.setLineDash([]);
+ dl.forEach((t,i)=>T(t,cx,yD+34+i*22,fo(400,14),MUT,'center'));
+ T('KOSA BANK · Mobile Banking',cx,cardB+34,fo(600,13),'#9A8A8D','center');
+ x.fillStyle=BUR;x.fillRect(0,H-8,W,8);
+ return cv}
+document.addEventListener('keydown',e=>{const m=document.querySelector('.modal.als');if(!m)return;
+ if(e.key==='Escape'){const o=ALS&&ALS.opener;setTimeout(()=>{if(o&&o.isConnected&&o.focus)o.focus()},0);return}
+ if(e.key!=='Tab')return;const f=[...m.querySelectorAll('button:not([disabled]),input:not([disabled]),textarea')].filter(n=>!n.closest('[hidden]'));if(!f.length)return;const i=f.indexOf(document.activeElement);
+ if(e.shiftKey&&i<=0){e.preventDefault();f[f.length-1].focus()}else if(!e.shiftKey&&i===f.length-1){e.preventDefault();f[0].focus()}});
 /* ===== หน้าบัตรประจำตัว (slug id-card-kds): เลย์เอาต์ใหม่ภายในหน้า · ส่วนหัวหน้า (h1 ชื่อหน้า) ยังใช้ของ pageView ตัวเดียวกับทุกหน้า ไม่แก้ =====
    เนื้อหาอยู่ในค่าคงที่ IDC_TYPES / IDC_LANYARD / IDC_COLORS ด้านล่าง (ข้อความตามบรีฟ) · ไม่อ่าน/เขียนฐานข้อมูล ไม่แก้ส่วน CMS เดิม · ทำงานเฉพาะหน้าที่ slug อยู่ใน IDC_SLUGS หน้าอื่นเรนเดอร์เหมือนเดิม
    เพิ่มรูปภายหลัง: ใส่ URL https:// ในช่อง img ของการ์ดบัตร / IDC_LANYARD · เพิ่มลิงก์ภายนอก: ใส่ URL https:// ในช่อง url ของการ์ดบัตร (เว้นว่าง = ปุ่มปิดใช้งานและแสดง "ยังไม่ได้ตั้งค่าลิงก์") */
