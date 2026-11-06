@@ -1524,6 +1524,39 @@ html:has(.sch-pg){overflow-x:clip}
 .alu-g li{display:flex;flex-direction:column;align-items:flex-start}
 .alu-g li p{flex:1 1 auto}
 .alu-g li .als-go{margin-top:18px;max-width:100%}
+/* ส่วน "ร่วมสร้างอนาคตไปกับโกศาดิลก" (หน้า alumni-kds) · ใช้ตัวแปรสีเดิม + ทองอ่อนเล็กน้อย (--alp-gold) */
+.alp,.als{--alp-gold:#B08A3E}
+:root[data-theme="dark"] .alp,:root[data-theme="dark"] .als{--alp-gold:#D1AC68}
+@media(prefers-color-scheme:dark){:root:not([data-theme]) .alp,:root:not([data-theme]) .als{--alp-gold:#D1AC68}}
+.alp-hd{text-align:center}
+.alp-hi{display:flex;align-items:center;justify-content:center;width:64px;height:64px;margin:0 auto 14px;border-radius:50%;color:var(--kds-primary-text);background:color-mix(in srgb,var(--gold) 9%,var(--surface));border:1.5px solid var(--alp-gold)}
+.alp>.alp-hd>h2{margin:0 0 10px}
+.alp-lead{margin:0 auto;max-width:62ch;text-align:center;line-height:1.85;color:var(--muted)}
+.alp-bd{max-width:860px;margin:28px auto 0}
+.alp-tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.alp .alp-tb{appearance:none;-webkit-appearance:none;box-sizing:border-box;width:auto;min-width:0;min-height:0;margin:0;display:flex;align-items:center;justify-content:center;gap:10px;padding:15px 14px;border:1px solid transparent;border-radius:14px;box-shadow:none;background:color-mix(in srgb,var(--fg) 5%,var(--surface));color:var(--muted);font:inherit;line-height:1.4;text-align:center;cursor:pointer;transition:background .18s,color .18s}
+.alp .alp-tb:hover{background:color-mix(in srgb,var(--gold) 9%,var(--surface));color:var(--kds-primary-text)}
+.alp .alp-tb[aria-selected="true"]{background:#7A1A22;border-color:#7A1A22;color:#fff}
+.alp .alp-tb:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+.alp-ti{flex:none;display:flex;align-items:center;justify-content:center;width:22px;height:22px}
+.alp-tl{min-width:0;font-weight:700;font-size:1rem;overflow-wrap:break-word}
+.alp-pn{margin-top:18px;padding:34px clamp(20px,5vw,48px) 38px;text-align:center;border:1px solid var(--line);border-top:3px solid var(--alp-gold);border-radius:16px;background:var(--surface);animation:alpIn .22s ease-out}
+@keyframes alpIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){.alp-pn{animation:none}.alp .alp-tb{transition:none}}
+.alp-pi{display:flex;align-items:center;justify-content:center;width:56px;height:56px;margin:0 auto 14px;border-radius:50%;color:var(--kds-primary-text);background:color-mix(in srgb,var(--gold) 9%,var(--surface))}
+.alp-pn h3{margin:0 0 8px;font-size:1.3rem;line-height:1.5;color:var(--kds-primary-text)}
+.alp-pn p{margin:0 auto;max-width:52ch;line-height:1.8}
+.alp-st{list-style:none;display:flex;flex-wrap:wrap;justify-content:center;gap:10px 26px;margin:22px 0 26px;padding:0}
+.alp-st li{display:flex;align-items:center;gap:8px;font-size:.92rem;color:var(--muted)}
+.alp-st b{display:flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;font-size:.8rem;line-height:1;color:var(--kds-primary-text);border:1px solid var(--alp-gold)}
+.alp .btn.alp-go{box-sizing:border-box;min-height:50px;padding:12px 34px;border:1px solid var(--act);border-radius:12px;box-shadow:none;background:var(--act);color:#fff;font-size:1.05rem;font-weight:700;transform:none}
+.alp .btn.alp-go:hover{transform:translateY(-1px);box-shadow:0 8px 18px color-mix(in srgb,var(--act) 30%,transparent)}
+.alp .btn.alp-go:focus-visible{outline:3px solid #7A1A2255;outline-offset:2px}
+@media(max-width:560px){.alp-tabs{gap:8px}
+.alp .alp-tb{flex-direction:column;gap:6px;padding:12px 6px}
+.alp-tl{font-size:.9rem;line-height:1.4}
+.alp-pn{padding:26px 18px 30px}
+.alp .btn.alp-go{width:100%;padding:12px 18px}}
 /* ทำเนียบผู้ร่วมสนับสนุน (หน้า alumni-kds) · หัวข้อกึ่งกลาง + แถบหมวด 3 ปุ่ม + รายชื่อแบบแถว · ใช้ตัวแปรสีเดิม */
 .alh>h2{margin:0 0 10px;text-align:center}
 .alh>h2::after{content:"";display:block;width:56px;height:3px;margin:12px auto 0;border-radius:2px;background:var(--gold)}
@@ -1584,6 +1617,16 @@ html:has(.sch-pg){overflow-x:clip}
 :root[data-theme="dark"] .als-er{color:#E69A8B}
 .als-ac{display:flex;flex-wrap:wrap;gap:12px;margin-top:24px}
 .als-ac .btn{min-height:46px;padding:10px 28px;font-size:1.05rem}
+.als-gp{margin:20px 0 0;padding:20px 22px 22px;border:1px solid var(--line);border-radius:14px;background:color-mix(in srgb,var(--fg) 3%,var(--surface))}
+.als-gh,.als-gp .als-fs legend{display:flex;align-items:center;gap:10px;margin:0 0 14px;padding:0;font-size:.98rem;font-weight:700;line-height:1.5;color:var(--kds-primary-text)}
+.als-gh::before,.als-gp .als-fs legend::before{content:"";flex:none;width:4px;height:16px;border-radius:2px;background:var(--alp-gold)}
+.als-gh+.als-lb,.als-gh+#als-ab>.als-lb:first-child{margin-top:0}
+.als-gp>.als-fs{margin:0}
+.als-gh+#als-ab[hidden]+.als-lb{margin-top:0}
+.als .als-ac .btn{border-width:1px;border-radius:12px;box-shadow:none;transform:none}
+.als .als-ac .btn.b{border-color:var(--act);background:var(--act);color:#fff}
+.als .als-ac .btn:hover{transform:translateY(-1px);box-shadow:0 6px 16px color-mix(in srgb,var(--fg) 16%,transparent)}
+@media(max-width:560px){.als-gp{padding:16px 14px 18px}}
 .als-rv{margin:14px 0 0}
 .als-rv>div{display:grid;grid-template-columns:170px minmax(0,1fr);gap:4px 18px;padding:13px 0;border-top:1px solid var(--line)}
 .als-rv dt{font-weight:700;color:var(--kds-primary-text)}
