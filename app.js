@@ -369,29 +369,19 @@ function alpKey(e){const k=e.key,L=ALU.support,n=L.length,i=L.findIndex(f=>f[2]=
  if(k==='ArrowRight'||k==='ArrowDown')j=(i+1)%n;else if(k==='ArrowLeft'||k==='ArrowUp')j=(i-1+n)%n;else if(k==='Home')j=0;else if(k==='End')j=n-1;
  if(j<0)return true;e.preventDefault();alpPick(L[j][2],true);return false}
 function alpHtml(){const A=ALU;return `<section class="alu-s alp" aria-labelledby="alu-h2"><div class="alp-hd"><div class="alp-hi" aria-hidden="true">${alpSvg(ALP_HEART,30)}</div><h2 id="alu-h2">${E(A.h2)}</h2><p class="alp-lead">${E(A.lead)}</p></div>${alpBoardHtml()}</section>`}
-/* ===== ทำเนียบผู้ร่วมสนับสนุนโรงเรียน (หน้า alumni-kds) · ระยะแรก: แสดงผลจากข้อมูลตัวอย่างเท่านั้น =====
-   ไม่อ่าน/เขียนฐานข้อมูล ไม่เชื่อมกับแบบฟอร์มสนับสนุน (ALS) และไม่มีระบบจัดการสำหรับผู้ดูแล
-   ระยะถัดไป: ให้ alhRows() คืนรายการจากแหล่งข้อมูลจริง (รูปแบบเดียวกับ ALH_DATA) แล้วตั้ง ALH_SAMPLE=false · ส่วนแสดงผลไม่ต้องแก้
-   รูปแบบรายการ: {id, cat:'donate'|'sponsor'|'project', name:'' (ว่าง=ผู้ไม่ประสงค์ออกนาม), kind:'money'|'item'|'act', amount:ตัวเลข(เฉพาะ money), detail:ข้อความ(item/act), date:'YYYY-MM-DD'} */
-const ALH_SAMPLE=true;
-const ALH_ANON='ผู้ไม่ประสงค์ออกนาม';
+/* ===== ทำเนียบผู้ร่วมสนับสนุนโรงเรียน (หน้า alumni-kds) · ข้อมูลจริงจาก Supabase ตาราง support_entries =====
+   อ่าน: ผู้เข้าชมทุกคนผ่าน stuPub() (anon ไม่เก็บเซสชัน เหมือนหน้ารายชื่อนักเรียน) · โหลดแยกรายหมวด หมวดละ ALH_PG รายการ + ปุ่ม "แสดงเพิ่มเติม" · เรียงใหม่ไปเก่า วันที่แสดงเป็น พ.ศ.
+   เขียน: alsConfirm() → alsStore() เมื่อผู้สนับสนุนกดยืนยันในฟอร์มสนับสนุนเดิม · รายการใหม่ขึ้นทันทีหลังบันทึกสำเร็จ และขึ้นให้คนอื่นเมื่อเปิด/โหลดหน้าใหม่ (ไม่ใช้ Realtime)
+   ไม่มีข้อมูลตัวอย่าง · ทุกคนแสดงชื่อตามที่กรอก (ไม่มีระบบไม่เปิดเผยชื่อ) · เป็นการบันทึกความประสงค์ ไม่ใช่การรับเงินจริง/Payment Gateway
+   ต้องรัน supabase/migration_support_hall.sql ก่อน (ตาราง support_entries + bucket 'supporters') · ยังไม่มีหน้าจัดการสำหรับผู้ดูแล (รอบถัดไป) */
 const ALH_CATS=[['donate','บริจาคทุนการศึกษา'],['sponsor','สมัครเป็นผู้สนับสนุน'],['project','สนับสนุนโครงการโรงเรียน']];
 const ALH_KD={item:'สิ่งของ/อุปกรณ์',act:'กิจกรรม/บริการ'};
-const ALH_DATA=[
- {id:'s01',cat:'donate',name:'ศิษย์เก่ารุ่นที่ 12',kind:'money',amount:5000,date:'2026-10-28'},
- {id:'s02',cat:'donate',name:'',kind:'money',amount:1000,date:'2026-10-21'},
- {id:'s03',cat:'donate',name:'คุณนภัสสร ก.',kind:'money',amount:2500.5,date:'2026-10-09'},
- {id:'s04',cat:'donate',name:'ศิษย์เก่ารุ่นที่ 8',kind:'money',amount:10000,date:'2026-09-30'},
- {id:'s05',cat:'sponsor',name:'ร้านบ้านสวนกาแฟ (ตัวอย่าง)',kind:'item',detail:'เครื่องดื่มสำหรับกิจกรรมวันพบปะศิษย์เก่า จำนวน 100 แก้ว',date:'2026-10-30'},
- {id:'s06',cat:'sponsor',name:'',kind:'money',amount:3000,date:'2026-10-17'},
- {id:'s07',cat:'sponsor',name:'คุณธนกร ว.',kind:'act',detail:'ถ่ายภาพและตัดต่อวิดีโอกิจกรรมโรงเรียน ช่วงเดือนพฤศจิกายน',date:'2026-10-05'},
- {id:'s08',cat:'project',name:'ศิษย์เก่ารุ่นที่ 15',kind:'item',detail:'หนังสือห้องสมุด 40 เล่ม และชั้นวางหนังสือ 2 ชุด',date:'2026-10-26'},
- {id:'s09',cat:'project',name:'คุณปวีณา ม.',kind:'act',detail:'จัดอบรมการเขียนแนะนำตัวสมัครเรียนต่อ แก่นักเรียน ม.ปลาย 1 รอบ',date:'2026-10-14'},
- {id:'s10',cat:'project',name:'',kind:'money',amount:1500,date:'2026-10-02'}
-];
-function alhRows(){return ALH_DATA}
-const alhTs=r=>{const t=Date.parse(String(r.date||'')+'T00:00:00+07:00');return isNaN(t)?0:t};
-const alhDate=r=>{const t=alhTs(r);return t?new Date(t).toLocaleDateString('th-TH',{timeZone:'Asia/Bangkok',day:'numeric',month:'short',year:'numeric'}):''};
+const ALH_PG=30,ALH_TTL=60000,ALH_COLS='id,cat,kind,name,acct,amount,detail,photo_path,created_at';
+const ALH={t:0,boot:false,cat:{}};
+ALH_CATS.forEach(c=>{ALH.cat[c[0]]={rows:[],n:0,busy:false,again:false,err:'',did:false}});
+const alhDb=()=>{try{return stuPub()}catch(e){return null}};
+const alhTs=r=>{const t=Date.parse(String(r&&r.created_at||''));return isNaN(t)?0:t};
+const alhDate=r=>{const t=alhTs(r);return t?new Date(t).toLocaleDateString('th-TH-u-ca-buddhist',{timeZone:'Asia/Bangkok',day:'numeric',month:'short',year:'numeric'}):''};
 const alhMoney=n=>n.toLocaleString('en-US',{minimumFractionDigits:Number.isInteger(n)?0:2,maximumFractionDigits:2});
 let ALH_SEL=ALH_CATS[0][0];
 /* ไอคอน Lucide (outline) แบบ inline ไม่โหลดจากภายนอก */
@@ -401,22 +391,40 @@ const ALH_ICO={
  sponsor:'<path d="M11 14h2a2 2 0 1 0 0-4h-3c-.6 0-1.1.2-1.4.6L3 16"/><path d="m7 20 1.6-1.4c.3-.4.8-.6 1.4-.6h4c1.1 0 2.1-.4 2.8-1.2l4.6-4.4a2 2 0 0 0-2.75-2.91l-4.2 3.9"/><path d="m2 15 6 6"/><path d="M19.5 8.5c.7-.7 1.5-1.6 1.5-2.7A2.73 2.73 0 0 0 16 4a2.78 2.78 0 0 0-5 1.8c0 1.2.8 2 1.5 2.8L16 12Z"/>',
  project:ALP_SCHOOL};
 const ALH_USER='<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>';
-function alhItemHtml(r){const nm=String(r.name==null?'':r.name).trim(),dt=alhDate(r),amt=+r.amount,mn=r.kind==='money'&&amt>0;
+const alhErr=e=>{const c=(e&&(e.code||e.status||e.statusCode))||'error';if(c==='42P01'||c==='PGRST205')return 'ยังไม่มีตารางทำเนียบในฐานข้อมูล (ต้องรัน migration_support_hall.sql ใน Supabase ก่อน)';return 'โหลดทำเนียบผู้ร่วมสนับสนุนไม่สำเร็จ กรุณาลองใหม่อีกครั้ง ('+c+')'};
+/* รูปโปรไฟล์: path ใน bucket 'supporters' → URL สาธารณะ (คำนวณในเบราว์เซอร์ ไม่ยิงเครือข่าย) · รับเฉพาะรูปแบบ avatars/<ref>.jpg */
+const alhPhoto=p=>{if(!p||!/^avatars\/[\w-]{1,64}\.jpg$/.test(p))return '';const db=alhDb();if(!db)return '';try{const u=db.storage.from('supporters').getPublicUrl(p).data.publicUrl;return okU(u)?u:''}catch(e){return ''}};
+function alhItemHtml(r){const nm=String(r.name==null?'':r.name).trim(),ac=String(r.acct==null?'':r.acct).trim(),dt=alhDate(r),amt=+r.amount,mn=r.kind==='money'&&amt>0,ph=alhPhoto(r.photo_path);
  const sub=mn?'':`<div class="alh-ds"><span class="alh-kd">${E(ALH_KD[r.kind]||'รายละเอียด')}</span> ${E(r.detail||'-')}</div>`;
- return `<li><div class="alh-av" aria-hidden="true">${alhSvg(ALH_USER,22)}</div><div class="alh-mn"><div class="alh-nm${nm?'':' anon'}">${E(nm||ALH_ANON)}</div>${dt?`<div class="alh-d">${E(dt)}</div>`:''}${sub}</div>${mn?`<div class="alh-amt">${E(alhMoney(amt))}<span class="alh-u">บาท</span></div>`:''}</li>`}
-function alhBoardHtml(){const rows=alhRows().slice().sort((a,b)=>alhTs(b)-alhTs(a)||String(b.id).localeCompare(String(a.id)));
- const tabs=ALH_CATS.map(c=>{const n=rows.filter(r=>r.cat===c[0]).length,on=c[0]===ALH_SEL;return `<button type="button" role="tab" class="alh-tb" id="alh-t-${c[0]}" aria-selected="${on}" aria-controls="alh-pn" tabindex="${on?0:-1}" onclick="alhPick('${c[0]}')"><span class="alh-ti">${alhSvg(ALH_ICO[c[0]]||ALH_USER,24)}</span><span class="alh-tx"><span class="alh-tl">${E(c[1])}</span><span class="alh-ct">${n} รายการ</span></span></button>`}).join('');
- const L=rows.filter(r=>r.cat===ALH_SEL);
- return `<div class="alh-bd" id="alh-bd"><div class="alh-tabs" role="tablist" aria-label="หมวดหมู่ผู้ร่วมสนับสนุน" onkeydown="return alhKey(event)">${tabs}</div><div class="alh-pn" id="alh-pn" role="tabpanel" aria-labelledby="alh-t-${ALH_SEL}">${L.length?`<ul class="alh-l">${L.map(alhItemHtml).join('')}</ul>`:'<p class="alh-em">ยังไม่มีรายการในหมวดนี้</p>'}</div></div>`}
+ return `<li><div class="alh-av" aria-hidden="true">${alhSvg(ALH_USER,22)}${ph?`<img src="${E(ph)}" alt="" width="46" height="46" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.remove()">`:''}</div><div class="alh-mn"><div class="alh-nm">${E(nm||'-')}</div>${ac?`<div class="alh-ac">${E(ac)}</div>`:''}${dt?`<div class="alh-d">${E(dt)}</div>`:''}${sub}</div>${mn?`<div class="alh-amt">${E(alhMoney(amt))}<span class="alh-u">บาท</span></div>`:''}</li>`}
+function alhTabsHtml(){return ALH_CATS.map(c=>{const s=ALH.cat[c[0]],on=c[0]===ALH_SEL,ct=s.did?(s.err&&!s.rows.length?'—':s.n.toLocaleString('th-TH')+' รายการ'):'กำลังโหลด…';return `<button type="button" role="tab" class="alh-tb" id="alh-t-${c[0]}" aria-selected="${on}" aria-controls="alh-pn" tabindex="${on?0:-1}" onclick="alhPick('${c[0]}')"><span class="alh-ti">${alhSvg(ALH_ICO[c[0]]||ALH_USER,24)}</span><span class="alh-tx"><span class="alh-tl">${E(c[1])}</span><span class="alh-ct">${E(ct)}</span></span></button>`}).join('')}
+function alhPanel(id){const s=ALH.cat[id];if(!s||!s.did)return '<p class="alh-em" role="status">กำลังโหลดรายการ…</p>';
+ const er=s.err?`<div class="msg er alh-er" role="alert"><span>${E(s.err)}</span><button type="button" class="btn s" id="alh-rt" onclick="alhLoad('${id}')"${s.busy?' disabled':''}>ลองอีกครั้ง</button></div>`:'';
+ if(!s.rows.length)return s.err?er:'<p class="alh-em">ยังไม่มีรายการในหมวดนี้</p>';
+ const mr=s.rows.length<s.n?`<p class="alh-mr"><button type="button" class="btn" id="alh-mb" onclick="alhLoad('${id}',true)"${s.busy?' disabled':''}>${s.busy?'กำลังโหลด…':'แสดงเพิ่มเติม ('+s.rows.length.toLocaleString('th-TH')+'/'+s.n.toLocaleString('th-TH')+')'}</button></p>`:'';
+ return `<ul class="alh-l">${s.rows.map(alhItemHtml).join('')}</ul>${mr}${er}`}
+function alhBoardHtml(){return `<div class="alh-bd" id="alh-bd"><div class="alh-tabs" role="tablist" aria-label="หมวดหมู่ผู้ร่วมสนับสนุน" onkeydown="return alhKey(event)">${alhTabsHtml()}</div><div class="alh-pn" id="alh-pn" role="tabpanel" aria-labelledby="alh-t-${ALH_SEL}">${alhPanel(ALH_SEL)}</div></div>`}
+/* อัปเดตเฉพาะแถบหมวด+แผงรายการ (ไม่สร้าง .alh-bd ใหม่ จึงไม่เล่นแอนิเมชันซ้ำตอนข้อมูลทยอยโหลดเสร็จ) และคืนโฟกัสเดิม */
+function alhPaint(){const b=$('alh-bd'),t=b&&b.querySelector('.alh-tabs'),p=$('alh-pn');if(!t||!p)return;const a=document.activeElement,fid=a&&a.id&&b.contains(a)?a.id:'';t.innerHTML=alhTabsHtml();p.innerHTML=alhPanel(ALH_SEL);if(fid){const n=$(fid);if(n&&!n.disabled)n.focus()}}
+async function alhLoad(id,more){const s=ALH.cat[id];if(!s)return;if(s.busy){if(!more)s.again=true;return}const db=alhDb();
+ if(!db){s.err='ยังไม่ได้ตั้งค่า Supabase จึงแสดงทำเนียบไม่ได้';s.did=true;alhPaint();return}
+ s.busy=true;s.err='';if(more)alhPaint();
+ try{const from=more?s.rows.length:0,{data,error,count}=await db.from('support_entries').select(ALH_COLS,{count:'exact'}).eq('cat',id).order('created_at',{ascending:false}).order('id',{ascending:false}).range(from,from+ALH_PG-1);
+  if(error)throw error;const D=data||[];if(more){const seen=new Set(s.rows.map(r=>r.id));s.rows=s.rows.concat(D.filter(r=>!seen.has(r.id)))}else s.rows=D;s.n=count==null?s.rows.length:count}
+ catch(e){console.error('support_entries:',e);s.err=alhErr(e)}
+ finally{s.busy=false;s.did=true;alhPaint();if(s.again){s.again=false;alhLoad(id)}}}
+function alhBoot(force){if(ALH.boot)return;if(!force&&ALH.t&&Date.now()-ALH.t<ALH_TTL)return;ALH.boot=true;ALH.t=Date.now();const end=()=>{ALH.boot=false};Promise.all(ALH_CATS.map(c=>alhLoad(c[0]))).then(end,end)}
+/* เรียกหลังบันทึกรายการสำเร็จ: สลับไปหมวดที่เพิ่งสนับสนุนและโหลดใหม่ทันที */
+function alhAfterSave(type){if(ALH.cat[type])ALH_SEL=type;const b=$('alh-bd');if(b)b.outerHTML=alhBoardHtml();ALH.t=0;ALH.boot=false;alhBoot(true)}
 function alhPick(id,keep){if(!ALH_CATS.some(c=>c[0]===id))return;ALH_SEL=id;const b=$('alh-bd');if(!b)return;b.outerHTML=alhBoardHtml();const t=$('alh-t-'+id);if(t&&keep)t.focus()}
 function alhKey(e){const k=e.key,i=ALH_CATS.findIndex(c=>c[0]===ALH_SEL),n=ALH_CATS.length;let j=-1;
  if(k==='ArrowRight'||k==='ArrowDown')j=(i+1)%n;else if(k==='ArrowLeft'||k==='ArrowUp')j=(i-1+n)%n;else if(k==='Home')j=0;else if(k==='End')j=n-1;
  if(j<0)return true;e.preventDefault();alhPick(ALH_CATS[j][0],true);return false}
-function alhHtml(){return `<section class="alu-s alh" aria-labelledby="alh-h"><h2 id="alh-h">ทำเนียบผู้ร่วมสนับสนุน</h2><p class="alh-sub">ขอบคุณทุกการสนับสนุนที่ช่วยส่งต่อโอกาสให้นักเรียนโรงเรียนสาธิตโกศาดิลก</p>${ALH_SAMPLE?'<p class="alh-smp">ข้อมูลที่แสดงเป็นข้อมูลตัวอย่างสำหรับทดสอบการแสดงผล</p>':''}${alhBoardHtml()}</section>`}
+function alhHtml(){setTimeout(alhBoot,0);return `<section class="alu-s alh" aria-labelledby="alh-h"><h2 id="alh-h">ทำเนียบผู้ร่วมสนับสนุน</h2><p class="alh-sub">ขอบคุณทุกการสนับสนุนที่ช่วยส่งต่อโอกาสให้นักเรียนโรงเรียนสาธิตโกศาดิลก</p>${alhBoardHtml()}</section>`}
 /* ===== ระบบสนับสนุนในหน้าสมาคมศิษย์เก่า (alumni-kds): ฟอร์ม → ตรวจสอบ → สลิป KOSA BANK (PNG) =====
-   ทำงานในเบราว์เซอร์ล้วน: ข้อมูลที่กรอกเก็บในตัวแปร ALS ชั่วคราว ไม่อ่าน/เขียนฐานข้อมูล ไม่ส่งข้อมูลออกนอกเครื่อง และหายเมื่อปิดหน้าต่าง
+   ข้อมูลที่กรอกเก็บในตัวแปร ALS ระหว่างกรอก/ตรวจสอบ · เมื่อกด "ยืนยัน" จะบันทึกลง Supabase (ตาราง support_entries + รูปใน bucket 'supporters') ผ่าน alsStore() แล้วจึงสร้างสลิป · ถ้าบันทึกไม่สำเร็จจะไม่สร้างสลิป
    KOSA BANK เป็นธนาคารสมมติสำหรับระบบ Roleplay · สลิปเป็นสลิปโอนเงินในเรื่อง ไม่มีการรับ-โอนเงินจริง และไม่ใช้ชื่อ/โลโก้ธนาคารจริง
-   ใช้ #md/.modal.wide เดิม ปิดด้วยปุ่ม ✕ / คลิกพื้นหลัง / Esc · เมื่อมีฐานข้อมูลจริง ให้ต่อการบันทึกที่ alsConfirm() (ยังไม่ทำ รอได้รับอนุญาต)
+   ใช้ #md/.modal.wide เดิม ปิดด้วยปุ่ม ✕ / คลิกพื้นหลัง / Esc · การบันทึกอยู่ที่ alsConfirm()/alsStore() · เป็นการบันทึกความประสงค์ ไม่ใช่การรับเงินจริง
    ยอดแนะนำแก้ที่ ALS_PRESETS · ข้อความแจ้งผู้ใช้ในหน้าต่างแก้ที่ ALS_NOTE · ข้อความท้ายสลิปแก้ที่ ALS_THX */
 const ALS_TYPES={
  donate:{t:'บริจาคทุนการศึกษา',ph:'ระบุวัตถุประสงค์ของการบริจาค (ถ้ามี)'},
@@ -428,6 +436,7 @@ const ALS_MAX=10000000;
 const ALS_RCV='โรงเรียนสาธิตโกศาดิลก';
 const ALS_NOTE='ร่วมเป็นส่วนหนึ่งในการสนับสนุนโรงเรียนสาธิตโกศาดิลก เลือกรูปแบบการสนับสนุนที่ต้องการ จากนั้นตรวจสอบข้อมูลก่อนยืนยันรายการ';
 const ALS_THX='ขอบคุณที่ใช้บริการ';
+const ALS_PUB='เมื่อยืนยันรายการ ชื่อ รูปโปรไฟล์ ชื่อแอคเคาท์ ประเภทการสนับสนุน และยอดเงินหรือรายละเอียด จะแสดงในทำเนียบผู้ร่วมสนับสนุนให้ผู้เข้าชมทุกคนเห็น (ไม่แสดงหมายเหตุ)';
 let ALS=null;
 const alsClean=s=>String(s==null?'':s).replace(/[\p{Extended_Pictographic}\uFE0F\u200D]/gu,'').replace(/[\u0000-\u001F\u007F]+/g,' ').replace(/\s+/g,' ').trim();
 const alsAmt=v=>{const s=String(v==null?'':v).replace(/[,\s฿]/g,'');return /^\d{1,8}(\.\d{1,2})?$/.test(s)&&+s>0?+s:null};
@@ -442,7 +451,7 @@ function alsRows(r,slip){const mn=r.amt!=null,o=[[slip?'จาก':'ชื่อ
  if(mn&&!slip)o.push(['ยอดที่แจ้ง','฿ '+alsMoney(r.amt)]);
  if(r.detail)o.push(['รายละเอียด',r.detail]);o.push(['หมายเหตุ',r.note||'-']);
  if(slip){o.push(['วันที่ทำรายการ',alsDT(r.ts)]);o.push(['เลขที่รายการ',r.ref])}return o}
-function alsOpen(type,btn){if(!ALS_TYPES[type])return;ALS={type,step:1,name:'',amtRaw:'',kind:'money',detail:'',note:'',acct:'',photo:null,opener:btn||document.activeElement,rec:null,cv:null};alsShow()}
+function alsOpen(type,btn){if(!ALS_TYPES[type])return;ALS={type,step:1,name:'',amtRaw:'',kind:'money',detail:'',note:'',acct:'',photo:null,opener:btn||document.activeElement,rec:null,cv:null,saving:false,saved:false};alsShow()}
 function alsClose(){const o=ALS&&ALS.opener;ALS=null;$('md').innerHTML='';if(o&&o.isConnected&&o.focus)o.focus()}
 function alsWrap(inner,title,n,lab,cls){return `<div class="modal wide als${cls?' '+cls:''}" role="dialog" aria-modal="true" aria-labelledby="als-t" onpointerdown="this._d=event.target===this" onclick="if(this._d&&event.target===this)alsClose()"><div><button type="button" class="mx" aria-label="ปิดหน้าต่าง" onclick="alsClose()">${ic('close')}</button><p class="als-st">ขั้นตอนที่ ${n} จาก 3 · ${E(lab)}</p><h3 id="als-t">${E(title)}</h3>${inner}</div></div>`}
 function alsShow(){const A=ALS;if(!A)return;const T=ALS_TYPES[A.type],m=$('md');
@@ -451,7 +460,7 @@ function alsShow(){const A=ALS;if(!A)return;const T=ALS_TYPES[A.type],m=$('md');
  else{m.innerHTML=alsWrap(alsSlipHtml(),'สลิป KOSA BANK',3,'สลิปรายการ','als-slip');alsSlip()}
  const h=$('als-t');if(h){h.tabIndex=-1;h.focus({preventScroll:true})}}
 const ALS_PH_MAX=5*1024*1024,ALS_PH_PX=256;
-/* รูปโปรไฟล์ผู้สนับสนุน (ไม่บังคับ): ย่อเป็น 256×256 เก็บในตัวแปร ALS.photo (data URL) เท่านั้น ไม่ส่งออกนอกเครื่อง · ยังไม่วาดลงสลิป */
+/* รูปโปรไฟล์ผู้สนับสนุน (ไม่บังคับ): ย่อเป็น 256×256 เก็บในตัวแปร ALS.photo (data URL) ระหว่างกรอก · เมื่อกดยืนยันจะอัปโหลดเป็น avatars/<ref>.jpg ใน bucket 'supporters' (alsStore) · ยังไม่วาดลงสลิป */
 function alsPhotoInner(){const p=ALS&&ALS.photo;
  return `<div class="als-av" id="als-av">${p?`<img src="${p}" alt="รูปโปรไฟล์ที่เลือก" width="84" height="84">`:alpSvg('<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',38)}</div><div class="als-pc"><span class="als-lb" id="als-pl">รูปโปรไฟล์ (ไม่บังคับ)</span><div class="als-pb"><button type="button" class="btn s" id="als-pu" aria-describedby="als-pl" onclick="$('als-ph').click()">${p?'เปลี่ยนรูป':'อัปโหลดรูป'}</button>${p?'<button type="button" class="btn s" onclick="alsPhotoDel()">ลบรูป</button>':''}<input type="file" id="als-ph" accept="image/png,image/jpeg,image/webp,image/gif" hidden onchange="alsPhotoPick(this)"></div><p class="als-ph-h">PNG, JPG, WebP หรือ GIF ขนาดไม่เกิน 5 MB</p><p class="als-pe" id="als-pe" role="alert"></p></div>`}
 function alsPhotoHtml(){return `<div class="als-pf" id="als-pf">${alsPhotoInner()}</div>`}
@@ -472,7 +481,7 @@ function alsFormHtml(){const A=ALS,T=ALS_TYPES[A.type],sp=A.type==='sponsor',mn=
  const am=`<div id="als-ab"${mn?'':' hidden'}><span class="als-lb" id="als-al">เลือกยอดแนะนำ (บาท)</span><div class="als-ch" role="group" aria-labelledby="als-al">${ALS_PRESETS.map(v=>`<button type="button" class="btn s${a===v?' b':''}" data-v="${v}" aria-pressed="${a===v}" onclick="alsPick(${v})">${v.toLocaleString('en-US')}</button>`).join('')}</div><label class="als-lb" for="als-am">หรือกรอกจำนวนเงินเอง (บาท)</label><input id="als-am" type="text" inputmode="decimal" autocomplete="off" placeholder="0.00" value="${E(A.amtRaw)}" oninput="alsIn()"></div>`;
  const dt=sp?`<label class="als-lb" for="als-dt" id="als-dl">${E(alsDl(A.kind))}</label><textarea id="als-dt" rows="3" maxlength="300" oninput="alsIn()">${E(A.detail)}</textarea>`:'';
  return `<p class="als-sb">กรอกข้อมูลเพื่อแจ้งความประสงค์สนับสนุน ประเภท “${E(T.t)}” ระบบกำหนดให้โดยอัตโนมัติ</p>${kd?`<div class="als-gp">${kd}</div>`:''}<div class="als-gp"><h4 class="als-gh">ข้อมูลผู้สนับสนุน</h4>${alsPhotoHtml()}<label class="als-lb" for="als-nm">ชื่อผู้สนับสนุน</label><input id="als-nm" type="text" maxlength="100" autocomplete="name" value="${E(A.name)}" oninput="alsIn()"><label class="als-lb" for="als-ac">ชื่อแอคเคาท์ เช่น Bluesky (ไม่บังคับ)</label><input id="als-ac" type="text" maxlength="60" autocomplete="off" placeholder="เช่น @name.bsky.social" value="${E(A.acct||'')}" oninput="alsIn()"></div><div class="als-gp"><h4 class="als-gh">รายละเอียดการสนับสนุน</h4>${am}${dt}</div><div class="als-gp"><h4 class="als-gh">หมายเหตุ</h4><label class="als-lb" for="als-nt">หมายเหตุ / วัตถุประสงค์ (ไม่บังคับ)</label><textarea id="als-nt" rows="3" maxlength="200" placeholder="${E(T.ph)}" oninput="alsIn()">${E(A.note)}</textarea></div><p id="als-er" class="als-er" role="alert"></p><div class="als-ac"><button type="button" class="btn b" onclick="alsCheck()">ตรวจสอบรายการ</button><button type="button" class="btn" onclick="alsClose()">ยกเลิก</button></div>`}
-function alsReviewHtml(){const r=ALS.rec;return `<p class="als-sb">โปรดตรวจสอบความถูกต้องก่อนยืนยัน</p><dl class="als-rv">${alsRows(r,false).map(x=>`<div><dt>${E(x[0])}</dt><dd>${E(x[1])}</dd></div>`).join('')}</dl><p class="als-nt">${E(ALS_NOTE)}</p><div class="als-ac"><button type="button" class="btn b" onclick="alsConfirm()">ยืนยันและสร้างสลิป</button><button type="button" class="btn" onclick="alsBack()">แก้ไขข้อมูล</button></div>`}
+function alsReviewHtml(){const r=ALS.rec;return `<p class="als-sb">โปรดตรวจสอบความถูกต้องก่อนยืนยัน</p><dl class="als-rv">${alsRows(r,false).map(x=>`<div><dt>${E(x[0])}</dt><dd>${E(x[1])}</dd></div>`).join('')}</dl><p class="als-nt">${E(ALS_NOTE)}</p><p class="als-nt">${E(ALS_PUB)}</p><p id="als-er" class="als-er" role="alert"></p><div class="als-ac"><button type="button" class="btn b" id="als-cf" onclick="alsConfirm()">ยืนยันและสร้างสลิป</button><button type="button" class="btn" id="als-bk" onclick="alsBack()">แก้ไขข้อมูล</button></div>`}
 function alsSlipHtml(){return `<p class="als-sb">สร้างสลิปเรียบร้อยแล้ว กดปุ่มด้านล่างเพื่อบันทึกเป็นรูป PNG</p><div id="als-cvw" class="als-cvw" aria-busy="true"><p class="als-sb">กำลังสร้างสลิป</p></div><p id="als-ms" class="als-ms" role="status" aria-live="polite"></p><p class="als-nt">${E(ALS_NOTE)}</p><div class="als-ac"><button type="button" class="btn b" id="als-sv" disabled onclick="alsSave(this)">บันทึกเป็น PNG</button><button type="button" class="btn" onclick="alsClose()">ปิด</button></div>`}
 function alsRead(){const A=ALS,g=id=>{const e=$(id);return e?e.value:null},n=g('als-nm'),a=g('als-am'),d=g('als-dt'),t=g('als-nt'),c=g('als-ac');if(n!==null)A.name=n;if(c!==null)A.acct=c;if(a!==null)A.amtRaw=a;if(d!==null)A.detail=d;if(t!==null)A.note=t}
 function alsChips(){const v=alsAmt(ALS.amtRaw);document.querySelectorAll('.als-ch .btn').forEach(b=>{const on=+b.dataset.v===v;b.classList.toggle('b',on);b.setAttribute('aria-pressed',on?'true':'false')})}
@@ -488,7 +497,28 @@ function alsCheck(){const A=ALS;if(!A)return;alsRead();
  if(!mn&&!dt)return alsErr('กรุณาระบุรายละเอียด'+(A.kind==='item'?'สิ่งของ/อุปกรณ์':'กิจกรรม/บริการ')+'ที่ต้องการสนับสนุน','als-dt');
  A.rec={type:A.type,kind:A.type==='sponsor'?A.kind:null,name:nm,acct:ac,amt:mn?amt:null,detail:dt,note:nt,ts:null,ref:null};A.step=2;alsShow()}
 function alsBack(){if(!ALS)return;ALS.step=1;alsShow()}
-function alsConfirm(){const A=ALS;if(!A||!A.rec)return;if(!A.rec.ref){const d=new Date();A.rec.ts=d;A.rec.ref=alsRef(d)}A.step=3;alsShow()}
+/* บันทึกลง Supabase ก่อน แล้วจึงสร้างสลิป · ref/ts คงเดิมเมื่อกดซ้ำหลังล้มเหลว (กันรายการซ้ำ: ref เป็น unique + รูปชื่อไฟล์ตาม ref) */
+const alsDup=e=>String(e&&(e.statusCode||e.status))==='409'||/already exists|duplicate/i.test(String((e&&e.message)||''));
+const alsBlob=u=>{const m=/^data:image\/jpeg;base64,([A-Za-z0-9+/=]+)$/.exec(u||'');if(!m)throw {code:'photo',message:'รูปโปรไฟล์ไม่ถูกต้อง กรุณาเลือกรูปใหม่หรือลบรูปออก'};const b=atob(m[1]),a=new Uint8Array(b.length);for(let i=0;i<b.length;i++)a[i]=b.charCodeAt(i);return new Blob([a],{type:'image/jpeg'})};
+const alsSaveMsg=e=>{const c=(e&&(e.code||e.statusCode||e.status))||'error',m=String((e&&e.message)||'');
+ if(c==='noconfig'||c==='photo')return m;
+ if(c==='42P01'||c==='PGRST205'||/bucket not found/i.test(m))return 'ยังบันทึกรายการไม่ได้ เพราะฐานข้อมูลยังไม่พร้อม (ผู้ดูแลต้องรัน migration_support_hall.sql ใน Supabase ก่อน) ('+c+')';
+ if(c==='42501'||String(c)==='401'||String(c)==='403')return 'ยังบันทึกรายการไม่ได้ เพราะไม่มีสิทธิ์เขียนข้อมูล (ผู้ดูแลตรวจนโยบาย RLS/Storage ของ migration_support_hall.sql) ('+c+')';
+ if(c==='23514')return 'ข้อมูลไม่ผ่านเงื่อนไขของฐานข้อมูล กรุณากด "แก้ไขข้อมูล" แล้วตรวจชื่อ ยอดเงิน และรายละเอียด';
+ if(/failed to fetch|networkerror|load failed/i.test(m))return 'เชื่อมต่อเครือข่ายไม่ได้ ยังไม่ได้บันทึกรายการ กรุณากดยืนยันอีกครั้ง';
+ return 'บันทึกรายการไม่สำเร็จ กรุณากดยืนยันอีกครั้ง ('+c+')'};
+function alsBusy(on){const c=$('als-cf'),b=$('als-bk');if(c){c.disabled=on;c.textContent=on?'กำลังบันทึกรายการ…':'ยืนยันและสร้างสลิป'}if(b)b.disabled=on}
+async function alsStore(r,photo){const db=stuPub();if(!db)throw {code:'noconfig',message:'ยังไม่ได้ตั้งค่า Supabase จึงบันทึกรายการไม่ได้'};
+ let path=null;
+ if(photo){path='avatars/'+r.ref+'.jpg';const {error}=await db.storage.from('supporters').upload(path,alsBlob(photo),{contentType:'image/jpeg',cacheControl:'31536000',upsert:false});if(error&&!alsDup(error))throw error}
+ const {error}=await db.from('support_entries').insert({ref:r.ref,cat:r.type,kind:r.type==='sponsor'?r.kind:'money',name:r.name,acct:r.acct||null,amount:r.amt==null?null:r.amt,detail:r.detail||null,photo_path:path});
+ if(error&&error.code!=='23505')throw error}
+async function alsConfirm(){const A=ALS;if(!A||!A.rec||A.saving)return;const r=A.rec;if(!r.ref){const d=new Date();r.ts=d;r.ref=alsRef(d)}
+ if(!A.saved){A.saving=true;alsBusy(true);alsErr('');
+  try{await alsStore(r,A.photo);A.saved=true}
+  catch(e){console.error('support_entries:',e);A.saving=false;if(ALS===A){alsBusy(false);alsErr(alsSaveMsg(e));const c=$('als-cf');if(c)c.focus()}return}
+  A.saving=false;alhAfterSave(r.type)}
+ if(ALS!==A)return;A.step=3;alsShow()}
 async function alsSlip(){const A=ALS,r=A&&A.rec;if(!r)return;
  try{const cv=await alsDraw(r),w=$('als-cvw');if(!w||ALS!==A)return;cv.className='als-cv';cv.setAttribute('role','img');cv.setAttribute('aria-label','สลิป KOSA BANK '+alsRows(r,true).map(x=>x[0]+' '+x[1]+(x[0]==='จาก'&&r.acct?' ('+r.acct+')':'')).join(' · '));w.replaceChildren(cv);w.removeAttribute('aria-busy');A.cv=cv;const b=$('als-sv');if(b)b.disabled=false}
  catch(e){console.error(e);const w=$('als-cvw');if(w&&ALS===A)w.innerHTML='<p class="als-er">สร้างสลิปไม่สำเร็จ กรุณาปิดแล้วลองใหม่อีกครั้ง</p>'}}
