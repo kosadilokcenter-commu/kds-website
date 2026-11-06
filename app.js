@@ -372,11 +372,21 @@ function alhRows(){return ALH_DATA}
 const alhTs=r=>{const t=Date.parse(String(r.date||'')+'T00:00:00+07:00');return isNaN(t)?0:t};
 const alhDate=r=>{const t=alhTs(r);return t?new Date(t).toLocaleDateString('th-TH',{timeZone:'Asia/Bangkok',day:'numeric',month:'short',year:'numeric'}):''};
 const alhMoney=n=>n.toLocaleString('en-US',{minimumFractionDigits:Number.isInteger(n)?0:2,maximumFractionDigits:2});
-function alhItemHtml(r){const nm=String(r.name==null?'':r.name).trim(),dt=alhDate(r),amt=+r.amount;
- const val=r.kind==='money'&&amt>0?`<span class="alh-amt">${E(alhMoney(amt))} บาท</span>`:`<span class="alh-kd">${E(ALH_KD[r.kind]||'รายละเอียด')}</span><span class="alh-ds">${E(r.detail||'-')}</span>`;
- return `<li><div class="alh-nm${nm?'':' anon'}">${E(nm||ALH_ANON)}</div><div class="alh-vl">${val}</div>${dt?`<div class="alh-d">${E(dt)}</div>`:''}</li>`}
-function alhHtml(){const rows=alhRows().slice().sort((a,b)=>alhTs(b)-alhTs(a)||String(b.id).localeCompare(String(a.id)));
- return `<section class="alu-s alh" aria-labelledby="alh-h"><h2 id="alh-h">ทำเนียบผู้ร่วมสนับสนุนโรงเรียน</h2><p class="alh-sub">ขอบคุณผู้ร่วมสนับสนุนโรงเรียนสาธิตโกศาดิลก เรียงจากรายการล่าสุดไปเก่าสุด</p>${ALH_SAMPLE?'<p class="alh-smp">ข้อมูลที่แสดงเป็นข้อมูลตัวอย่างสำหรับทดสอบการแสดงผล</p>':''}<div class="alh-g">${ALH_CATS.map(c=>{const L=rows.filter(r=>r.cat===c[0]);return `<div class="alh-c"><div class="alh-ch"><h3>${E(c[1])}</h3><span class="alh-n">${L.length} รายการ</span></div>${L.length?`<ul class="alh-l">${L.map(alhItemHtml).join('')}</ul>`:'<p class="alh-em">ยังไม่มีรายการในหมวดนี้</p>'}</div>`}).join('')}</div></section>`}
+let ALH_SEL=ALH_CATS[0][0];
+const ALH_ICON='<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8.5" r="3.6"/><path d="M4.8 20c.9-3.6 3.7-5.6 7.2-5.6s6.3 2 7.2 5.6"/></svg>';
+const alhInit=n=>{const c=Array.from(String(n).trim().replace(/^คุณ\s*/,'').replace(/^[เแโใไ]+/,''));return c.length?c[0]:'?'};
+function alhItemHtml(r){const nm=String(r.name==null?'':r.name).trim(),dt=alhDate(r),amt=+r.amount,mn=r.kind==='money'&&amt>0;
+ const sub=mn?'':`<div class="alh-ds"><span class="alh-kd">${E(ALH_KD[r.kind]||'รายละเอียด')}</span> ${E(r.detail||'-')}</div>`;
+ return `<li><div class="alh-av" aria-hidden="true">${nm?E(alhInit(nm)):ALH_ICON}</div><div class="alh-mn"><div class="alh-nm${nm?'':' anon'}">${E(nm||ALH_ANON)}</div>${dt?`<div class="alh-d">${E(dt)}</div>`:''}${sub}</div>${mn?`<div class="alh-amt">${E(alhMoney(amt))}<span class="alh-u">บาท</span></div>`:''}</li>`}
+function alhBoardHtml(){const rows=alhRows().slice().sort((a,b)=>alhTs(b)-alhTs(a)||String(b.id).localeCompare(String(a.id)));
+ const tabs=ALH_CATS.map(c=>{const n=rows.filter(r=>r.cat===c[0]).length,on=c[0]===ALH_SEL;return `<button type="button" role="tab" class="alh-tb" id="alh-t-${c[0]}" aria-selected="${on}" aria-controls="alh-pn" tabindex="${on?0:-1}" onclick="alhPick('${c[0]}')"><span class="alh-tl">${E(c[1])}</span><span class="alh-ct" aria-label="${n} รายการ">${n}</span></button>`}).join('');
+ const L=rows.filter(r=>r.cat===ALH_SEL);
+ return `<div class="alh-bd" id="alh-bd"><div class="alh-tabs" role="tablist" aria-label="หมวดหมู่ผู้ร่วมสนับสนุน" onkeydown="return alhKey(event)">${tabs}</div><div class="alh-pn" id="alh-pn" role="tabpanel" aria-labelledby="alh-t-${ALH_SEL}">${L.length?`<ul class="alh-l">${L.map(alhItemHtml).join('')}</ul>`:'<p class="alh-em">ยังไม่มีรายการในหมวดนี้</p>'}</div></div>`}
+function alhPick(id,keep){if(!ALH_CATS.some(c=>c[0]===id))return;ALH_SEL=id;const b=$('alh-bd');if(!b)return;b.outerHTML=alhBoardHtml();const t=$('alh-t-'+id);if(t&&keep)t.focus()}
+function alhKey(e){const k=e.key,i=ALH_CATS.findIndex(c=>c[0]===ALH_SEL),n=ALH_CATS.length;let j=-1;
+ if(k==='ArrowRight'||k==='ArrowDown')j=(i+1)%n;else if(k==='ArrowLeft'||k==='ArrowUp')j=(i-1+n)%n;else if(k==='Home')j=0;else if(k==='End')j=n-1;
+ if(j<0)return true;e.preventDefault();alhPick(ALH_CATS[j][0],true);return false}
+function alhHtml(){return `<section class="alu-s alh" aria-labelledby="alh-h"><h2 id="alh-h">ทำเนียบผู้ร่วมสนับสนุนโรงเรียน</h2><p class="alh-sub">ขอบคุณผู้ร่วมสนับสนุนโรงเรียนสาธิตโกศาดิลก เรียงจากรายการล่าสุดไปเก่าสุด</p>${ALH_SAMPLE?'<p class="alh-smp">ข้อมูลที่แสดงเป็นข้อมูลตัวอย่างสำหรับทดสอบการแสดงผล</p>':''}${alhBoardHtml()}</section>`}
 /* ===== ระบบสนับสนุนในหน้าสมาคมศิษย์เก่า (alumni-kds): ฟอร์ม → ตรวจสอบ → สลิป KOSA BANK (PNG) =====
    ทำงานในเบราว์เซอร์ล้วน: ข้อมูลที่กรอกเก็บในตัวแปร ALS ชั่วคราว ไม่อ่าน/เขียนฐานข้อมูล ไม่ส่งข้อมูลออกนอกเครื่อง และหายเมื่อปิดหน้าต่าง
    KOSA BANK เป็นธนาคารสมมติสำหรับระบบ Roleplay · สลิปเป็นสลิปโอนเงินในเรื่อง ไม่มีการรับ-โอนเงินจริง และไม่ใช้ชื่อ/โลโก้ธนาคารจริง
