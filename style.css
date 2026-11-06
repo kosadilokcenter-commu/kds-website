@@ -1504,15 +1504,15 @@ html:has(.sch-pg){overflow-x:clip}
 .alu p{white-space:normal;overflow-wrap:anywhere}
 .alu-lead{max-width:68ch;font-size:1.05rem;line-height:1.85}
 /* วิสัยทัศน์ / พันธกิจ / วัตถุประสงค์ / ค่านิยม · สไตล์ Editorial: เลข 01–04 ขนาดใหญ่ (CSS counter ไม่แก้ข้อความ) + เส้นแบ่งบาง ๆ · สีเน้นเบอร์กันดี #7A1A22 (โหมดมืดใช้โทนอ่อนของเบอร์กันดีเพื่อให้อ่านชัด) */
-.alu-dl{--alu-ac:#7A1A22;margin:clamp(8px,2vw,24px) 0 0;counter-reset:alu-n;border-bottom:1px solid var(--line)}
+.alu-dl{--alu-ac:#7A1A22;margin:clamp(4px,1vw,12px) 0 0;counter-reset:alu-n;border-bottom:1px solid var(--line)}
 :root[data-theme="dark"] .alu-dl{--alu-ac:#E9A9B0}
 @media(prefers-color-scheme:dark){:root:not([data-theme]) .alu-dl{--alu-ac:#E9A9B0}}
-.alu-dl>div{counter-increment:alu-n;display:grid;grid-template-columns:clamp(84px,13vw,150px) minmax(0,15rem) minmax(0,1fr);column-gap:clamp(20px,4vw,56px);row-gap:0;align-items:baseline;padding:clamp(28px,4.2vw,48px) 0;border-top:1px solid var(--line)}
-.alu-dl>div::before{content:counter(alu-n,decimal-leading-zero);grid-column:1;grid-row:1/span 2;align-self:start;font-size:clamp(3rem,7.4vw,5.5rem);font-weight:300;line-height:.95;letter-spacing:-.03em;font-variant-numeric:lining-nums tabular-nums;color:var(--alu-ac)}
-.alu-dl dt{grid-column:2;grid-row:1;margin:0;font-size:clamp(1.2rem,2.1vw,1.5rem);font-weight:700;line-height:1.5;color:var(--fg)}
-.alu-dl dd{grid-column:3;grid-row:1;margin:0;max-width:46ch;font-size:clamp(1.02rem,1.5vw,1.15rem);line-height:1.9;color:var(--fg);overflow-wrap:anywhere}
-@media(max-width:860px){.alu-dl>div{grid-template-columns:clamp(64px,14vw,96px) minmax(0,1fr);row-gap:8px}.alu-dl>div::before{font-size:clamp(2.6rem,9vw,3.6rem)}.alu-dl dt{grid-column:2;grid-row:1}.alu-dl dd{grid-column:2;grid-row:2;max-width:none}}
-@media(max-width:520px){.alu-dl>div{grid-template-columns:minmax(0,1fr);row-gap:6px;padding:24px 0}.alu-dl>div::before{grid-column:1;grid-row:auto;font-size:2.6rem;margin-bottom:4px}.alu-dl dt,.alu-dl dd{grid-column:1;grid-row:auto}}
+.alu-dl>div{counter-increment:alu-n;display:grid;grid-template-columns:clamp(56px,8vw,84px) minmax(0,11rem) minmax(0,1fr);column-gap:clamp(16px,3vw,36px);row-gap:0;align-items:baseline;padding:clamp(14px,2vw,22px) 0;border-top:1px solid var(--line)}
+.alu-dl>div::before{content:counter(alu-n,decimal-leading-zero);grid-column:1;grid-row:1/span 2;align-self:start;font-size:clamp(1.9rem,4.2vw,2.8rem);font-weight:300;line-height:1;letter-spacing:-.03em;font-variant-numeric:lining-nums tabular-nums;color:var(--alu-ac)}
+.alu-dl dt{grid-column:2;grid-row:1;margin:0;font-size:clamp(1.02rem,1.5vw,1.15rem);font-weight:700;line-height:1.5;color:var(--fg)}
+.alu-dl dd{grid-column:3;grid-row:1;margin:0;max-width:52ch;font-size:clamp(.95rem,1.25vw,1.02rem);line-height:1.7;color:var(--fg);overflow-wrap:anywhere}
+@media(max-width:860px){.alu-dl>div{grid-template-columns:clamp(48px,10vw,64px) minmax(0,1fr);row-gap:2px}.alu-dl>div::before{font-size:clamp(1.8rem,6vw,2.3rem)}.alu-dl dt{grid-column:2;grid-row:1}.alu-dl dd{grid-column:2;grid-row:2;max-width:none}}
+@media(max-width:520px){.alu-dl>div{grid-template-columns:44px minmax(0,1fr);column-gap:14px;padding:14px 0}.alu-dl>div::before{font-size:1.7rem}}
 .alu-g{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:28px clamp(24px,4vw,48px)}
 .alu-g li{min-width:0;padding-top:16px;border-top:3px solid var(--gold)}
 .alu-g h3{margin:0 0 6px;font-size:1.1rem;line-height:1.5;color:var(--kds-primary-text)}
