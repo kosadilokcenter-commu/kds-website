@@ -349,9 +349,9 @@ function aluHtml(){const A=ALU;
  +`<section class="alu-s alu-n" aria-label="หมายเหตุและข้อจำกัด"><div class="alu-nb"><h3>${E(A.noteT)}</h3><p>${E(A.note)}</p></div><div class="alu-nb"><h3>${E(A.limT)}</h3><ul>${A.lim.map(f=>`<li><b>${E(f[0])}</b> ${E(f[1])}</li>`).join('')}</ul></div></section></div>`}
 /* ===== ระบบสนับสนุนในหน้าสมาคมศิษย์เก่า (alumni-kds): ฟอร์ม → ตรวจสอบ → สลิป KOSA BANK (PNG) =====
    ทำงานในเบราว์เซอร์ล้วน: ข้อมูลที่กรอกเก็บในตัวแปร ALS ชั่วคราว ไม่อ่าน/เขียนฐานข้อมูล ไม่ส่งข้อมูลออกนอกเครื่อง และหายเมื่อปิดหน้าต่าง
-   KOSA BANK เป็นธนาคารสมมติ · สลิปคือ "ใบแจ้งความประสงค์สนับสนุน" ไม่ใช่หลักฐานการโอนเงินหรือใบเสร็จรับเงิน · ยอดเงินเรียกว่า "ยอดที่แจ้ง"
+   KOSA BANK เป็นธนาคารสมมติสำหรับระบบ Roleplay · สลิปเป็นสลิปโอนเงินในเรื่อง ไม่มีการรับ-โอนเงินจริง และไม่ใช้ชื่อ/โลโก้ธนาคารจริง
    ใช้ #md/.modal.wide เดิม ปิดด้วยปุ่ม ✕ / คลิกพื้นหลัง / Esc · เมื่อมีฐานข้อมูลจริง ให้ต่อการบันทึกที่ alsConfirm() (ยังไม่ทำ รอได้รับอนุญาต)
-   ยอดแนะนำแก้ที่ ALS_PRESETS · ข้อความแจ้งผู้ใช้แก้ที่ ALS_NOTE / ALS_DISC */
+   ยอดแนะนำแก้ที่ ALS_PRESETS · ข้อความแจ้งผู้ใช้ในหน้าต่างแก้ที่ ALS_NOTE · ข้อความท้ายสลิปแก้ที่ ALS_THX */
 const ALS_TYPES={
  donate:{t:'บริจาคทุนการศึกษา',ph:'ระบุวัตถุประสงค์ของการบริจาค (ถ้ามี)'},
  sponsor:{t:'สมัครเป็นผู้สนับสนุน',ph:'ระบุวัตถุประสงค์หรือข้อความถึงสมาคม (ถ้ามี)'},
@@ -360,28 +360,28 @@ const ALS_KS={money:'เงิน',item:'สิ่งของ/อุปกร�
 const ALS_PRESETS=[100,500,1000,2000,5000];
 const ALS_MAX=10000000;
 const ALS_RCV='โรงเรียนสาธิตโกศาดิลก';
-const ALS_NOTE='ขณะนี้ระบบยังไม่ส่งข้อมูลไปยังสมาคม ยังไม่รับเงินผ่านเว็บไซต์ และยังไม่บันทึกรายการลงฐานข้อมูล สลิปที่สร้างเป็นใบแจ้งความประสงค์สำหรับเก็บไว้เอง';
-const ALS_DISC='เอกสารนี้เป็นใบแจ้งความประสงค์สนับสนุนที่สร้างจากหน้าเว็บไซต์ ไม่ใช่หลักฐานการโอนเงินหรือใบเสร็จรับเงิน';
+const ALS_NOTE='ขณะนี้ระบบยังไม่ส่งข้อมูลไปยังสมาคม ยังไม่รับเงินผ่านเว็บไซต์ และยังไม่บันทึกรายการลงฐานข้อมูล สลิปนี้ใช้ในระบบ Roleplay เท่านั้น';
+const ALS_THX='ขอบคุณที่ใช้บริการ';
 let ALS=null;
 const alsClean=s=>String(s==null?'':s).replace(/[\p{Extended_Pictographic}\uFE0F\u200D]/gu,'').replace(/[\u0000-\u001F\u007F]+/g,' ').replace(/\s+/g,' ').trim();
 const alsAmt=v=>{const s=String(v==null?'':v).replace(/[,\s฿]/g,'');return /^\d{1,8}(\.\d{1,2})?$/.test(s)&&+s>0?+s:null};
 const alsMoney=n=>n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
 const alsDl=k=>k==='item'?'รายละเอียดสิ่งของ/อุปกรณ์ เช่น ชนิดและจำนวน (จำเป็น)':k==='act'?'รายละเอียดกิจกรรม/บริการ เช่น รูปแบบและช่วงเวลา (จำเป็น)':'รายละเอียดเพิ่มเติม (ไม่บังคับ)';
 const alsDT=d=>{const o={timeZone:'Asia/Bangkok'};return d.toLocaleDateString('th-TH',{...o,day:'numeric',month:'short',year:'numeric'})+' เวลา '+d.toLocaleTimeString('th-TH',{...o,hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false})+' น.'};
-/* เลขอ้างอิงสร้างในเบราว์เซอร์ (วันที่ + รหัสสุ่ม 6 ตัว) ยังไม่ได้ตรวจความซ้ำกับระบบใด */
+/* เลขที่รายการสร้างในเบราว์เซอร์ (วันที่ + รหัสสุ่ม 6 ตัว) ยังไม่ได้ตรวจความซ้ำกับระบบใด */
 function alsRef(d){const p=new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Bangkok',year:'numeric',month:'2-digit',day:'2-digit'}).format(d).replace(/-/g,''),a='ABCDEFGHJKLMNPQRSTUVWXYZ23456789',r=new Uint32Array(6);if(window.crypto&&crypto.getRandomValues)crypto.getRandomValues(r);else for(let i=0;i<6;i++)r[i]=Math.floor(Math.random()*4294967296);return 'KB'+p+'-'+Array.from(r,v=>a[v%a.length]).join('')}
-function alsRows(r,slip){const mn=r.amt!=null,o=[[slip?'ผู้สนับสนุน':'ชื่อผู้สนับสนุน',r.name],['ผู้รับ',ALS_RCV],['ประเภทการสนับสนุน',ALS_TYPES[r.type].t]];
- if(r.type==='sponsor'&&!(slip&&!mn))o.push(['รูปแบบการสนับสนุน',ALS_KS[r.kind]]);
+function alsRows(r,slip){const mn=r.amt!=null,o=[[slip?'จาก':'ชื่อผู้สนับสนุน',r.name],[slip?'ไปยัง':'ผู้รับ',ALS_RCV],[slip?'ประเภทรายการ':'ประเภทการสนับสนุน',ALS_TYPES[r.type].t]];
+ if(r.type==='sponsor'&&!(slip&&!mn))o.push([slip?'รูปแบบ':'รูปแบบการสนับสนุน',ALS_KS[r.kind]]);
  if(mn&&!slip)o.push(['ยอดที่แจ้ง','฿ '+alsMoney(r.amt)]);
  if(r.detail)o.push(['รายละเอียด',r.detail]);o.push(['หมายเหตุ',r.note||'-']);
- if(slip){o.push(['วันที่-เวลา',alsDT(r.ts)]);o.push(['เลขอ้างอิง',r.ref])}return o}
+ if(slip){o.push(['วันที่ทำรายการ',alsDT(r.ts)]);o.push(['เลขที่รายการ',r.ref])}return o}
 function alsOpen(type,btn){if(!ALS_TYPES[type])return;ALS={type,step:1,name:'',amtRaw:'',kind:'money',detail:'',note:'',opener:btn||document.activeElement,rec:null,cv:null};alsShow()}
 function alsClose(){const o=ALS&&ALS.opener;ALS=null;$('md').innerHTML='';if(o&&o.isConnected&&o.focus)o.focus()}
 function alsWrap(inner,title,n,lab,cls){return `<div class="modal wide als${cls?' '+cls:''}" role="dialog" aria-modal="true" aria-labelledby="als-t" onpointerdown="this._d=event.target===this" onclick="if(this._d&&event.target===this)alsClose()"><div><button type="button" class="mx" aria-label="ปิดหน้าต่าง" onclick="alsClose()">${ic('close')}</button><p class="als-st">ขั้นตอนที่ ${n} จาก 3 · ${E(lab)}</p><h3 id="als-t">${E(title)}</h3>${inner}</div></div>`}
 function alsShow(){const A=ALS;if(!A)return;const T=ALS_TYPES[A.type],m=$('md');
  if(A.step===1)m.innerHTML=alsWrap(alsFormHtml(),T.t,1,'กรอกข้อมูล');
  else if(A.step===2)m.innerHTML=alsWrap(alsReviewHtml(),'ตรวจสอบและยืนยันรายการ',2,'ตรวจสอบ');
- else{m.innerHTML=alsWrap(alsSlipHtml(),'สลิป KOSA BANK',3,'สลิปแจ้งความประสงค์','als-slip');alsSlip()}
+ else{m.innerHTML=alsWrap(alsSlipHtml(),'สลิป KOSA BANK',3,'สลิปรายการ','als-slip');alsSlip()}
  const h=$('als-t');if(h){h.tabIndex=-1;h.focus({preventScroll:true})}}
 function alsFormHtml(){const A=ALS,T=ALS_TYPES[A.type],sp=A.type==='sponsor',mn=!sp||A.kind==='money',a=alsAmt(A.amtRaw);
  const kd=sp?`<fieldset class="als-fs"><legend>รูปแบบการสนับสนุน</legend><div class="als-kd">${Object.keys(ALS_KS).map(k=>`<label class="als-opt${A.kind===k?' on':''}"><input type="radio" name="als-k" value="${k}"${A.kind===k?' checked':''} onchange="alsKind(this.value)"><span>${E(ALS_KS[k])}</span></label>`).join('')}</div></fieldset>`:'';
@@ -420,10 +420,10 @@ async function alsDraw(r){
  seg=window.Intl&&Intl.Segmenter?new Intl.Segmenter('th',{granularity:'word'}):null,
  fo=(w,s)=>w+' '+s+'px '+FF,
  wrap=(t,f,w)=>{x.font=f;const P=[];(seg?Array.from(seg.segment(t),q=>q.segment):Array.from(t)).forEach(p=>{if(x.measureText(p).width>w)Array.from(p).forEach(c=>P.push(c));else P.push(p)});const L=[];let cur='';P.forEach(p=>{if(cur&&x.measureText(cur+p).width>w){L.push(cur.trim());cur=p.trimStart()}else cur+=p});if(cur.trim())L.push(cur.trim());return L.length?L:['-']},
- rows=alsRows(r,true).map(q=>{const b=q[0]==='เลขอ้างอิง',ls=wrap(q[1],fo(b?700:600,17),VW);return {l:q[0],ls,b,h:ls.length*LH+28}}),
+ rows=alsRows(r,true).map(q=>{const b=q[0]==='เลขที่รายการ',ls=wrap(q[1],fo(b?700:600,17),VW);return {l:q[0],ls,b,h:ls.length*LH+28}}),
  mn=r.amt!=null,al=mn?['฿ '+alsMoney(r.amt)]:wrap(ALS_KS[r.kind],fo(700,28),IN),
- yA=216,aEnd=mn?yA+100:yA+50+(al.length-1)*38+30,yR=aEnd+22,rEnd=yR+rows.reduce((a,o)=>a+o.h,0),
- dl=wrap(ALS_DISC,fo(400,14),IN),yD=rEnd+18,cardB=yD+22+dl.length*22+26,H=cardB+70,S=Math.min(3,Math.sqrt(24e6/(W*H)));
+ yA=216,aEnd=mn?yA+100:yA+50+(al.length-1)*38+30,yR=aEnd+60,rEnd=yR+rows.reduce((a,o)=>a+o.h,0),
+ dl=[ALS_THX],yD=rEnd+18,cardB=yD+22+dl.length*22+26,H=cardB+70,S=Math.min(3,Math.sqrt(24e6/(W*H)));
  cv.width=Math.round(W*S);cv.height=Math.round(H*S);x.scale(S,S);x.textBaseline='middle';
  const rr=(a,b,w,h,d)=>{x.beginPath();x.moveTo(a+d,b);x.arcTo(a+w,b,a+w,b+h,d);x.arcTo(a+w,b+h,a,b+h,d);x.arcTo(a,b+h,a,b,d);x.arcTo(a,b,a+w,b,d);x.closePath()},
  T=(t,a,b,f,c,al2)=>{x.font=f;x.fillStyle=c;x.textAlign=al2||'left';x.fillText(t,a,b)},cx=W/2,cT=118;
@@ -435,13 +435,13 @@ async function alsDraw(r){
  x.save();x.shadowColor='rgba(60,10,16,.18)';x.shadowBlur=24;x.shadowOffsetY=8;rr(M,cT,CW,cardB-cT,24);x.fillStyle='#fff';x.fill();x.restore();
  x.beginPath();x.arc(cx,cT,40,0,7);x.fillStyle='#fff';x.fill();x.beginPath();x.arc(cx,cT,33,0,7);x.fillStyle=BUR;x.fill();
  x.strokeStyle='#fff';x.lineWidth=5;x.lineCap='round';x.lineJoin='round';x.beginPath();x.moveTo(cx-14,cT+1);x.lineTo(cx-4,cT+11);x.lineTo(cx+15,cT-10);x.stroke();
- T('บันทึกความประสงค์เรียบร้อย',cx,cT+64,fo(700,24),INK,'center');
- T(mn?'ยอดที่แจ้ง':'รูปแบบการสนับสนุน',cx,yA+10,fo(400,15),MUT,'center');
+ T(mn?'โอนเงินสำเร็จ':'ทำรายการสำเร็จ',cx,cT+64,fo(700,24),INK,'center');
+ T(mn?'จำนวนเงิน':'รูปแบบการสนับสนุน',cx,yA+10,fo(400,15),MUT,'center');
  if(mn)T(al[0],cx,yA+60,fo(700,48),BUR,'center');else al.forEach((t,i)=>T(t,cx,yA+50+i*38,fo(700,28),BUR,'center'));
- x.fillStyle=LN;x.fillRect(M+PX,aEnd+4,IN,1);
+ x.fillStyle=LN;x.fillRect(M+PX,aEnd+4,IN,1);T(mn?'รายละเอียดการโอนเงิน':'รายละเอียดรายการ',M+PX,aEnd+34,fo(700,17),BUR,'left');
  let y=yR;rows.forEach((o,i)=>{const c=y+14+LH/2;T(o.l,M+PX,c,fo(400,15),MUT,'left');o.ls.forEach((t,j)=>T(t,M+PX+IN,c+j*LH,fo(o.b?700:600,17),INK,'right'));y+=o.h;if(i<rows.length-1){x.fillStyle=LN;x.fillRect(M+PX,y-.5,IN,1)}});
  x.strokeStyle='#D9CBCD';x.lineWidth=1.5;x.setLineDash([6,6]);x.beginPath();x.moveTo(M+PX,yD);x.lineTo(M+PX+IN,yD);x.stroke();x.setLineDash([]);
- dl.forEach((t,i)=>T(t,cx,yD+34+i*22,fo(400,14),MUT,'center'));
+ dl.forEach((t,i)=>T(t,cx,yD+34+i*22,fo(600,17),BUR,'center'));
  T('KOSA BANK · Mobile Banking',cx,cardB+34,fo(600,13),'#9A8A8D','center');
  x.fillStyle=BUR;x.fillRect(0,H-8,W,8);
  return cv}
