@@ -353,10 +353,12 @@ function aluHtml(){const A=ALU;
 /* ===== ส่วน "ร่วมสร้างอนาคตไปกับโกศาดิลก" (หน้า alumni-kds) · UI: ส่วนหัวกึ่งกลาง + เลือกประเภท 3 แท็บ + แผงรายละเอียด · ปุ่มเปิดฟอร์มเดิม alsOpen() ไม่แก้ขั้นตอน/ช่องกรอก/ระบบสลิป ===== */
 let ALP_SEL=ALU.support[0][2];
 const alpSvg=(p,s)=>`<svg viewBox="0 0 24 24" width="${s}" height="${s}" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">${p}</svg>`;
+/* ไอคอนอาคารเรียน (หมวด "สนับสนุนโครงการโรงเรียน") · สมมาตรซ้าย–ขวาที่แกน x=12 · หลังคา/ประตูอยู่กึ่งกลาง · หน้าต่าง 3 ช่องห่างเท่ากัน (x=9,12,15) · เส้น Outline หนา 2 สม่ำเสมอ ใช้ร่วมกันทั้งแถบ "ประเภทการสนับสนุน" และ "ทำเนียบผู้ร่วมสนับสนุน" */
+const ALP_SCHOOL='<path d="M4 6 11.6 2.2a2 2 0 0 1 .8 0L20 6"/><path d="M6 5v16"/><path d="M18 5v16"/><path d="M6 11 2.48 13.147a1 1 0 0 0-.48.854V19a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-4.999a1 1 0 0 0-.48-.854L18 11"/><path d="M10 21v-3a2 2 0 0 1 4 0v3"/><path d="M9 9v2"/><path d="M12 9v2"/><path d="M15 9v2"/>';
 const ALP_ICO={
  donate:'<path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"/><path d="M22 10v6"/><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"/>',
  sponsor:'<path d="M11 14h2a2 2 0 1 0 0-4h-3c-.6 0-1.1.2-1.4.6L3 16"/><path d="m7 20 1.6-1.4c.3-.4.8-.6 1.4-.6h4c1.1 0 2.1-.4 2.8-1.2l4.6-4.4a2 2 0 0 0-2.75-2.91l-4.2 3.9"/><path d="m2 15 6 6"/><path d="M19.5 8.5c.7-.7 1.5-1.6 1.5-2.7A2.73 2.73 0 0 0 16 4a2.78 2.78 0 0 0-5 1.8c0 1.2.8 2 1.5 2.8L16 12Z"/>',
- project:'<path d="M14 21v-3a2 2 0 0 0-4 0v3"/><path d="M18 5v16"/><path d="m4 6 7.6-3.8a2 2 0 0 1 .8 0L20 6"/><path d="m6 11-3.52 2.147a1 1 0 0 0-.48.854V19a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-5a1 1 0 0 0-.48-.853L18 11"/><path d="M6 5v16"/><circle cx="12" cy="9" r="2"/>'};
+ project:ALP_SCHOOL};
 const ALP_HEART='<path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/><path d="M12 5 9.04 7.96a2.17 2.17 0 0 0 0 3.08c.82.82 2.13.85 3 .07l2.07-1.9a2.82 2.82 0 0 1 3.79 0l2.96 2.66"/><path d="m18 15-2-2"/><path d="m15 18-2-2"/>';
 const ALP_STEPS=['กรอกข้อมูล','ตรวจสอบ','สลิปรายการ'];
 function alpBoardHtml(){const A=ALU,tabs=A.support.map((f,i)=>{const id=f[2],on=id===ALP_SEL;return `<button type="button" role="tab" class="alp-tb" id="alp-t-${id}" aria-selected="${on}" aria-controls="alp-pn" tabindex="${on?0:-1}" onclick="alpPick('${id}')"><span class="alp-ti">${alpSvg(ALP_ICO[id]||ALP_HEART,22)}</span><span class="alp-tl">${E(A.supT[i]||f[0])}</span></button>`}).join('');
@@ -397,7 +399,7 @@ const alhSvg=(p,s)=>`<svg viewBox="0 0 24 24" width="${s}" height="${s}" fill="n
 const ALH_ICO={
  donate:'<path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"/><path d="M22 10v6"/><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"/>',
  sponsor:'<path d="M11 14h2a2 2 0 1 0 0-4h-3c-.6 0-1.1.2-1.4.6L3 16"/><path d="m7 20 1.6-1.4c.3-.4.8-.6 1.4-.6h4c1.1 0 2.1-.4 2.8-1.2l4.6-4.4a2 2 0 0 0-2.75-2.91l-4.2 3.9"/><path d="m2 15 6 6"/><path d="M19.5 8.5c.7-.7 1.5-1.6 1.5-2.7A2.73 2.73 0 0 0 16 4a2.78 2.78 0 0 0-5 1.8c0 1.2.8 2 1.5 2.8L16 12Z"/>',
- project:'<path d="M14 21v-3a2 2 0 0 0-4 0v3"/><path d="M18 5v16"/><path d="m4 6 7.6-3.8a2 2 0 0 1 .8 0L20 6"/><path d="m6 11-3.52 2.147a1 1 0 0 0-.48.854V19a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-5a1 1 0 0 0-.48-.853L18 11"/><path d="M6 5v16"/><circle cx="12" cy="9" r="2"/>'};
+ project:ALP_SCHOOL};
 const ALH_USER='<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>';
 function alhItemHtml(r){const nm=String(r.name==null?'':r.name).trim(),dt=alhDate(r),amt=+r.amount,mn=r.kind==='money'&&amt>0;
  const sub=mn?'':`<div class="alh-ds"><span class="alh-kd">${E(ALH_KD[r.kind]||'รายละเอียด')}</span> ${E(r.detail||'-')}</div>`;
