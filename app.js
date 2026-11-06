@@ -360,7 +360,7 @@ const ALS_KS={money:'เงิน',item:'สิ่งของ/อุปกร�
 const ALS_PRESETS=[100,500,1000,2000,5000];
 const ALS_MAX=10000000;
 const ALS_RCV='โรงเรียนสาธิตโกศาดิลก';
-const ALS_NOTE='ขณะนี้ระบบยังไม่ส่งข้อมูลไปยังสมาคม ยังไม่รับเงินผ่านเว็บไซต์ และยังไม่บันทึกรายการลงฐานข้อมูล สลิปนี้ใช้ในระบบ Roleplay เท่านั้น';
+const ALS_NOTE='ร่วมเป็นส่วนหนึ่งในการสนับสนุนโรงเรียนสาธิตโกศาดิลก เลือกรูปแบบการสนับสนุนที่ต้องการ จากนั้นตรวจสอบข้อมูลก่อนยืนยันรายการ';
 const ALS_THX='ขอบคุณที่ใช้บริการ';
 let ALS=null;
 const alsClean=s=>String(s==null?'':s).replace(/[\p{Extended_Pictographic}\uFE0F\u200D]/gu,'').replace(/[\u0000-\u001F\u007F]+/g,' ').replace(/\s+/g,' ').trim();
