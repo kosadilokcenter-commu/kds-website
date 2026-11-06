@@ -435,11 +435,12 @@ const alsDT=d=>{const o={timeZone:'Asia/Bangkok'};return d.toLocaleDateString('t
 /* เลขที่รายการสร้างในเบราว์เซอร์ (วันที่ + รหัสสุ่ม 6 ตัว) ยังไม่ได้ตรวจความซ้ำกับระบบใด */
 function alsRef(d){const p=new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Bangkok',year:'numeric',month:'2-digit',day:'2-digit'}).format(d).replace(/-/g,''),a='ABCDEFGHJKLMNPQRSTUVWXYZ23456789',r=new Uint32Array(6);if(window.crypto&&crypto.getRandomValues)crypto.getRandomValues(r);else for(let i=0;i<6;i++)r[i]=Math.floor(Math.random()*4294967296);return 'KB'+p+'-'+Array.from(r,v=>a[v%a.length]).join('')}
 function alsRows(r,slip){const mn=r.amt!=null,o=[[slip?'จาก':'ชื่อผู้สนับสนุน',r.name],[slip?'ไปยัง':'ผู้รับ',ALS_RCV],[slip?'ประเภทรายการ':'ประเภทการสนับสนุน',ALS_TYPES[r.type].t]];
+ if(!slip&&r.acct)o.splice(1,0,['ชื่อแอคเคาท์',r.acct]);
  if(r.type==='sponsor'&&!(slip&&!mn))o.push([slip?'รูปแบบ':'รูปแบบการสนับสนุน',ALS_KS[r.kind]]);
  if(mn&&!slip)o.push(['ยอดที่แจ้ง','฿ '+alsMoney(r.amt)]);
  if(r.detail)o.push(['รายละเอียด',r.detail]);o.push(['หมายเหตุ',r.note||'-']);
  if(slip){o.push(['วันที่ทำรายการ',alsDT(r.ts)]);o.push(['เลขที่รายการ',r.ref])}return o}
-function alsOpen(type,btn){if(!ALS_TYPES[type])return;ALS={type,step:1,name:'',amtRaw:'',kind:'money',detail:'',note:'',opener:btn||document.activeElement,rec:null,cv:null};alsShow()}
+function alsOpen(type,btn){if(!ALS_TYPES[type])return;ALS={type,step:1,name:'',amtRaw:'',kind:'money',detail:'',note:'',acct:'',photo:null,opener:btn||document.activeElement,rec:null,cv:null};alsShow()}
 function alsClose(){const o=ALS&&ALS.opener;ALS=null;$('md').innerHTML='';if(o&&o.isConnected&&o.focus)o.focus()}
 function alsWrap(inner,title,n,lab,cls){return `<div class="modal wide als${cls?' '+cls:''}" role="dialog" aria-modal="true" aria-labelledby="als-t" onpointerdown="this._d=event.target===this" onclick="if(this._d&&event.target===this)alsClose()"><div><button type="button" class="mx" aria-label="ปิดหน้าต่าง" onclick="alsClose()">${ic('close')}</button><p class="als-st">ขั้นตอนที่ ${n} จาก 3 · ${E(lab)}</p><h3 id="als-t">${E(title)}</h3>${inner}</div></div>`}
 function alsShow(){const A=ALS;if(!A)return;const T=ALS_TYPES[A.type],m=$('md');
@@ -447,30 +448,47 @@ function alsShow(){const A=ALS;if(!A)return;const T=ALS_TYPES[A.type],m=$('md');
  else if(A.step===2)m.innerHTML=alsWrap(alsReviewHtml(),'ตรวจสอบและยืนยันรายการ',2,'ตรวจสอบ');
  else{m.innerHTML=alsWrap(alsSlipHtml(),'สลิป KOSA BANK',3,'สลิปรายการ','als-slip');alsSlip()}
  const h=$('als-t');if(h){h.tabIndex=-1;h.focus({preventScroll:true})}}
+const ALS_PH_MAX=5*1024*1024,ALS_PH_PX=256;
+/* รูปโปรไฟล์ผู้สนับสนุน (ไม่บังคับ): ย่อเป็น 256×256 เก็บในตัวแปร ALS.photo (data URL) เท่านั้น ไม่ส่งออกนอกเครื่อง · ยังไม่วาดลงสลิป */
+function alsPhotoInner(){const p=ALS&&ALS.photo;
+ return `<div class="als-av" id="als-av">${p?`<img src="${p}" alt="รูปโปรไฟล์ที่เลือก" width="84" height="84">`:alpSvg('<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',38)}</div><div class="als-pc"><span class="als-lb" id="als-pl">รูปโปรไฟล์ (ไม่บังคับ)</span><div class="als-pb"><button type="button" class="btn s" id="als-pu" aria-describedby="als-pl" onclick="$('als-ph').click()">${p?'เปลี่ยนรูป':'อัปโหลดรูป'}</button>${p?'<button type="button" class="btn s" onclick="alsPhotoDel()">ลบรูป</button>':''}<input type="file" id="als-ph" accept="image/png,image/jpeg,image/webp,image/gif" hidden onchange="alsPhotoPick(this)"></div><p class="als-ph-h">PNG, JPG, WebP หรือ GIF ขนาดไม่เกิน 5 MB</p><p class="als-pe" id="als-pe" role="alert"></p></div>`}
+function alsPhotoHtml(){return `<div class="als-pf" id="als-pf">${alsPhotoInner()}</div>`}
+function alsPhotoUI(){const p=$('als-pf');if(!p)return;p.innerHTML=alsPhotoInner();const b=$('als-pu');if(b)b.focus()}
+function alsPhotoErr(m){const e=$('als-pe');if(e)e.textContent=m||''}
+function alsPhotoDel(){if(!ALS)return;ALS.photo=null;alsPhotoUI()}
+function alsPhotoPick(inp){const A=ALS,f=inp.files&&inp.files[0];if(!A||!f)return;inp.value='';
+ if(!/^image\/(png|jpe?g|webp|gif)$/i.test(f.type))return alsPhotoErr('รองรับเฉพาะไฟล์รูป PNG, JPG, WebP หรือ GIF');
+ if(f.size>ALS_PH_MAX)return alsPhotoErr('ไฟล์รูปต้องมีขนาดไม่เกิน 5 MB');
+ const u=URL.createObjectURL(f),im=new Image();
+ im.onload=()=>{URL.revokeObjectURL(u);if(ALS!==A)return;
+  try{const s=Math.min(im.naturalWidth,im.naturalHeight);if(!s)throw new Error('size');const c=document.createElement('canvas');c.width=c.height=ALS_PH_PX;const g=c.getContext('2d');g.fillStyle='#fff';g.fillRect(0,0,ALS_PH_PX,ALS_PH_PX);g.drawImage(im,(im.naturalWidth-s)/2,(im.naturalHeight-s)/2,s,s,0,0,ALS_PH_PX,ALS_PH_PX);A.photo=c.toDataURL('image/jpeg',.88);alsPhotoUI()}
+  catch(e){alsPhotoErr('ไม่สามารถใช้รูปนี้ได้ กรุณาเลือกรูปอื่น')}};
+ im.onerror=()=>{URL.revokeObjectURL(u);alsPhotoErr('ไม่สามารถเปิดไฟล์รูปนี้ได้ กรุณาเลือกรูปอื่น')};
+ im.src=u}
 function alsFormHtml(){const A=ALS,T=ALS_TYPES[A.type],sp=A.type==='sponsor',mn=!sp||A.kind==='money',a=alsAmt(A.amtRaw);
  const kd=sp?`<fieldset class="als-fs"><legend>รูปแบบการสนับสนุน</legend><div class="als-kd">${Object.keys(ALS_KS).map(k=>`<label class="als-opt${A.kind===k?' on':''}"><input type="radio" name="als-k" value="${k}"${A.kind===k?' checked':''} onchange="alsKind(this.value)"><span>${E(ALS_KS[k])}</span></label>`).join('')}</div></fieldset>`:'';
  const am=`<div id="als-ab"${mn?'':' hidden'}><span class="als-lb" id="als-al">เลือกยอดแนะนำ (บาท)</span><div class="als-ch" role="group" aria-labelledby="als-al">${ALS_PRESETS.map(v=>`<button type="button" class="btn s${a===v?' b':''}" data-v="${v}" aria-pressed="${a===v}" onclick="alsPick(${v})">${v.toLocaleString('en-US')}</button>`).join('')}</div><label class="als-lb" for="als-am">หรือกรอกจำนวนเงินเอง (บาท)</label><input id="als-am" type="text" inputmode="decimal" autocomplete="off" placeholder="0.00" value="${E(A.amtRaw)}" oninput="alsIn()"></div>`;
  const dt=sp?`<label class="als-lb" for="als-dt" id="als-dl">${E(alsDl(A.kind))}</label><textarea id="als-dt" rows="3" maxlength="300" oninput="alsIn()">${E(A.detail)}</textarea>`:'';
- return `<p class="als-sb">กรอกข้อมูลเพื่อแจ้งความประสงค์สนับสนุน ประเภท “${E(T.t)}” ระบบกำหนดให้โดยอัตโนมัติ</p>${kd?`<div class="als-gp">${kd}</div>`:''}<div class="als-gp"><h4 class="als-gh">ข้อมูลผู้สนับสนุน</h4><label class="als-lb" for="als-nm">ชื่อผู้สนับสนุน</label><input id="als-nm" type="text" maxlength="100" autocomplete="name" value="${E(A.name)}" oninput="alsIn()"></div><div class="als-gp"><h4 class="als-gh">รายละเอียดการสนับสนุน</h4>${am}${dt}</div><div class="als-gp"><h4 class="als-gh">หมายเหตุ</h4><label class="als-lb" for="als-nt">หมายเหตุ / วัตถุประสงค์ (ไม่บังคับ)</label><textarea id="als-nt" rows="3" maxlength="200" placeholder="${E(T.ph)}" oninput="alsIn()">${E(A.note)}</textarea></div><p id="als-er" class="als-er" role="alert"></p><div class="als-ac"><button type="button" class="btn b" onclick="alsCheck()">ตรวจสอบรายการ</button><button type="button" class="btn" onclick="alsClose()">ยกเลิก</button></div>`}
+ return `<p class="als-sb">กรอกข้อมูลเพื่อแจ้งความประสงค์สนับสนุน ประเภท “${E(T.t)}” ระบบกำหนดให้โดยอัตโนมัติ</p>${kd?`<div class="als-gp">${kd}</div>`:''}<div class="als-gp"><h4 class="als-gh">ข้อมูลผู้สนับสนุน</h4>${alsPhotoHtml()}<label class="als-lb" for="als-nm">ชื่อผู้สนับสนุน</label><input id="als-nm" type="text" maxlength="100" autocomplete="name" value="${E(A.name)}" oninput="alsIn()"><label class="als-lb" for="als-ac">ชื่อแอคเคาท์ เช่น Bluesky (ไม่บังคับ)</label><input id="als-ac" type="text" maxlength="60" autocomplete="off" placeholder="เช่น @name.bsky.social" value="${E(A.acct||'')}" oninput="alsIn()"></div><div class="als-gp"><h4 class="als-gh">รายละเอียดการสนับสนุน</h4>${am}${dt}</div><div class="als-gp"><h4 class="als-gh">หมายเหตุ</h4><label class="als-lb" for="als-nt">หมายเหตุ / วัตถุประสงค์ (ไม่บังคับ)</label><textarea id="als-nt" rows="3" maxlength="200" placeholder="${E(T.ph)}" oninput="alsIn()">${E(A.note)}</textarea></div><p id="als-er" class="als-er" role="alert"></p><div class="als-ac"><button type="button" class="btn b" onclick="alsCheck()">ตรวจสอบรายการ</button><button type="button" class="btn" onclick="alsClose()">ยกเลิก</button></div>`}
 function alsReviewHtml(){const r=ALS.rec;return `<p class="als-sb">โปรดตรวจสอบความถูกต้องก่อนยืนยัน</p><dl class="als-rv">${alsRows(r,false).map(x=>`<div><dt>${E(x[0])}</dt><dd>${E(x[1])}</dd></div>`).join('')}</dl><p class="als-nt">${E(ALS_NOTE)}</p><div class="als-ac"><button type="button" class="btn b" onclick="alsConfirm()">ยืนยันและสร้างสลิป</button><button type="button" class="btn" onclick="alsBack()">แก้ไขข้อมูล</button></div>`}
 function alsSlipHtml(){return `<p class="als-sb">สร้างสลิปเรียบร้อยแล้ว กดปุ่มด้านล่างเพื่อบันทึกเป็นรูป PNG</p><div id="als-cvw" class="als-cvw" aria-busy="true"><p class="als-sb">กำลังสร้างสลิป</p></div><p id="als-ms" class="als-ms" role="status" aria-live="polite"></p><p class="als-nt">${E(ALS_NOTE)}</p><div class="als-ac"><button type="button" class="btn b" id="als-sv" disabled onclick="alsSave(this)">บันทึกเป็น PNG</button><button type="button" class="btn" onclick="alsClose()">ปิด</button></div>`}
-function alsRead(){const A=ALS,g=id=>{const e=$(id);return e?e.value:null},n=g('als-nm'),a=g('als-am'),d=g('als-dt'),t=g('als-nt');if(n!==null)A.name=n;if(a!==null)A.amtRaw=a;if(d!==null)A.detail=d;if(t!==null)A.note=t}
+function alsRead(){const A=ALS,g=id=>{const e=$(id);return e?e.value:null},n=g('als-nm'),a=g('als-am'),d=g('als-dt'),t=g('als-nt'),c=g('als-ac');if(n!==null)A.name=n;if(c!==null)A.acct=c;if(a!==null)A.amtRaw=a;if(d!==null)A.detail=d;if(t!==null)A.note=t}
 function alsChips(){const v=alsAmt(ALS.amtRaw);document.querySelectorAll('.als-ch .btn').forEach(b=>{const on=+b.dataset.v===v;b.classList.toggle('b',on);b.setAttribute('aria-pressed',on?'true':'false')})}
 function alsErr(t,fid){const e=$('als-er');if(e)e.textContent=t||'';document.querySelectorAll('.als [aria-invalid]').forEach(n=>n.removeAttribute('aria-invalid'));if(t&&fid){const f=$(fid);if(f){f.setAttribute('aria-invalid','true');f.focus()}}}
 function alsIn(){if(!ALS)return;alsRead();alsChips();alsErr('')}
 function alsPick(v){if(!ALS)return;const i=$('als-am');ALS.amtRaw=String(v);if(i)i.value=String(v);alsChips();alsErr('')}
 function alsKind(k){if(!ALS||!ALS_KS[k])return;alsRead();ALS.kind=k;const ab=$('als-ab'),l=$('als-dl');if(ab)ab.hidden=k!=='money';if(l)l.textContent=alsDl(k);document.querySelectorAll('.als-opt').forEach(o=>o.classList.toggle('on',o.querySelector('input').checked));alsErr('')}
 function alsCheck(){const A=ALS;if(!A)return;alsRead();
- const nm=alsClean(A.name),mn=A.type!=='sponsor'||A.kind==='money',amt=mn?alsAmt(A.amtRaw):null,dt=alsClean(A.detail),nt=alsClean(A.note);
+ const nm=alsClean(A.name),mn=A.type!=='sponsor'||A.kind==='money',amt=mn?alsAmt(A.amtRaw):null,dt=alsClean(A.detail),nt=alsClean(A.note),ac=alsClean(A.acct||'').slice(0,60);
  if(!nm)return alsErr('กรุณากรอกชื่อผู้สนับสนุน','als-nm');
  if(mn&&amt===null)return alsErr('กรุณาเลือกยอดแนะนำหรือกรอกจำนวนเงินเป็นตัวเลขมากกว่า 0 (ทศนิยมไม่เกิน 2 ตำแหน่ง)','als-am');
  if(mn&&amt>ALS_MAX)return alsErr('จำนวนเงินต้องไม่เกิน '+ALS_MAX.toLocaleString('en-US')+' บาท','als-am');
  if(!mn&&!dt)return alsErr('กรุณาระบุรายละเอียด'+(A.kind==='item'?'สิ่งของ/อุปกรณ์':'กิจกรรม/บริการ')+'ที่ต้องการสนับสนุน','als-dt');
- A.rec={type:A.type,kind:A.type==='sponsor'?A.kind:null,name:nm,amt:mn?amt:null,detail:dt,note:nt,ts:null,ref:null};A.step=2;alsShow()}
+ A.rec={type:A.type,kind:A.type==='sponsor'?A.kind:null,name:nm,acct:ac,amt:mn?amt:null,detail:dt,note:nt,ts:null,ref:null};A.step=2;alsShow()}
 function alsBack(){if(!ALS)return;ALS.step=1;alsShow()}
 function alsConfirm(){const A=ALS;if(!A||!A.rec)return;if(!A.rec.ref){const d=new Date();A.rec.ts=d;A.rec.ref=alsRef(d)}A.step=3;alsShow()}
 async function alsSlip(){const A=ALS,r=A&&A.rec;if(!r)return;
- try{const cv=await alsDraw(r),w=$('als-cvw');if(!w||ALS!==A)return;cv.className='als-cv';cv.setAttribute('role','img');cv.setAttribute('aria-label','สลิป KOSA BANK '+alsRows(r,true).map(x=>x[0]+' '+x[1]).join(' · '));w.replaceChildren(cv);w.removeAttribute('aria-busy');A.cv=cv;const b=$('als-sv');if(b)b.disabled=false}
+ try{const cv=await alsDraw(r),w=$('als-cvw');if(!w||ALS!==A)return;cv.className='als-cv';cv.setAttribute('role','img');cv.setAttribute('aria-label','สลิป KOSA BANK '+alsRows(r,true).map(x=>x[0]+' '+x[1]+(x[0]==='จาก'&&r.acct?' ('+r.acct+')':'')).join(' · '));w.replaceChildren(cv);w.removeAttribute('aria-busy');A.cv=cv;const b=$('als-sv');if(b)b.disabled=false}
  catch(e){console.error(e);const w=$('als-cvw');if(w&&ALS===A)w.innerHTML='<p class="als-er">สร้างสลิปไม่สำเร็จ กรุณาปิดแล้วลองใหม่อีกครั้ง</p>'}}
 async function alsSave(btn){const A=ALS;if(!A||!A.cv||!A.rec)return;btn.disabled=true;const ms=$('als-ms');
  try{const blob=await new Promise(r=>A.cv.toBlob(r,'image/png'));if(!blob)throw new Error('toBlob');const u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download='KOSA-BANK-'+A.rec.ref+'.png';a.rel='noopener';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),8000);if(ms)ms.textContent='ส่งไฟล์ PNG ให้เบราว์เซอร์บันทึกแล้ว'}
@@ -484,7 +502,7 @@ async function alsDraw(r){
  seg=window.Intl&&Intl.Segmenter?new Intl.Segmenter('th',{granularity:'word'}):null,
  fo=(w,s)=>w+' '+s+'px '+FF,
  wrap=(t,f,w)=>{x.font=f;const P=[];(seg?Array.from(seg.segment(t),q=>q.segment):Array.from(t)).forEach(p=>{if(x.measureText(p).width>w)Array.from(p).forEach(c=>P.push(c));else P.push(p)});const L=[];let cur='';P.forEach(p=>{if(cur&&x.measureText(cur+p).width>w){L.push(cur.trim());cur=p.trimStart()}else cur+=p});if(cur.trim())L.push(cur.trim());return L.length?L:['-']},
- rows=alsRows(r,true).map(q=>{const b=q[0]==='เลขที่รายการ',ls=wrap(q[1],fo(b?700:600,17),VW);return {l:q[0],ls,b,h:ls.length*LH+28}}),
+ rows=alsRows(r,true).map(q=>{const b=q[0]==='เลขที่รายการ',ls=wrap(q[1],fo(b?700:600,17),VW),ac=q[0]==='จาก'&&r.acct?wrap(r.acct,fo(400,15),VW):null;return {l:q[0],ls,b,ac,h:ls.length*LH+28+(ac?24+(ac.length-1)*22:0)}}),
  mn=r.amt!=null,al=mn?['฿ '+alsMoney(r.amt)]:wrap(ALS_KS[r.kind],fo(700,28),IN),
  yA=216,aEnd=mn?yA+100:yA+50+(al.length-1)*38+30,yR=aEnd+60,rEnd=yR+rows.reduce((a,o)=>a+o.h,0),
  dl=[ALS_THX],yD=rEnd+18,cardB=yD+22+dl.length*22+26,H=cardB+70,S=Math.min(3,Math.sqrt(24e6/(W*H)));
@@ -503,7 +521,7 @@ async function alsDraw(r){
  T(mn?'จำนวนเงิน':'รูปแบบการสนับสนุน',cx,yA+10,fo(400,15),MUT,'center');
  if(mn)T(al[0],cx,yA+60,fo(700,48),BUR,'center');else al.forEach((t,i)=>T(t,cx,yA+50+i*38,fo(700,28),BUR,'center'));
  x.fillStyle=LN;x.fillRect(M+PX,aEnd+4,IN,1);T(mn?'รายละเอียดการโอนเงิน':'รายละเอียดรายการ',M+PX,aEnd+34,fo(700,17),BUR,'left');
- let y=yR;rows.forEach((o,i)=>{const c=y+14+LH/2;T(o.l,M+PX,c,fo(400,15),MUT,'left');o.ls.forEach((t,j)=>T(t,M+PX+IN,c+j*LH,fo(o.b?700:600,17),INK,'right'));y+=o.h;if(i<rows.length-1){x.fillStyle=LN;x.fillRect(M+PX,y-.5,IN,1)}});
+ let y=yR;rows.forEach((o,i)=>{const c=y+14+LH/2;T(o.l,M+PX,c,fo(400,15),MUT,'left');o.ls.forEach((t,j)=>T(t,M+PX+IN,c+j*LH,fo(o.b?700:600,17),INK,'right'));if(o.ac)o.ac.forEach((t,j)=>T(t,M+PX+IN,c+(o.ls.length-1)*LH+24+j*22,fo(400,15),MUT,'right'));y+=o.h;if(i<rows.length-1){x.fillStyle=LN;x.fillRect(M+PX,y-.5,IN,1)}});
  x.strokeStyle='#D9CBCD';x.lineWidth=1.5;x.setLineDash([6,6]);x.beginPath();x.moveTo(M+PX,yD);x.lineTo(M+PX+IN,yD);x.stroke();x.setLineDash([]);
  dl.forEach((t,i)=>T(t,cx,yD+34+i*22,fo(600,17),BUR,'center'));
  T('KOSA BANK · Mobile Banking',cx,cardB+34,fo(600,13),'#9A8A8D','center');
