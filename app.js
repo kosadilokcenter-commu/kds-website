@@ -373,7 +373,7 @@ function alpHtml(){const A=ALU;return `<section class="alu-s alp" aria-labelledb
    อ่าน: ผู้เข้าชมทุกคนผ่าน stuPub() (anon ไม่เก็บเซสชัน เหมือนหน้ารายชื่อนักเรียน) · โหลดแยกรายหมวด หมวดละ ALH_PG รายการ + ปุ่ม "แสดงเพิ่มเติม" · เรียงใหม่ไปเก่า วันที่แสดงเป็น พ.ศ.
    เขียน: alsConfirm() → alsStore() เมื่อผู้สนับสนุนกดยืนยันในฟอร์มสนับสนุนเดิม · รายการใหม่ขึ้นทันทีหลังบันทึกสำเร็จ และขึ้นให้คนอื่นเมื่อเปิด/โหลดหน้าใหม่ (ไม่ใช้ Realtime)
    ไม่มีข้อมูลตัวอย่าง · ทุกคนแสดงชื่อตามที่กรอก (ไม่มีระบบไม่เปิดเผยชื่อ) · เป็นการบันทึกความประสงค์ ไม่ใช่การรับเงินจริง/Payment Gateway
-   ต้องรัน supabase/migration_support_hall.sql ก่อน (ตาราง support_entries + bucket 'supporters') · ยังไม่มีหน้าจัดการสำหรับผู้ดูแล (รอบถัดไป) */
+   ต้องรัน supabase/migration_support_hall.sql ก่อน (ตาราง support_entries + bucket 'supporters') · หน้าจัดการสำหรับผู้ดูแล (ดู/ลบรายการ) อยู่ที่ #/admin/support — supAdmin() ด้านล่าง */
 const ALH_CATS=[['donate','บริจาคทุนการศึกษา'],['sponsor','สมัครเป็นผู้สนับสนุน'],['project','สนับสนุนโครงการโรงเรียน']];
 const ALH_KD={item:'สิ่งของ/อุปกรณ์',act:'กิจกรรม/บริการ'};
 const ALH_PG=30,ALH_TTL=60000,ALH_COLS='id,cat,kind,name,acct,amount,detail,photo_path,created_at';
@@ -421,6 +421,80 @@ function alhKey(e){const k=e.key,i=ALH_CATS.findIndex(c=>c[0]===ALH_SEL),n=ALH_C
  if(k==='ArrowRight'||k==='ArrowDown')j=(i+1)%n;else if(k==='ArrowLeft'||k==='ArrowUp')j=(i-1+n)%n;else if(k==='Home')j=0;else if(k==='End')j=n-1;
  if(j<0)return true;e.preventDefault();alhPick(ALH_CATS[j][0],true);return false}
 function alhHtml(){setTimeout(alhBoot,0);return `<section class="alu-s alh" aria-labelledby="alh-h"><h2 id="alh-h">ทำเนียบผู้ร่วมสนับสนุน</h2><p class="alh-sub">ขอบคุณทุกการสนับสนุนที่ช่วยส่งต่อโอกาสให้นักเรียนโรงเรียนสาธิตโกศาดิลก</p>${alhBoardHtml()}</section>`}
+/* ===== จัดการทำเนียบผู้ร่วมสนับสนุน (หลังบ้าน #/admin/support) · รอบ 2 =====
+   อยู่ในหน้าจัดการผู้ดูแลเดิม (เมนู "จัดการเว็บไซต์") ไม่มีระบบแอดมินใหม่ · ใช้ตาราง support_entries + bucket 'supporters' เดิม
+   ดู: แยก 3 หมวด (ALH_CATS) หมวดละ SUP_PG รายการ เรียงใหม่ไปเก่า · อ่านผ่าน client สาธารณะ (anon) เหมือนหน้าทำเนียบ จึงเห็นข้อมูลชุดเดียวกัน
+   ลบ: กดปุ่ม "ลบ" → หน้าต่างยืนยัน (โฟกัสเริ่มที่ "ยกเลิก") → supDel()
+        1) ตรวจ is_staff() ซ้ำที่ฐานข้อมูลก่อนลบ (UI) · 2) ลบแถวด้วย DBH (session ทีมงาน) — RLS ฝั่งฐานข้อมูลเป็นตัวบังคับจริง (ดู sql/proposal_support_admin_delete.sql)
+        3) ลบรูปโปรไฟล์ใน bucket 'supporters' หลังลบแถวสำเร็จ เฉพาะเมื่อ path เป็นรูปแบบ avatars/<ref>.jpg และไม่มีแถวอื่นอ้างถึง path เดียวกัน
+        ถ้าลบรูปไม่สำเร็จ แถวข้อมูลยังถูกลบแล้ว และแจ้งผู้ดูแลว่ามีไฟล์ค้าง (ไม่ย้อนกลับข้อมูล)
+   หลังลบ: ALH.t=0 เพื่อให้หน้าทำเนียบสาธารณะโหลดใหม่ในครั้งถัดไป */
+const SUP_PG=30,SUP_TTL=30000,SUP_PHOTO=/^avatars\/[\w-]{1,64}\.jpg$/;
+const SUP={cat:ALH_CATS[0][0],st:{},ask:null,op:null,busy:false,boot:false,t:0};
+ALH_CATS.forEach(c=>{SUP.st[c[0]]={rows:[],n:0,pg:0,busy:false,err:'',did:false,seq:0}});
+const supDb=()=>alhDb()||DBH;
+const supCatName=id=>(ALH_CATS.find(c=>c[0]===id)||[id,id])[1];
+function supMsg(e){const c=(e&&(e.code||e.status||e.statusCode))||'error';
+ if(c==='42501'||String(c)==='401'||String(c)==='403')return 'ไม่มีสิทธิ์ลบรายการ (ต้องเป็นผู้ดูแลที่ผ่าน is_staff() และฐานข้อมูลต้องมีนโยบายลบสำหรับทีมงาน — ดู sql/proposal_support_admin_delete.sql) ('+c+')';
+ return (ERR[c]||(e&&e.message)||'เกิดข้อผิดพลาดที่ไม่ทราบสาเหตุ')+' ('+c+')'}
+function supRow(r){const nm=String(r.name==null?'':r.name).trim(),ac=String(r.acct==null?'':r.acct).trim(),dt=alhDate(r),amt=+r.amount,mn=r.kind==='money'&&amt>0,ph=alhPhoto(r.photo_path);
+ const info=mn?alhMoney(amt)+' บาท':(ALH_KD[r.kind]||'รายละเอียด')+' '+(r.detail||'-');
+ return `<div class="row sta-r sup-r"><div class="sup-av" aria-hidden="true">${alhSvg(ALH_USER,20)}${ph?`<img src="${E(ph)}" alt="" width="44" height="44" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.remove()">`:''}</div><div class="sta-i"><b>${E(nm||'-')}</b>${ac?' · '+E(ac):''}<br><small>${dt?E(dt)+' · ':''}${E(info)}</small></div><div class="sta-a"><button type="button" class="btn s c" data-id="${E(r.id)}" onclick="supAsk(this.dataset.id,this)">ลบ</button></div></div>`}
+const supTabs=()=>ALH_CATS.map(c=>{const s=SUP.st[c[0]],on=c[0]===SUP.cat,ct=s.did?(s.err&&!s.rows.length?'—':s.n.toLocaleString('th-TH')):'…';
+ return `<button type="button" role="tab" class="btn s sup-tb${on?' b':''}" id="sup-t-${c[0]}" aria-selected="${on}" aria-controls="sup-pn" tabindex="${on?0:-1}" onclick="supPick('${c[0]}')">${E(c[1])}<span class="sup-n">${E(ct)}</span></button>`}).join('');
+function supPanel(id){const s=SUP.st[id];if(!s||!s.did)return '<p class="stu-st" role="status">กำลังโหลดรายการ…</p>';
+ const er=s.err?`<div class="msg er" role="alert">${E(s.err)} <button type="button" class="btn s" id="sup-rt" onclick="supLoad('${id}')"${s.busy?' disabled':''}>ลองอีกครั้ง</button></div>`:'';
+ if(!s.rows.length)return er||'<p class="stu-st">ยังไม่มีรายการในหมวดนี้</p>';
+ const pages=Math.max(1,Math.ceil(s.n/SUP_PG));
+ return `${er}<p class="stu-cnt" role="status">ทั้งหมด ${s.n.toLocaleString('th-TH')} รายการ${s.busy?' · กำลังอัปเดต…':''}</p>${s.rows.map(supRow).join('')}<p class="stu-pg"><button type="button" class="btn s" id="sup-pv" onclick="supLoad('${id}',${s.pg-1})"${s.pg<=0||s.busy?' disabled':''}>← ก่อนหน้า</button> <span>หน้า ${s.pg+1} / ${pages}</span> <button type="button" class="btn s" id="sup-nx" onclick="supLoad('${id}',${s.pg+1})"${s.pg+1>=pages||s.busy?' disabled':''}>ถัดไป →</button></p>`}
+/* อัปเดตเฉพาะแถบหมวดและแผงรายการ แล้วคืนโฟกัสเดิม */
+function supPaint(){const t=$('sup-tabs'),p=$('sup-pn');if(!t||!p)return;const a=document.activeElement,fid=a&&a.id&&(t.contains(a)||p.contains(a))?a.id:'';t.innerHTML=supTabs();p.innerHTML=supPanel(SUP.cat);p.setAttribute('aria-labelledby','sup-t-'+SUP.cat);if(fid){const n=$(fid);if(n&&!n.disabled)n.focus()}}
+async function supLoad(id,pg){const s=SUP.st[id];if(!s)return;const db=supDb();
+ if(!db){s.err='ยังไม่ได้ตั้งค่า Supabase จึงแสดงรายการไม่ได้';s.did=true;return supPaint()}
+ if(typeof pg==='number')s.pg=Math.max(0,pg);const my=++s.seq;s.busy=true;s.err='';supPaint();
+ try{const from=s.pg*SUP_PG,{data,error,count}=await db.from('support_entries').select(ALH_COLS,{count:'exact'}).eq('cat',id).order('created_at',{ascending:false}).order('id',{ascending:false}).range(from,from+SUP_PG-1);
+  if(my!==s.seq)return;if(error)throw error;
+  if(!(data||[]).length&&s.pg>0&&count>0){s.pg=Math.ceil(count/SUP_PG)-1;s.busy=false;return supLoad(id)}
+  s.rows=data||[];s.n=count==null?s.rows.length:count}
+ catch(e){if(my===s.seq){console.error('support_entries:',e);s.err=alhErr(e)}}
+ finally{if(my===s.seq){s.busy=false;s.did=true;supPaint()}}}
+function supBoot(force){if(!force&&SUP.boot&&Date.now()-SUP.t<=SUP_TTL)return;SUP.boot=true;SUP.t=Date.now();setTimeout(()=>ALH_CATS.forEach(c=>supLoad(c[0])),0)}
+function supPick(id,keep){if(!ALH_CATS.some(c=>c[0]===id))return;SUP.cat=id;supPaint();const t=$('sup-t-'+id);if(t&&keep)t.focus()}
+function supKey(e){const k=e.key,i=ALH_CATS.findIndex(c=>c[0]===SUP.cat),n=ALH_CATS.length;let j=-1;
+ if(k==='ArrowRight'||k==='ArrowDown')j=(i+1)%n;else if(k==='ArrowLeft'||k==='ArrowUp')j=(i-1+n)%n;else if(k==='Home')j=0;else if(k==='End')j=n-1;
+ if(j<0)return true;e.preventDefault();supPick(ALH_CATS[j][0],true);return false}
+function supAdmin(){if(!Auth.canAccessAdmin())return '<div class="msg er">ไม่มีสิทธิ์เข้าถึงหน้านี้ (ต้องเป็นผู้ดูแลที่ผ่าน is_staff())</div>';
+ supBoot();
+ return `<h1>จัดการทำเนียบผู้ร่วมสนับสนุน</h1><p>รายการที่ผู้สนับสนุนกรอกผ่านฟอร์มในหน้าสมาคมศิษย์เก่า และแสดงในหน้าทำเนียบสาธารณะ · ผู้ดูแลลบรายการได้ (ลบแล้วกู้คืนไม่ได้) · ไม่มีการแก้ไขรายการ</p>${dbBanner()}<div class="sup-bar"><div class="sup-tabs" id="sup-tabs" role="tablist" aria-label="หมวดการสนับสนุน" onkeydown="return supKey(event)">${supTabs()}</div><button type="button" class="btn s" id="sup-rf" onclick="supBoot(true)">รีเฟรช</button></div><div id="sup-pn" role="tabpanel" aria-labelledby="sup-t-${SUP.cat}">${supPanel(SUP.cat)}</div>`}
+/* ---------- ยืนยันก่อนลบ ---------- */
+function supClose(){$('md').innerHTML='';SUP.ask=null;const o=SUP.op;SUP.op=null;if(o&&o.isConnected&&o.focus)o.focus()}
+function supAsk(id,btn){if(!Auth.canAccessAdmin()||!DBH)return say(Auth.canAccessAdmin()?dbOff():'ไม่มีสิทธิ์ลบรายการ (ต้องเป็นผู้ดูแลที่เข้าสู่ระบบ)',false);
+ const r=SUP.st[SUP.cat].rows.find(x=>String(x.id)===String(id));if(!r)return say('ไม่พบรายการนี้แล้ว กรุณากดรีเฟรช',false);
+ const nm=String(r.name==null?'':r.name).trim()||'-',amt=+r.amount,mn=r.kind==='money'&&amt>0,pp=r.photo_path&&SUP_PHOTO.test(r.photo_path)?r.photo_path:'';
+ SUP.ask={id:r.id,cat:r.cat,photo:r.photo_path||''};SUP.op=btn||null;
+ $('md').innerHTML=`<div class="modal" role="alertdialog" aria-modal="true" aria-labelledby="sup-mt" aria-describedby="sup-mb"><div><h3 id="sup-mt">ยืนยันการลบรายการ</h3><p id="sup-mb">ลบรายการของ <b>${E(nm)}</b> (${E(supCatName(r.cat))}${mn?' · '+E(alhMoney(amt))+' บาท':''}) ออกจากทำเนียบถาวร${pp?' และลบรูปโปรไฟล์ที่เกี่ยวข้อง':''} · การลบกู้คืนไม่ได้ และรายการจะหายจากหน้าทำเนียบสาธารณะ</p><p class="msg er" id="sup-er" role="alert" hidden></p><button type="button" class="btn c" id="sup-go" onclick="supDel()">ลบรายการ</button> <button type="button" class="btn" id="sup-no" onclick="supClose()">ยกเลิก</button></div></div>`;
+ setTimeout(()=>{const n=$('sup-no');if(n)n.focus()},0)}
+async function supDel(){const a=SUP.ask,go=$('sup-go');if(!a||!go||SUP.busy)return; /* ต้องผ่านหน้าต่างยืนยันที่เปิดอยู่เท่านั้น */
+ const er=m=>{const n=$('sup-er');if(n){n.textContent=m;n.hidden=false}},lock=on=>{const g=$('sup-go'),c=$('sup-no');if(g){g.disabled=on;g.textContent=on?'กำลังลบ…':'ลบรายการ'}if(c)c.disabled=on};
+ if(!Auth.canAccessAdmin()||!DBH)return er('ไม่มีสิทธิ์ลบรายการ (ต้องเป็นผู้ดูแลที่เข้าสู่ระบบ)');
+ SUP.busy=true;lock(true);
+ try{
+  const {data:ok,error:se}=await DBH.rpc('is_staff');if(se)throw se;if(ok!==true){Auth.staff=false;throw {code:'42501'}}
+  const {data,error}=await DBH.from('support_entries').delete().eq('id',a.id).select('id');if(error)throw error;
+  if(!data||!data.length){ /* 0 แถว: ถูกลบไปก่อนแล้ว หรือ RLS ไม่อนุญาต — แยกด้วยการอ่านซ้ำ */
+   const {data:left,error:le}=await supDb().from('support_entries').select('id').eq('id',a.id).limit(1);if(le)throw le;
+   if(left&&left.length)throw {code:'42501'};
+   supClose();ALH.t=0;say('รายการนี้ถูกลบไปแล้ว (อาจมีผู้ดูแลคนอื่นลบก่อน)',false);return supLoad(a.cat)}
+  let note='',warn=false;const pp=a.photo;
+  if(pp){
+   if(!SUP_PHOTO.test(pp)){note=' (ไม่ได้ลบไฟล์รูป เพราะ path ไม่อยู่ในรูปแบบ avatars/<ref>.jpg ที่ปลอดภัย)';warn=true}
+   else{try{const {count,error:ce}=await supDb().from('support_entries').select('id',{count:'exact',head:true}).eq('photo_path',pp);if(ce)throw ce;
+     if(count>0)note=' (คงไฟล์รูปไว้ เพราะยังมีรายการอื่นใช้ไฟล์เดียวกัน)';
+     else{const {data:rm,error:re}=await DBH.storage.from('supporters').remove([pp]);if(re)throw re;if(!rm||!rm.length)throw {code:'42501'};note=' และลบรูปโปรไฟล์แล้ว'}}
+    catch(pe){console.error('supporters remove:',pe);note=' แต่ลบรูปโปรไฟล์ไม่สำเร็จ ไฟล์ '+pp+' ยังค้างใน Storage ('+((pe&&(pe.code||pe.status))||'error')+' — ตรวจนโยบาย Storage ใน sql/proposal_support_admin_delete.sql)';warn=true}}}
+  supClose();ALH.t=0;say('ลบรายการแล้ว'+note,!warn);supLoad(a.cat)}
+ catch(e){console.error('support_entries delete:',e);er(supMsg(e))}
+ finally{SUP.busy=false;lock(false)}}
 /* ===== ระบบสนับสนุนในหน้าสมาคมศิษย์เก่า (alumni-kds): ฟอร์ม → ตรวจสอบ → สลิป KOSA BANK (PNG) =====
    ข้อมูลที่กรอกเก็บในตัวแปร ALS ระหว่างกรอก/ตรวจสอบ · เมื่อกด "ยืนยัน" จะบันทึกลง Supabase (ตาราง support_entries + รูปใน bucket 'supporters') ผ่าน alsStore() แล้วจึงสร้างสลิป · ถ้าบันทึกไม่สำเร็จจะไม่สร้างสลิป
    KOSA BANK เป็นธนาคารสมมติสำหรับระบบ Roleplay · สลิปเป็นสลิปโอนเงินในเรื่อง ไม่มีการรับ-โอนเงินจริง และไม่ใช้ชื่อ/โลโก้ธนาคารจริง
@@ -855,11 +929,11 @@ for(const [l,u] of [[h.b1t,h.b1u],[h.b2t,h.b2u]])if((l&&!okL(u))||(!l&&u))return
 if(!DBH)return say(dbOff(),false);try{await putDoc('settings',Object.assign({},getSH('settings')||{},{home:h,footer:STRIP(d.get('f')||'').trim()}));WC.hm=null;say('บันทึกเนื้อหาหน้าแรกเรียบร้อย ผู้เข้าชมเห็นทันที')}catch(e){dbErr('บันทึกไม่สำเร็จ',e)}}
 const PUB={p(sl){const q=getPages().find(x=>x.slug===sl);return q&&q.status==='published'?pageView(q):nf()},preview(id){const q=pgById(id);return q?pageView(q,1):nf()}};
 /* ===== Admin: shell ===== */
-const AG=[['ภาพรวม',[['dash','แดชบอร์ด']]],['จัดการเว็บไซต์',[['home','เนื้อหาหน้าแรก'],['news','จัดการข่าวสารและประกาศ'],['cposts','จัดการโพสต์'],['pages','จัดการเมนูและหน้าเว็บ'],['menu','แก้ไขเมนูแบบละเอียด'],['events','จัดการกิจกรรมปฏิทิน'],['campus','จัดการแผนผังสถาบัน'],['pexec','จัดการคณะผู้บริหาร'],['pstaff','จัดการอาจารย์และบุคลากร'],['ptypes','จัดการประเภทบุคลากร'],['pdepartments','จัดการฝ่ายงาน'],['pgroups','จัดการกลุ่มสาระการเรียนรู้'],['clubs','จัดการชมรมนักศึกษา'],['clubcats','จัดการหมวดหมู่ชมรม'],['affcomms','จัดการคอมมูนิตี้ในเครือ']]],['ข้อมูลการศึกษา',[['curriculum','โครงสร้างหลักสูตรและตารางเรียน'],['sgsched','กลุ่มสาระ: กำหนดวิชาและตารางสอน'],['students','จัดการรายชื่อนักเรียน'],['typo','ตั้งค่าตัวอักษร']],true],['ตั้งค่า',[['settings','การตั้งค่าเว็บไซต์']]]];
+const AG=[['ภาพรวม',[['dash','แดชบอร์ด']]],['จัดการเว็บไซต์',[['home','เนื้อหาหน้าแรก'],['news','จัดการข่าวสารและประกาศ'],['cposts','จัดการโพสต์'],['pages','จัดการเมนูและหน้าเว็บ'],['menu','แก้ไขเมนูแบบละเอียด'],['events','จัดการกิจกรรมปฏิทิน'],['campus','จัดการแผนผังสถาบัน'],['pexec','จัดการคณะผู้บริหาร'],['pstaff','จัดการอาจารย์และบุคลากร'],['ptypes','จัดการประเภทบุคลากร'],['pdepartments','จัดการฝ่ายงาน'],['pgroups','จัดการกลุ่มสาระการเรียนรู้'],['clubs','จัดการชมรมนักศึกษา'],['clubcats','จัดการหมวดหมู่ชมรม'],['affcomms','จัดการคอมมูนิตี้ในเครือ'],['support','จัดการทำเนียบผู้ร่วมสนับสนุน']]],['ข้อมูลการศึกษา',[['curriculum','โครงสร้างหลักสูตรและตารางเรียน'],['sgsched','กลุ่มสาระ: กำหนดวิชาและตารางสอน'],['students','จัดการรายชื่อนักเรียน'],['typo','ตั้งค่าตัวอักษร']],true],['ตั้งค่า',[['settings','การตั้งค่าเว็บไซต์']]]];
 function adminNav(sec){return `<aside aria-label="เมนูหลังบ้าน"><b class="ab">${kitTile(30)}<span>Admin · ${BRAND.short}</span>${soundBtn()}${themeBtn()}</b><br><a href="#/">&#8592; ดูเว็บไซต์</a><small style="display:block;opacity:.7;margin:6px 0;word-break:break-all">${E(Auth.email)}</small><button type="button" class="btn s" onclick="doLogout()">ออกจากระบบ</button>${AG.map(([g,it,fold])=>{const ln=it.map(([k,t])=>{const on=sec===k;return `<a href="#/admin/${k}" class="${on?'on':''}"${on?' aria-current="page"':''}>${t}</a>`}).join('');return fold?`<details class="agd"${FQN.open||it.some(x=>x[0]===sec)?' open':''} ontoggle="FQN.open=this.open"><summary class="ag">${g}</summary>${ln}</details>`:`<div class="ag">${g}</div>${ln}`}).join('')}</aside>`}
 function sbt(){sbc=!sbc;render()}
 function admin(parts){if(!Auth.canAccessAdmin())return loginView();const sec=(parts[0]==='people'?'pstaff':parts[0])||'dash';if(sec!=='home')WC.hm=null;let main;
- if(sec==='dash')main=dashboard();else if(sec==='pages'&&parts[1]==='edit')main=pageEditor(parts[2]);else if(sec==='pages')main=pagesAdmin();else if(sec==='home')main=homeAdmin();else if(sec==='menu')main=menuAdmin();else if(sec==='events'&&parts[1]==='edit')main=eventEditor(parts[2]);else if(sec==='events')main=eventsAdmin();else if(sec==='campus'&&parts[1]==='edit')main=cmpEditor(parts[2]);else if(sec==='campus')main=campusAdmin();else if(sec==='curriculum')main=ctAdmin();else if(sec==='sgsched')main=sgxAdmin();else if(sec==='students')main=stuAdmin();else if(FQE[sec])main=parts[1]==='edit'?fqEditor(sec,parts[2]):fqAdmin(sec);else if(sec==='typo')main=typoAdmin();else if(sec==='settings')main=settingsAdmin();else main='<p>ไม่พบเมนู</p>';
+ if(sec==='dash')main=dashboard();else if(sec==='pages'&&parts[1]==='edit')main=pageEditor(parts[2]);else if(sec==='pages')main=pagesAdmin();else if(sec==='home')main=homeAdmin();else if(sec==='menu')main=menuAdmin();else if(sec==='events'&&parts[1]==='edit')main=eventEditor(parts[2]);else if(sec==='events')main=eventsAdmin();else if(sec==='campus'&&parts[1]==='edit')main=cmpEditor(parts[2]);else if(sec==='campus')main=campusAdmin();else if(sec==='curriculum')main=ctAdmin();else if(sec==='sgsched')main=sgxAdmin();else if(sec==='students')main=stuAdmin();else if(sec==='support')main=supAdmin();else if(FQE[sec])main=parts[1]==='edit'?fqEditor(sec,parts[2]):fqAdmin(sec);else if(sec==='typo')main=typoAdmin();else if(sec==='settings')main=settingsAdmin();else main='<p>ไม่พบเมนู</p>';
  return `<div class="adm${sbc?' c':''}">${adminNav(sec)}<main><button class="btn s" onclick="sbt()" aria-expanded="${!sbc}" aria-label="ย่อหรือขยายเมนู">${ic('menu')} เมนู</button>${toast?`<div class="msg ${toast.ok?'ok':'er'}">${E(toast.t)}</div>`:''}${main}</main></div>`}
 const dbBanner=()=>`<div class="msg ${DBH&&CW!==false?'ok':'er'}">${DBH?(CW===false?'เชื่อมต่อฐานข้อมูลแล้ว แต่บัญชีนี้ไม่มีสิทธิ์เขียนข้อมูล (ดูได้อย่างเดียว) ต้องเป็นเจ้าของหรือผู้แก้ไข':'เชื่อมต่อ Supabase แล้ว บันทึกลงฐานข้อมูลจริง (เฉพาะทีมงานที่ได้รับอนุญาต)'):dbOff()}</div>`;
 /* ===== โครงสร้างหลักสูตรและตารางเรียน (ระบบใหม่ เมนูเดียว #/admin/curriculum) — ไม่เพิ่มตาราง/คีย์ในฐานข้อมูล: เก็บเป็นอาร์เรย์ใน settings (site_docs 'settings') เหมือน ptypes/pgroups

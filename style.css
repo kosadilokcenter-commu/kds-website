@@ -2086,3 +2086,11 @@ html:has(.sch-pg){overflow-x:clip}
 @media(hover:hover){.aff-ci:hover{background:var(--kds-primary);border-color:var(--kds-primary);color:#fff}}
 @media(prefers-reduced-motion:reduce){.aff-ci{transition:none}}
 @media(max-width:480px){.aff-m .aff-bd{padding:8px 16px 18px}.aff-m h3{font-size:1.2rem}}
+
+/* ===== หลังบ้าน: จัดการทำเนียบผู้ร่วมสนับสนุน (#/admin/support) — ใช้ .row/.sta-r/.sta-i/.sta-a/.stu-cnt/.stu-pg เดิม ===== */
+.sup-bar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;margin:14px 0 6px}
+.sup-tabs{display:flex;flex-wrap:wrap;gap:8px}
+.sup-n{margin-left:8px;font-weight:500;opacity:.85}
+.sup-av{position:relative;flex:0 0 auto;width:44px;height:44px;border-radius:50%;overflow:hidden;display:grid;place-items:center;color:var(--muted);border:1px solid var(--line);background:color-mix(in srgb,var(--act) 8%,var(--surface))}
+.sup-av img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:50%}
+.modal [role="alert"][hidden]{display:none}
