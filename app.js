@@ -377,11 +377,11 @@ function alsRows(r,slip){const mn=r.amt!=null,o=[[slip?'ผู้สนับส
  if(slip){o.push(['วันที่-เวลา',alsDT(r.ts)]);o.push(['เลขอ้างอิง',r.ref])}return o}
 function alsOpen(type,btn){if(!ALS_TYPES[type])return;ALS={type,step:1,name:'',amtRaw:'',kind:'money',detail:'',note:'',opener:btn||document.activeElement,rec:null,cv:null};alsShow()}
 function alsClose(){const o=ALS&&ALS.opener;ALS=null;$('md').innerHTML='';if(o&&o.isConnected&&o.focus)o.focus()}
-function alsWrap(inner,title,n,lab){return `<div class="modal wide als" role="dialog" aria-modal="true" aria-labelledby="als-t" onpointerdown="this._d=event.target===this" onclick="if(this._d&&event.target===this)alsClose()"><div><button type="button" class="mx" aria-label="ปิดหน้าต่าง" onclick="alsClose()">${ic('close')}</button><p class="als-st">ขั้นตอนที่ ${n} จาก 3 · ${E(lab)}</p><h3 id="als-t">${E(title)}</h3>${inner}</div></div>`}
+function alsWrap(inner,title,n,lab,cls){return `<div class="modal wide als${cls?' '+cls:''}" role="dialog" aria-modal="true" aria-labelledby="als-t" onpointerdown="this._d=event.target===this" onclick="if(this._d&&event.target===this)alsClose()"><div><button type="button" class="mx" aria-label="ปิดหน้าต่าง" onclick="alsClose()">${ic('close')}</button><p class="als-st">ขั้นตอนที่ ${n} จาก 3 · ${E(lab)}</p><h3 id="als-t">${E(title)}</h3>${inner}</div></div>`}
 function alsShow(){const A=ALS;if(!A)return;const T=ALS_TYPES[A.type],m=$('md');
  if(A.step===1)m.innerHTML=alsWrap(alsFormHtml(),T.t,1,'กรอกข้อมูล');
  else if(A.step===2)m.innerHTML=alsWrap(alsReviewHtml(),'ตรวจสอบและยืนยันรายการ',2,'ตรวจสอบ');
- else{m.innerHTML=alsWrap(alsSlipHtml(),'สลิป KOSA BANK',3,'สลิปแจ้งความประสงค์');alsSlip()}
+ else{m.innerHTML=alsWrap(alsSlipHtml(),'สลิป KOSA BANK',3,'สลิปแจ้งความประสงค์','als-slip');alsSlip()}
  const h=$('als-t');if(h){h.tabIndex=-1;h.focus({preventScroll:true})}}
 function alsFormHtml(){const A=ALS,T=ALS_TYPES[A.type],sp=A.type==='sponsor',mn=!sp||A.kind==='money',a=alsAmt(A.amtRaw);
  const kd=sp?`<fieldset class="als-fs"><legend>รูปแบบการสนับสนุน</legend><div class="als-kd">${Object.keys(ALS_KS).map(k=>`<label class="als-opt${A.kind===k?' on':''}"><input type="radio" name="als-k" value="${k}"${A.kind===k?' checked':''} onchange="alsKind(this.value)"><span>${E(ALS_KS[k])}</span></label>`).join('')}</div></fieldset>`:'';
@@ -423,7 +423,7 @@ async function alsDraw(r){
  rows=alsRows(r,true).map(q=>{const b=q[0]==='เลขอ้างอิง',ls=wrap(q[1],fo(b?700:600,17),VW);return {l:q[0],ls,b,h:ls.length*LH+28}}),
  mn=r.amt!=null,al=mn?['฿ '+alsMoney(r.amt)]:wrap(ALS_KS[r.kind],fo(700,28),IN),
  yA=216,aEnd=mn?yA+100:yA+50+(al.length-1)*38+30,yR=aEnd+22,rEnd=yR+rows.reduce((a,o)=>a+o.h,0),
- dl=wrap(ALS_DISC,fo(400,14),IN),yD=rEnd+18,cardB=yD+22+dl.length*22+26,H=cardB+70,S=Math.min(2,Math.sqrt(14e6/(W*H)));
+ dl=wrap(ALS_DISC,fo(400,14),IN),yD=rEnd+18,cardB=yD+22+dl.length*22+26,H=cardB+70,S=Math.min(3,Math.sqrt(24e6/(W*H)));
  cv.width=Math.round(W*S);cv.height=Math.round(H*S);x.scale(S,S);x.textBaseline='middle';
  const rr=(a,b,w,h,d)=>{x.beginPath();x.moveTo(a+d,b);x.arcTo(a+w,b,a+w,b+h,d);x.arcTo(a+w,b+h,a,b+h,d);x.arcTo(a,b+h,a,b,d);x.arcTo(a,b,a+w,b,d);x.closePath()},
  T=(t,a,b,f,c,al2)=>{x.font=f;x.fillStyle=c;x.textAlign=al2||'left';x.fillText(t,a,b)},cx=W/2,cT=118;
