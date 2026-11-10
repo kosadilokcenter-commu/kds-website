@@ -1507,10 +1507,10 @@ html:has(.sch-pg){overflow-x:clip}
 .alu-dl{--alu-ac:#7A1A22;margin:clamp(4px,1vw,12px) 0 0;counter-reset:alu-n;border-bottom:1px solid var(--line)}
 :root[data-theme="dark"] .alu-dl{--alu-ac:#E9A9B0}
 @media(prefers-color-scheme:dark){:root:not([data-theme]) .alu-dl{--alu-ac:#E9A9B0}}
-.alu-dl>div{counter-increment:alu-n;display:grid;grid-template-columns:clamp(56px,8vw,84px) minmax(0,11rem) minmax(0,1fr);column-gap:clamp(16px,3vw,36px);row-gap:0;align-items:baseline;padding:clamp(14px,2vw,22px) 0;border-top:1px solid var(--line)}
+.alu-dl>div{counter-increment:alu-n;display:grid;grid-template-columns:clamp(52px,6vw,72px) minmax(0,8.5rem) minmax(0,1fr);column-gap:clamp(16px,2.4vw,32px);row-gap:0;align-items:baseline;padding:clamp(14px,2vw,22px) 0;border-top:1px solid var(--line)}
 .alu-dl>div::before{content:counter(alu-n,decimal-leading-zero);grid-column:1;grid-row:1/span 2;align-self:start;font-size:clamp(1.9rem,4.2vw,2.8rem);font-weight:300;line-height:1;letter-spacing:-.03em;font-variant-numeric:lining-nums tabular-nums;color:var(--alu-ac)}
 .alu-dl dt{grid-column:2;grid-row:1;margin:0;font-size:clamp(1.02rem,1.5vw,1.15rem);font-weight:700;line-height:1.5;color:var(--fg)}
-.alu-dl dd{grid-column:3;grid-row:1;margin:0;max-width:52ch;font-size:clamp(.95rem,1.25vw,1.02rem);line-height:1.7;color:var(--fg);overflow-wrap:anywhere}
+.alu-dl dd{grid-column:3;grid-row:1;margin:0;max-width:none;font-size:clamp(.95rem,1.25vw,1.02rem);line-height:1.7;color:var(--fg);overflow-wrap:anywhere}
 @media(max-width:860px){.alu-dl>div{grid-template-columns:clamp(48px,10vw,64px) minmax(0,1fr);row-gap:2px}.alu-dl>div::before{font-size:clamp(1.8rem,6vw,2.3rem)}.alu-dl dt{grid-column:2;grid-row:1}.alu-dl dd{grid-column:2;grid-row:2;max-width:none}}
 @media(max-width:520px){.alu-dl>div{grid-template-columns:44px minmax(0,1fr);column-gap:14px;padding:14px 0}.alu-dl>div::before{font-size:1.7rem}}
 .alu-g{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:28px clamp(24px,4vw,48px)}
@@ -2100,3 +2100,16 @@ html:has(.sch-pg){overflow-x:clip}
 .sup-av{position:relative;flex:0 0 auto;width:44px;height:44px;border-radius:50%;overflow:hidden;display:grid;place-items:center;color:var(--muted);border:1px solid var(--line);background:color-mix(in srgb,var(--act) 8%,var(--surface))}
 .sup-av img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:50%}
 .modal [role="alert"][hidden]{display:none}
+
+/* ===== สีประเภทกิจกรรม (ปฏิทิน) · --tc มาจากประเภทที่ตั้งค่าไว้หลังบ้าน · ผสมกับสีพื้นของธีม (--bg/--surface/--fg) จึงเป็นโทนอ่อนอ่านง่ายทั้ง Light/Dark · กิจกรรมที่ไม่มีประเภทไม่มีคลาส et/evty = หน้าตาเดิมทุกอย่าง · แถบบนมือถือใช้คลาส .bar ชุดเดียวกัน ===== */
+.bar.et{background:color-mix(in srgb,var(--tc) 30%,var(--bg));border-left-color:color-mix(in srgb,var(--tc) 72%,var(--fg))}
+.bar.et.mu{background:color-mix(in srgb,var(--tc) 40%,var(--bg))}
+.tag.evty{background:color-mix(in srgb,var(--tc) 30%,var(--surface));border-color:color-mix(in srgb,var(--tc) 72%,var(--fg));color:var(--fg)}
+/* หลังบ้าน: จัดการประเภทกิจกรรมและสี */
+.evtr{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:flex-end}.evtf{display:flex;flex-direction:column;gap:3px;min-width:0}.evtf.n{flex:1 1 200px}.evtf input{max-width:100%}.evtr input[type=color]{width:56px;min-width:56px;height:38px;padding:2px;cursor:pointer}.evtr .evta{display:flex;flex-wrap:wrap;gap:6px}.evtr .evtf .tag{white-space:nowrap;margin:0 4px 0 0}
+@media(max-width:640px){.evtf.n{flex-basis:100%}}
+/* โหมดกลางคืน: ลดสัดส่วนสีลงเพื่อให้ข้อความอ่านได้ชัดแม้ผู้ดูแลเลือกสีสว่างจัด (คอนทราสต์ ≥ 4.5:1) */
+:root[data-theme="dark"] .bar.et{background:color-mix(in srgb,var(--tc) 26%,var(--bg))}
+:root[data-theme="dark"] .bar.et.mu{background:color-mix(in srgb,var(--tc) 34%,var(--bg))}
+:root[data-theme="dark"] .tag.evty{background:color-mix(in srgb,var(--tc) 26%,var(--surface))}
+@media(prefers-color-scheme:dark){:root:not([data-theme]) .bar.et{background:color-mix(in srgb,var(--tc) 26%,var(--bg))}:root:not([data-theme]) .bar.et.mu{background:color-mix(in srgb,var(--tc) 34%,var(--bg))}:root:not([data-theme]) .tag.evty{background:color-mix(in srgb,var(--tc) 26%,var(--surface))}}
