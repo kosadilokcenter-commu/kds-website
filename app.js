@@ -1482,8 +1482,47 @@ function cmMount(){const v=cmEl('cmv');if(!v)return;v.addEventListener('pointerd
 
 
 /* ===== Admin: จัดการแผนผังสถาบัน ===== */
-async function cmUpload(file,dir){if(!SB||!DBH)throw {message:dbOff()};if(!file)throw {message:'ไม่ได้เลือกไฟล์'};const ext=CM_MIME[file.type];if(!ext)throw {message:'รองรับเฉพาะไฟล์ PNG, JPG, WebP, GIF'};if(file.size>5*1024*1024)throw {message:'ไฟล์ใหญ่เกิน 5 MB'};
- const path=dir+'/'+mkId('f')+'.'+ext,{error}=await SB.storage.from('campus').upload(path,file,{contentType:file.type,cacheControl:'31536000',upsert:false});if(error)throw error;return SB.storage.from('campus').getPublicUrl(path).data.publicUrl}
+/* ===== แปลงรูป PNG/JPG เป็น WebP ฝั่งเบราว์เซอร์ก่อนอัปโหลด (ใช้ร่วมกันทั้ง mdUpload และ cmUpload) =====
+   · แปลงเฉพาะ image/png และ image/jpeg · GIF/WebP ส่งต่อไฟล์เดิม · ย่อให้ด้านยาวสุดไม่เกิน 1920px รักษาสัดส่วน · PNG โปร่งใสคงความโปร่งใส (ไม่ถมพื้นหลัง)
+   · แปลงไม่สำเร็จ = แจ้งข้อผิดพลาดและไม่อัปโหลด · เบราว์เซอร์ที่เข้ารหัส WebP ไม่ได้ (เช่น Safari เก่า) = อัปโหลดไฟล์ต้นฉบับเหมือนเดิม · ไม่แตะไฟล์เก่าใน Storage */
+const WEBP_MAX=1920,WEBP_Q=.82,WEBP_SRC={'image/png':1,'image/jpeg':1};
+let UPST_T=0;
+function upStat(t,bad){clearTimeout(UPST_T);let e=document.getElementById('upst');if(!e){e=document.createElement('div');e.id='upst';e.setAttribute('role','status');e.setAttribute('aria-live','polite');document.body.appendChild(e)}e.hidden=false;e.className=bad?'er':'';e.textContent=t}
+function upStatEnd(ms){clearTimeout(UPST_T);UPST_T=setTimeout(()=>{const e=document.getElementById('upst');if(e)e.hidden=true},ms)}
+const upSize=n=>n>=1048576?(n/1048576).toFixed(1)+' MB':Math.max(1,Math.round(n/1024))+' KB';
+async function webpPrep(file){
+ if(!file||!WEBP_SRC[file.type])return file;
+ let bmp=null,url='';
+ try{
+  upStat('กำลังแปลงรูปเป็น WebP…');
+  let w,h,src;
+  if(window.createImageBitmap){try{bmp=await createImageBitmap(file,{imageOrientation:'from-image'})}catch(e){try{bmp=await createImageBitmap(file)}catch(e2){bmp=null}}}
+  if(bmp){w=bmp.width;h=bmp.height;src=bmp}
+  else{url=URL.createObjectURL(file);const im=new Image();await new Promise((ok,no)=>{im.onload=ok;im.onerror=()=>no(new Error('อ่านไฟล์รูปไม่ได้ (ไฟล์อาจเสียหาย)'));im.src=url});w=im.naturalWidth;h=im.naturalHeight;src=im}
+  if(!w||!h)throw new Error('อ่านขนาดรูปไม่ได้');
+  if(w*h>80e6)throw new Error('ขนาดพิกเซลของรูปใหญ่เกินไป');
+  const k=Math.min(1,WEBP_MAX/Math.max(w,h)),cw=Math.max(1,Math.round(w*k)),ch=Math.max(1,Math.round(h*k)),c=document.createElement('canvas');
+  c.width=cw;c.height=ch;const g=c.getContext('2d');if(!g)throw new Error('เบราว์เซอร์ไม่รองรับ Canvas');
+  g.clearRect(0,0,cw,ch);g.imageSmoothingEnabled=true;g.imageSmoothingQuality='high';g.drawImage(src,0,0,cw,ch);
+  const blob=await new Promise(r=>c.toBlob(r,'image/webp',WEBP_Q));c.width=c.height=0;
+  if(!blob)throw new Error('สร้างไฟล์ WebP ไม่สำเร็จ');
+  if(blob.type!=='image/webp')return file;
+  const nm=((file.name||'image').replace(/\.[^.\/\\]+$/,'')||'image').slice(0,80);
+  return new File([blob],nm+'.webp',{type:'image/webp',lastModified:Date.now()})
+ }catch(e){throw {code:'webp',message:'แปลงรูปเป็น WebP ไม่สำเร็จ: '+((e&&e.message)||'ไม่ทราบสาเหตุ')+' — ยังไม่ได้อัปโหลด ลองเลือกไฟล์อื่น'}}
+ finally{if(bmp&&bmp.close)try{bmp.close()}catch(e){}if(url)URL.revokeObjectURL(url)}
+}
+async function upImg(bucket,dir,file){
+ try{
+  const o=file,f=await webpPrep(o),ext=CM_MIME[f.type];if(!ext)throw {message:'รองรับเฉพาะไฟล์ PNG, JPG, WebP, GIF'};
+  upStat('กำลังอัปโหลดรูป…');
+  const path=dir+'/'+mkId('f')+'.'+ext,{error}=await SB.storage.from(bucket).upload(path,f,{contentType:f.type,cacheControl:'31536000',upsert:false});if(error)throw error;
+  const u=SB.storage.from(bucket).getPublicUrl(path).data.publicUrl;
+  upStat(f!==o?'อัปโหลดรูปสำเร็จ (WebP · '+upSize(o.size)+' → '+upSize(f.size)+')':WEBP_SRC[o.type]?'อัปโหลดรูปสำเร็จ (เบราว์เซอร์นี้แปลงเป็น WebP ไม่ได้ จึงใช้ไฟล์ต้นฉบับ)':'อัปโหลดรูปสำเร็จ');upStatEnd(3000);return u
+ }catch(e){upStat('อัปโหลดรูปไม่สำเร็จ',true);upStatEnd(5000);throw e}
+}
+async function cmUpload(file,dir){if(!SB||!DBH)throw {message:dbOff()};if(!file)throw {message:'ไม่ได้เลือกไฟล์'};if(!CM_MIME[file.type])throw {message:'รองรับเฉพาะไฟล์ PNG, JPG, WebP, GIF'};if(file.size>5*1024*1024)throw {message:'ไฟล์ใหญ่เกิน 5 MB'};
+ return upImg('campus',dir,file)}
 const cmDims=u=>new Promise((res,rej)=>{const i=new Image();i.onload=()=>res({w:i.naturalWidth,h:i.naturalHeight});i.onerror=()=>rej({message:'โหลดรูปจากลิงก์นี้ไม่ได้'});i.src=u});
 async function cmSave(c,msg){if(!DBH){say(dbOff(),false);return false}try{await putDoc('campus',c);say(msg);return true}catch(e){dbErr('บันทึกไม่สำเร็จ',e);return false}}
 function cmPageInfo(){const P=getPages(),M=getMenu(),pg=P.find(p=>(p.sections||[]).some(s=>s.type==='campusmap')),mi=pg&&M.find(m=>m.kind==='cms'&&m.pageId===pg.id);return {pg,mi}}
@@ -1926,8 +1965,8 @@ function fqSync(ent){const C=FQE[ent],it=WC.fq;if(!it)return null;const d=new Fo
  C.fields.forEach(([k,,t])=>{const nm='f_'+k;if(t==='chk')it[k]=d.getAll(nm);else if(t==='cpg'){if(d.has(nm+'_x'))it[k]=d.getAll(nm)}else if(t!=='flower'&&d.has(nm))it[k]=g(nm)});
  if(d.has('f_status'))it.status=d.get('f_status')==='published'?'published':'draft';
  fqSyncX(ent,it,d,g);return it}
-async function mdUpload(file,dir){if(!SB||!DBH)throw {message:dbOff()};const ext=CM_MIME[file&&file.type];if(!ext)throw {message:'รองรับเฉพาะไฟล์ PNG, JPG, WebP, GIF'};if(file.size>5*1024*1024)throw {message:'ไฟล์ใหญ่เกิน 5 MB'};
- const path=dir+'/'+mkId('f')+'.'+ext,{error}=await SB.storage.from('media').upload(path,file,{contentType:file.type,cacheControl:'31536000',upsert:false});if(error)throw error;return SB.storage.from('media').getPublicUrl(path).data.publicUrl}
+async function mdUpload(file,dir){if(!SB||!DBH)throw {message:dbOff()};if(!file||!CM_MIME[file.type])throw {message:'รองรับเฉพาะไฟล์ PNG, JPG, WebP, GIF'};if(file.size>5*1024*1024)throw {message:'ไฟล์ใหญ่เกิน 5 MB'};
+ return upImg('media',dir,file)}
 function fqPick(k,inp){const f=inp.files&&inp.files[0];inp.value='';if(!f)return;const ent=WC.fqEnt;if(!CM_MIME[f.type])return say('รองรับเฉพาะไฟล์ PNG, JPG, WebP, GIF',false);if(f.size>5*1024*1024)return say('ไฟล์ใหญ่เกิน 5 MB',false);fqSync(ent);const P=fqPend();if(P.files[k]){try{URL.revokeObjectURL(P.files[k].url)}catch(e){}}P.files[k]={file:f,url:URL.createObjectURL(f)};render()}
 function fqImgClear(k){fqSync(WC.fqEnt);const P=fqPend();delete P.files[k];fqImgSet(WC.fq,k,'');render()}
 let FQLIB=[];

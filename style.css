@@ -2206,3 +2206,5 @@ html:has(.sch-pg){overflow-x:clip}
  .agd{grid-template-columns:48px minmax(0,1fr);gap:10px}
  .ev{padding:12px 14px}
 }
+/* แถบสถานะแปลงรูปเป็น WebP/อัปโหลด (ลอยด้านล่าง ไม่ถูกล้างเมื่อหน้าแอดมินวาดใหม่ · เว้น safe-area บนมือถือ) */
+#upst{position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:60;width:max-content;max-width:min(92vw,440px);padding:10px 16px;border-radius:12px;background:var(--surface);color:var(--fg);border:1px solid var(--line);border-left:4px solid var(--gold);box-shadow:var(--shadow);font-weight:600;font-size:.9rem;line-height:1.4;text-align:center;overflow-wrap:anywhere;pointer-events:none}#upst.er{border-left-color:var(--red)}#upst[hidden]{display:none}
